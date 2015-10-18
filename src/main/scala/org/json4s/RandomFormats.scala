@@ -16,9 +16,6 @@
 
 package org.json4s
 
-
-import org.json4s.prefs.EmptyValueStrategy
-
 import scala.annotation.implicitNotFound
 
 /** Formats to use when converting JSON.
@@ -39,18 +36,14 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
    */
   def parameterNameReader: reflect.ParameterNameReader = reflect.ParanamerReader
 
-  def emptyValueStrategy: EmptyValueStrategy = EmptyValueStrategy.default
-
   private def copy(
                     wParameterNameReader: reflect.ParameterNameReader = self.parameterNameReader,
                     wCustomSerializers: List[Deserializer[_]] = self.customSerializers,
-                    wFieldSerializers: List[(Class[_], FieldSerializer[_])] = self.fieldSerializers,
-                    wEmptyValueStrategy: EmptyValueStrategy = self.emptyValueStrategy): RandomFormats =
+                    wFieldSerializers: List[(Class[_], FieldSerializer[_])] = self.fieldSerializers): RandomFormats =
     new RandomFormats {
       override def parameterNameReader: reflect.ParameterNameReader = wParameterNameReader
       override def customSerializers: List[Deserializer[_]] = wCustomSerializers
       override def fieldSerializers: List[(Class[_], FieldSerializer[_])] = wFieldSerializers
-      override def emptyValueStrategy: EmptyValueStrategy = wEmptyValueStrategy
     }
 
   def + (newSerializer: Deserializer[_]): RandomFormats = copy(wCustomSerializers = newSerializer :: self.customSerializers)
@@ -123,7 +116,6 @@ trait DefaultRandomFormats extends RandomFormats {
   override val parameterNameReader: reflect.ParameterNameReader = reflect.ParanamerReader
   override val customSerializers: List[Deserializer[_]] = Nil
   override val fieldSerializers: List[(Class[_], FieldSerializer[_])] = Nil
-  override val emptyValueStrategy: EmptyValueStrategy = EmptyValueStrategy.default
 }
 
 class CustomDeserializer[A: Manifest](
