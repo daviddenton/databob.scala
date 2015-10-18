@@ -18,7 +18,6 @@ package org.json4s
 
 
 import java.lang.reflect.Type
-import java.util.{Date, TimeZone}
 
 import org.json4s.prefs.EmptyValueStrategy
 import org.json4s.reflect.Reflector
@@ -40,7 +39,6 @@ object RandomFormats {
   "No org.json4s.RandomFormats found. Try to bring an instance of org.json4s.RandomFormats in scope or use the org.json4s.DefaultRandomFormats."
 )
 trait RandomFormats extends Serializable { self: RandomFormats =>
-  def dateFormat: DateFormat
   def typeHints: TypeHints = NoTypeHints
   def customSerializers: List[Deserializer[_]] = Nil
   def customKeyDeserializers: List[KeyDeserializer[_]] = Nil
@@ -63,7 +61,6 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
   def emptyValueStrategy: EmptyValueStrategy = EmptyValueStrategy.default
 
   private def copy(
-                    wDateFormat: DateFormat = self.dateFormat,
                     wTypeHintFieldName: String = self.typeHintFieldName,
                     wParameterNameReader: reflect.ParameterNameReader = self.parameterNameReader,
                     wTypeHints: TypeHints = self.typeHints,
@@ -75,7 +72,6 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
                     wStrict: Boolean = self.strictOptionParsing,
                     wEmptyValueStrategy: EmptyValueStrategy = self.emptyValueStrategy): RandomFormats =
     new RandomFormats {
-      def dateFormat: DateFormat = wDateFormat
       override def typeHintFieldName: String = wTypeHintFieldName
       override def parameterNameReader: reflect.ParameterNameReader = wParameterNameReader
       override def typeHints: TypeHints = wTypeHints
@@ -266,31 +262,13 @@ case class FullTypeHints(hints: List[Class[_]]) extends TypeHints {
   }
 }
 
-/** Default date format is UTC time.
-  */
-object DefaultRandomFormats extends DefaultRandomFormats {
-  val UTC = TimeZone.getTimeZone("UTC")
-
-  val losslessDate = {
-    def createSdf = {
-      val f = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-      f.setTimeZone(UTC)
-      f
-    }
-    new ThreadLocal(createSdf)
-  }
-
-
-}
+object DefaultRandomFormats extends DefaultRandomFormats
 
 private[json4s] class ThreadLocal[A](init: => A) extends java.lang.ThreadLocal[A] with (() => A) {
   override def initialValue = init
   def apply = get
 }
 trait DefaultRandomFormats extends RandomFormats {
-  import java.text.{ParseException, SimpleDateFormat}
-
-  private[this] val df = new ThreadLocal[SimpleDateFormat](dateFormatter)
 
   override val typeHintFieldName: String = "jsonClass"
   override val parameterNameReader: reflect.ParameterNameReader = reflect.ParanamerReader
@@ -303,30 +281,6 @@ trait DefaultRandomFormats extends RandomFormats {
   override val strictOptionParsing: Boolean = false
   override val emptyValueStrategy: EmptyValueStrategy = EmptyValueStrategy.default
   override val allowNull: Boolean = true
-
-  val dateFormat: DateFormat = new DateFormat {
-    def parse(s: String) = try {
-      Some(formatter.parse(s))
-    } catch {
-      case e: ParseException => None
-    }
-
-    def format(d: Date) = formatter.format(d)
-
-    private[this] def formatter = df()
-  }
-
-  protected def dateFormatter: SimpleDateFormat = {
-    val f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-    f.setTimeZone(DefaultRandomFormats.UTC)
-    f
-  }
-
-  /** Lossless date format includes milliseconds too.
-    */
-  def lossless: RandomFormats = new DefaultRandomFormats{
-    override def dateFormatter = DefaultRandomFormats.losslessDate()
-  }
 
   /** Default formats with given <code>TypeHint</code>s.
     */
