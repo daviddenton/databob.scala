@@ -81,18 +81,6 @@ trait KeyDeserializer[A] {
   def deserialize(implicit format: RandomFormats): PartialFunction[(TypeInfo, String), A]
 }
 
-trait TypeHints {
-
-  val hints: List[Class[_]]
-
-  def classFor(hint: String): Option[Class[_]]
-
-  def deserialize: PartialFunction[(String, JObject), Any] = Map()
-  def serialize: PartialFunction[Any, JObject] = Map()
-
-  def components: List[TypeHints] = List(this)
-}
-
 private[json4s] object ClassDelta {
   def delta(class1: Class[_], class2: Class[_]): Int = {
     if (class1 == class2) 0
