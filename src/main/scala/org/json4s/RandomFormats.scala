@@ -31,9 +31,6 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
   def customSerializers: List[Deserializer[_]] = Nil
   def fieldSerializers: List[(Class[_], FieldSerializer[_])] = Nil
 
-  /**
-   * Parameter name reading strategy. By default 'paranamer' is used.
-   */
   def parameterNameReader: reflect.ParameterNameReader = reflect.ParanamerReader
 
   private def copy(
@@ -100,8 +97,6 @@ object DefaultRandomFormats extends DefaultRandomFormats
 
 
 trait DefaultRandomFormats extends RandomFormats {
-
-  override val parameterNameReader: reflect.ParameterNameReader = reflect.ParanamerReader
   override val customSerializers: List[Deserializer[_]] = Nil
   override val fieldSerializers: List[(Class[_], FieldSerializer[_])] = Nil
 }
