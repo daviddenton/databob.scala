@@ -1,3 +1,6 @@
+/**
+ * Reflector logic taken from Json4S
+ */
 package io.github.databob
 
 import java.lang.{Boolean => JavaBoolean, Byte => JavaByte, Double => JavaDouble, Float => JavaFloat, Integer => JavaInteger, Long => JavaLong, Short => JavaShort}
@@ -6,7 +9,7 @@ import java.sql.Timestamp
 import java.util.Date
 
 import org.json4s._
-import org.json4s.reflect.{TypeInfo, _}
+import org.json4s.reflect._
 
 import scala.reflect.Manifest
 import scala.util.control.Exception.allCatch
@@ -20,33 +23,6 @@ object Databob {
       case e: MappingException => throw e
       case e: Exception =>
         throw new MappingException("unknown error", e)
-    }
-  }
-
-  def random(target: TypeInfo)(implicit formats: Randomizers): Any = random(ScalaType(target))
-
-
-  /** Load lazy val value
-    *
-    * This is a fix for failed lazy val serialization from FieldSerializer (see org.json4s.native.LazyValBugs test).
-    *
-    * We do this by finding the hidden lazy method which will have same name as the lazy val name
-    * but with suffix "$lzycompute" (for scala v2.10+), then invoke the method if found, and return the value.
-    *
-    * The "$lzycompute" method naming could be changed in future so this method must be adjusted if that happens.
-    *
-    * @param a Object to be serialized
-    * @param name Field name to be checked
-    * @param defaultValue Default value if lazy method is not found
-    * @return Value of invoked lazy method if found, else return the default value
-    */
-  def loadLazyValValue(a: Any, name: String, defaultValue: Any) = {
-    try {
-      val method = a.getClass.getDeclaredMethod(name + "$lzycompute")
-      method.setAccessible(true)
-      method.invoke(a)
-    } catch {
-      case e: Exception => defaultValue
     }
   }
 

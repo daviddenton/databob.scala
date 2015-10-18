@@ -2,29 +2,23 @@ package io.github.databob
 
 import org.json4s._
 
-case class Randomizers(customDeserializers: List[Deserializer[_]] = Nil,
-                       parameterNameReader: reflect.ParameterNameReader = reflect.ParanamerReader) {
+case class Randomizers(randomizers: List[Randomizer[_]] = Nil) {
 
-  def +(newSerializer: Deserializer[_]): Randomizers = copy(customDeserializers = newSerializer :: customDeserializers)
+  def +(newSerializer: Randomizer[_]): Randomizers = copy(randomizers = newSerializer :: randomizers)
 
-  def ++(newSerializers: Traversable[Deserializer[_]]): Randomizers =
-    copy(customDeserializers = newSerializers.foldRight(customDeserializers)(_ :: _))
-
-  def randomizer(implicit format: Randomizers) =
-    customDeserializers.foldLeft(Map(): PartialFunction[TypeInfo, Any]) { (acc, x) =>
-      acc.orElse(x.deserialize)
+  def randomizer(format: Randomizers) =
+    randomizers.foldLeft(Map(): PartialFunction[TypeInfo, Any]) { (acc, x) =>
+      acc.orElse(x.newRandom(format))
     }
 }
 
-trait Deserializer[A] {
-  def deserialize(implicit format: Randomizers): PartialFunction[TypeInfo, A]
+trait Randomizer[A] {
+  def newRandom(implicit format: Randomizers): PartialFunction[TypeInfo, A]
 }
 
-class CustomDeserializer[A: Manifest](ser: Randomizers => A) extends Deserializer[A] {
+class CustomRandomizer[A: Manifest](ser: Randomizers => A) extends Randomizer[A] {
 
   val Class = implicitly[Manifest[A]].runtimeClass
 
-  def deserialize(implicit format: Randomizers) = {
-    case TypeInfo(Class, _) => ser(format)
-  }
+  def newRandom(implicit format: Randomizers) = { case TypeInfo(Class, _) => ser(format) }
 }
