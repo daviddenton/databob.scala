@@ -37,7 +37,6 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
   def customSerializers: List[Deserializer[_]] = Nil
   def customKeyDeserializers: List[KeyDeserializer[_]] = Nil
   def fieldSerializers: List[(Class[_], FieldSerializer[_])] = Nil
-  def primitives: Set[Type] = Set(classOf[JValue], classOf[JObject], classOf[JArray])
   def companions: List[(Class[_], AnyRef)] = Nil
 
   /**
@@ -53,7 +52,6 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
                     wCustomSerializers: List[Deserializer[_]] = self.customSerializers,
                     wCustomKeyDeserializers: List[KeyDeserializer[_]] = self.customKeyDeserializers,
                     wFieldSerializers: List[(Class[_], FieldSerializer[_])] = self.fieldSerializers,
-                    withPrimitives: Set[Type] = self.primitives,
                     wCompanions: List[(Class[_], AnyRef)] = self.companions,
                     wEmptyValueStrategy: EmptyValueStrategy = self.emptyValueStrategy): RandomFormats =
     new RandomFormats {
@@ -62,7 +60,6 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
       override def customSerializers: List[Deserializer[_]] = wCustomSerializers
       override val customKeyDeserializers: List[KeyDeserializer[_]] = wCustomKeyDeserializers
       override def fieldSerializers: List[(Class[_], FieldSerializer[_])] = wFieldSerializers
-      override def primitives: Set[Type] = withPrimitives
       override def companions: List[(Class[_], AnyRef)] = wCompanions
       override def emptyValueStrategy: EmptyValueStrategy = wEmptyValueStrategy
     }
@@ -147,13 +144,11 @@ trait DefaultRandomFormats extends RandomFormats {
   override val parameterNameReader: reflect.ParameterNameReader = reflect.ParanamerReader
   override val typeHints: TypeHints = new TypeHints {
     val hints: List[Class[_]] = Nil
-    def hintFor(clazz: Class[_]) = sys.error("NoTypeHints does not provide any type hints.")
     def classFor(hint: String) = None
   }
   override val customSerializers: List[Deserializer[_]] = Nil
   override val customKeyDeserializers: List[KeyDeserializer[_]] = Nil
   override val fieldSerializers: List[(Class[_], FieldSerializer[_])] = Nil
-  override val primitives: Set[Type] = Set(classOf[JValue], classOf[JObject], classOf[JArray])
   override val companions: List[(Class[_], AnyRef)] = Nil
   override val emptyValueStrategy: EmptyValueStrategy = EmptyValueStrategy.default
 }
