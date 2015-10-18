@@ -32,7 +32,6 @@ import scala.annotation.implicitNotFound
 )
 trait RandomFormats extends Serializable { self: RandomFormats =>
   def customSerializers: List[Deserializer[_]] = Nil
-  def customKeyDeserializers: List[KeyDeserializer[_]] = Nil
   def fieldSerializers: List[(Class[_], FieldSerializer[_])] = Nil
   def companions: List[(Class[_], AnyRef)] = Nil
 
@@ -46,14 +45,12 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
   private def copy(
                     wParameterNameReader: reflect.ParameterNameReader = self.parameterNameReader,
                     wCustomSerializers: List[Deserializer[_]] = self.customSerializers,
-                    wCustomKeyDeserializers: List[KeyDeserializer[_]] = self.customKeyDeserializers,
                     wFieldSerializers: List[(Class[_], FieldSerializer[_])] = self.fieldSerializers,
                     wCompanions: List[(Class[_], AnyRef)] = self.companions,
                     wEmptyValueStrategy: EmptyValueStrategy = self.emptyValueStrategy): RandomFormats =
     new RandomFormats {
       override def parameterNameReader: reflect.ParameterNameReader = wParameterNameReader
       override def customSerializers: List[Deserializer[_]] = wCustomSerializers
-      override val customKeyDeserializers: List[KeyDeserializer[_]] = wCustomKeyDeserializers
       override def fieldSerializers: List[(Class[_], FieldSerializer[_])] = wFieldSerializers
       override def companions: List[(Class[_], AnyRef)] = wCompanions
       override def emptyValueStrategy: EmptyValueStrategy = wEmptyValueStrategy
@@ -62,9 +59,6 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
   def withCompanions(comps: (Class[_], AnyRef)*): RandomFormats = copy(wCompanions = comps.toList ::: self.companions)
 
   def + (newSerializer: Deserializer[_]): RandomFormats = copy(wCustomSerializers = newSerializer :: self.customSerializers)
-
-  def + (newSerializer: KeyDeserializer[_]): RandomFormats =
-    copy(wCustomKeyDeserializers = newSerializer :: self.customKeyDeserializers)
 
   def ++ (newSerializers: Traversable[Deserializer[_]]): RandomFormats =
     copy(wCustomSerializers = newSerializers.foldRight(self.customSerializers)(_ :: _))
@@ -87,11 +81,6 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
 
   def customDeserializer(implicit format: RandomFormats) =
     customSerializers.foldLeft(Map(): PartialFunction[(TypeInfo, JValue), Any]) { (acc, x) =>
-      acc.orElse(x.deserialize)
-    }
-
-  def customKeyDeserializer(implicit format: RandomFormats) =
-    customKeyDeserializers.foldLeft(Map(): PartialFunction[(TypeInfo, String), Any]) { (acc, x) =>
       acc.orElse(x.deserialize)
     }
 }
@@ -138,7 +127,6 @@ trait DefaultRandomFormats extends RandomFormats {
 
   override val parameterNameReader: reflect.ParameterNameReader = reflect.ParanamerReader
   override val customSerializers: List[Deserializer[_]] = Nil
-  override val customKeyDeserializers: List[KeyDeserializer[_]] = Nil
   override val fieldSerializers: List[(Class[_], FieldSerializer[_])] = Nil
   override val companions: List[(Class[_], AnyRef)] = Nil
   override val emptyValueStrategy: EmptyValueStrategy = EmptyValueStrategy.default
