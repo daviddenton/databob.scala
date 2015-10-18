@@ -7,14 +7,13 @@ import java.util.Date
 
 import org.json4s.reflect._
 
-import scala.collection.JavaConverters._
 import scala.reflect.Manifest
 
 object Extraction2 {
 
-  def extract[A](json: JValue)(implicit formats: Formats, mf: Manifest[A]): A = {
+  def random[A](json: JValue)(implicit formats: Formats, mf: Manifest[A]): A = {
     try {
-      extract(json, Reflector.scalaTypeOf[A]).asInstanceOf[A]
+      random(json, Reflector.scalaTypeOf[A]).asInstanceOf[A]
     } catch {
       case e: MappingException => throw e
       case e: Exception =>
@@ -23,7 +22,7 @@ object Extraction2 {
   }
 
 
-  def extract(json: JValue, target: TypeInfo)(implicit formats: Formats): Any = extract(json, ScalaType(target))
+  def random(json: JValue, target: TypeInfo)(implicit formats: Formats): Any = random(json, ScalaType(target))
 
 
   /** Load lazy val value
@@ -50,22 +49,22 @@ object Extraction2 {
     }
   }
 
-  def extract(json: JValue, scalaType: ScalaType)(implicit formats: Formats): Any = {
+  def random(json: JValue, scalaType: ScalaType)(implicit formats: Formats): Any = {
     if (scalaType.isEither) {
       import scala.util.control.Exception.allCatch
       (allCatch opt {
-        Left(extract(json, scalaType.typeArgs.head))
+        Left(random(json, scalaType.typeArgs.head))
       } orElse (allCatch opt {
-        Right(extract(json, scalaType.typeArgs(1)))
+        Right(random(json, scalaType.typeArgs(1)))
       })).getOrElse(fail("Expected value but got " + json))
     } else if (scalaType.isOption) {
-      customOrElse(scalaType, json)(_.toOption flatMap (j => Option(extract(j, scalaType.typeArgs.head))))
+      customOrElse(scalaType, json)(_.toOption flatMap (j => Option(random(j, scalaType.typeArgs.head))))
     } else if (scalaType.isMap) {
       json match {
         case JObject(xs) => {
           val kta = scalaType.typeArgs.head
           val ta = scalaType.typeArgs(1)
-          Map(xs.map(x => (convert(x._1, kta, formats), extract(x._2, ta))): _*)
+          Map(xs.map(x => (convert(x._1, kta, formats), random(x._2, ta))): _*)
         }
         case x => fail("Expected object but got " + x)
       }
@@ -75,8 +74,8 @@ object Extraction2 {
       val ta = scalaType.typeArgs(1)
       json match {
         case JObject(xs :: Nil) =>
-          if (classOf[Symbol].isAssignableFrom(scalaType.typeArgs.head.erasure)) (Symbol(xs._1), extract(xs._2, ta))
-          else (xs._1, extract(xs._2, ta))
+          if (classOf[Symbol].isAssignableFrom(scalaType.typeArgs.head.erasure)) (Symbol(xs._1), random(xs._2, ta))
+          else (xs._1, random(xs._2, ta))
         case x => fail("Expected object with 1 element but got " + x)
       }
     } else {
@@ -93,34 +92,14 @@ object Extraction2 {
   }
 
   private class CollectionBuilder(json: JValue, tpe: ScalaType)(implicit formats: Formats) {
-    private[this] val typeArg = tpe.typeArgs.head
-    private[this] def mkCollection(constructor: Array[_] => Any) = {
-      val array: Array[_] = json match {
-        case JArray(arr)      => arr.map(extract(_, typeArg)).toArray
-        case JNothing | JNull => Array[AnyRef]()
-        case x                => fail("Expected collection but got " + x + " for root " + json + " and mapping " + tpe)
-      }
-
-      constructor(array)
-    }
-
-    private[this] def mkTypedArray(a: Array[_]) = {
-      import java.lang.reflect.Array.{newInstance => newArray}
-
-      a.foldLeft((newArray(typeArg.erasure, a.length), 0)) { (tuple, e) => {
-        java.lang.reflect.Array.set(tuple._1, tuple._2, e)
-        (tuple._1, tuple._2 + 1)
-      }}._1
-    }
-
     def result: Any = {
       val custom = formats.customDeserializer(formats)
       if (custom.isDefinedAt(tpe.typeInfo, json)) custom(tpe.typeInfo, json)
-      else if (tpe.erasure == classOf[List[_]]) mkCollection(a => List(a: _*))
-      else if (tpe.erasure == classOf[Set[_]]) mkCollection(a => Set(a: _*))
-      else if (tpe.erasure == classOf[java.util.ArrayList[_]]) mkCollection(a => new java.util.ArrayList[Any](a.toList.asJavaCollection))
-      else if (tpe.erasure.isArray) mkCollection(mkTypedArray)
-      else if (classOf[Seq[_]].isAssignableFrom(tpe.erasure)) mkCollection(a => Seq(a: _*))
+      else if (tpe.erasure == classOf[List[_]]) List()
+      else if (tpe.erasure == classOf[Set[_]]) Set()
+      else if (tpe.erasure == classOf[java.util.ArrayList[_]]) new java.util.ArrayList[Any]()
+      else if (tpe.erasure.isArray) java.lang.reflect.Array.newInstance(tpe.typeArgs.head.erasure, 0)
+      else if (classOf[Seq[_]].isAssignableFrom(tpe.erasure)) Seq()
       else fail("Expected collection but got " + tpe)
     }
   }
@@ -167,7 +146,7 @@ object Extraction2 {
 
           fieldsToSet foreach { prop =>
             jsonSerializers get prop.name foreach { case (_, v) =>
-              val vv = extract(v, prop.returnType)
+              val vv = random(v, prop.returnType)
               // If includeLazyVal is set, try to find and initialize lazy val.
               // This is to prevent the extracted value to be overwritten by the lazy val initialization.
               if (serializer.includeLazyVal) loadLazyValValue(a, prop.name, vv) else ()
@@ -185,7 +164,7 @@ object Extraction2 {
       if (descr.isOptional && json == JNothing) defv(None)
       else {
         try {
-          val x = if (json == JNothing && default.isDefined) default.get() else extract(json, descr.argType)
+          val x = if (json == JNothing && default.isDefined) default.get() else random(json, descr.argType)
           if (descr.isOptional) { if (x == null) defv(None) else x }
           else if (x == null) {
             if(default.isEmpty && descr.argType <:< ScalaType(manifest[AnyVal])) {
@@ -242,7 +221,7 @@ object Extraction2 {
       val deserializer = formats.typeHints.deserialize
       if (!deserializer.isDefinedAt(typeHint, obj)) {
         val concreteClass = formats.typeHints.classFor(typeHint) getOrElse fail("Do not know how to deserialize '" + typeHint + "'")
-        extract(obj, typeInfo.copy(erasure = concreteClass))
+        random(obj, typeInfo.copy(erasure = concreteClass))
       } else deserializer(typeHint, obj)
     }
 
