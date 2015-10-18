@@ -77,9 +77,6 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
   def ++ (newSerializers: Traversable[Deserializer[_]]): RandomFormats =
     copy(wCustomSerializers = newSerializers.foldRight(self.customSerializers)(_ :: _))
 
-  def addKeyDeserializers (newKeyDeserializers: Traversable[KeyDeserializer[_]]): RandomFormats =
-    newKeyDeserializers.foldLeft(this)(_ + _)
-
   /**
    * Adds a field serializer for a given type to this formats.
    */
@@ -146,26 +143,6 @@ trait TypeHints {
   def serialize: PartialFunction[Any, JObject] = Map()
 
   def components: List[TypeHints] = List(this)
-
-
-  private[TypeHints] case class CompositeTypeHints(override val components: List[TypeHints]) extends TypeHints {
-    val hints: List[Class[_]] = components.flatMap(_.hints)
-
-    def classFor(hint: String): Option[Class[_]] = {
-      def hasClass(h: TypeHints) =
-        scala.util.control.Exception.allCatch opt h.classFor(hint) exists (_.isDefined)
-
-      components find hasClass flatMap (_.classFor(hint))
-    }
-
-    override def deserialize: PartialFunction[(String, JObject), Any] = components.foldLeft[PartialFunction[(String, JObject),Any]](Map()) {
-      (result, cur) => result.orElse(cur.deserialize)
-    }
-
-    override def serialize: PartialFunction[Any, JObject] = components.foldLeft[PartialFunction[Any, JObject]](Map()) {
-      (result, cur) => result.orElse(cur.serialize)
-    }
-  }
 }
 
 private[json4s] object ClassDelta {
