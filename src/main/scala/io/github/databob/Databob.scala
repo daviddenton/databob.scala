@@ -15,7 +15,7 @@ import scala.util.control.Exception.allCatch
 
 case class RandomFailure(msg: String) extends Exception(msg)
 
-object Databob {
+class Databob {
 
   def random[A](implicit randomizers: Randomizers = Randomizers(), mf: Manifest[A]): A = {
     try {
@@ -51,7 +51,7 @@ object Databob {
 
   private class CollectionBuilder(tpe: ScalaType)(implicit randomizers: Randomizers) {
     def result: Any = {
-      val custom = randomizers.randomizer(randomizers)
+      val custom = randomizers.randomizer(Databob.this)
       if (custom.isDefinedAt(tpe.typeInfo)) custom(tpe.typeInfo)
       else if (tpe.erasure == classOf[List[_]]) List()
       else if (tpe.erasure == classOf[Set[_]]) Set()
@@ -92,14 +92,14 @@ object Databob {
       }
   }
 
-  private[this] def customOrElse(target: ScalaType)(thunk: () => Any)(implicit formats: Randomizers): Any = {
-    val custom = formats.randomizer(formats)
+  private[this] def customOrElse(target: ScalaType)(thunk: () => Any)(implicit randomizers: Randomizers): Any = {
+    val custom = randomizers.randomizer(this)
     if (custom.isDefinedAt(target.typeInfo)) {
       custom(target.typeInfo)
     } else thunk()
   }
 
-  private[this] def convert(target: ScalaType, formats: Randomizers): Any = {
+  private[this] def convert(target: ScalaType, r: Randomizers): Any = {
     if (target.erasure == classOf[Int]) 0
     else if (target.erasure == classOf[JavaInteger]) new JavaInteger(0)
     else if (target.erasure == classOf[BigInt]) 0
@@ -122,9 +122,11 @@ object Databob {
     else if (target.erasure == classOf[Date]) new Date(0)
     else if (target.erasure == classOf[Timestamp]) new Timestamp(0)
     else {
-      val custom = formats.randomizer(formats)
+      val custom = r.randomizer(this)
       if (custom.isDefinedAt(target.typeInfo)) custom(target.typeInfo)
       else throw new RandomFailure("Do not know how to make a " + target.erasure)
     }
   }
 }
+
+object Databob extends Databob
