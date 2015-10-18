@@ -272,20 +272,20 @@ object Random {
     else if (target.erasure == classOf[JavaLong]) new JavaLong(0L)
     else if (target.erasure == classOf[Double]) 0.0d
     else if (target.erasure == classOf[JavaDouble]) new JavaDouble(0.0d)
+    else if (target.erasure == classOf[BigDecimal]) BigDecimal(0)
+    else if (target.erasure == classOf[JavaBigDecimal]) BigDecimal(0).bigDecimal
     else if (target.erasure == classOf[Float]) 0.0f
     else if (target.erasure == classOf[JavaFloat]) new JavaFloat(0.0f)
     else if (target.erasure == classOf[Short]) 0
     else if (target.erasure == classOf[JavaShort]) new JavaShort(0.shortValue)
     else if (target.erasure == classOf[Byte]) 0.byteValue
     else if (target.erasure == classOf[JavaByte]) new JavaByte(0.byteValue)
-    else if (target.erasure == classOf[String]) ""
-    else if (target.erasure == classOf[Number]) 0L
-    else if (target.erasure == classOf[BigDecimal]) BigDecimal(0)
-    else if (target.erasure == classOf[JavaBigDecimal]) BigDecimal(0).bigDecimal
-    else if (target.erasure == classOf[Date]) new Date(0)
-    else if (target.erasure == classOf[Timestamp]) new Timestamp(0)
     else if (target.erasure == classOf[Boolean]) false
     else if (target.erasure == classOf[JavaBoolean]) new JavaBoolean(false)
+    else if (target.erasure == classOf[String]) ""
+    else if (target.erasure == classOf[Number]) 0L
+    else if (target.erasure == classOf[Date]) new Date(0)
+    else if (target.erasure == classOf[Timestamp]) new Timestamp(0)
     else {
       val custom = formats.customDeserializer(formats)
       val typeInfo = target.typeInfo
