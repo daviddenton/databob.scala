@@ -5,18 +5,17 @@ import java.math.{BigDecimal => JavaBigDecimal}
 import java.sql.Timestamp
 import java.util.Date
 
-import org.json4s.JsonAST.JObject
 import org.json4s._
 import org.json4s.reflect.{TypeInfo, _}
 
 import scala.reflect.Manifest
 import scala.util.control.Exception.allCatch
 
-object Random {
+object Databob {
 
-  def random[A](json: JValue)(implicit formats: RandomFormats = RandomFormats(), mf: Manifest[A]): A = {
+  def random[A](implicit formats: Randomizers = Randomizers(), mf: Manifest[A]): A = {
     try {
-      random(json, Reflector.scalaTypeOf[A]).asInstanceOf[A]
+      random(Reflector.scalaTypeOf[A]).asInstanceOf[A]
     } catch {
       case e: MappingException => throw e
       case e: Exception =>
@@ -24,7 +23,7 @@ object Random {
     }
   }
 
-  def random(json: JValue, target: TypeInfo)(implicit formats: RandomFormats): Any = random(json, ScalaType(target))
+  def random(target: TypeInfo)(implicit formats: Randomizers): Any = random(ScalaType(target))
 
 
   /** Load lazy val value
@@ -51,43 +50,32 @@ object Random {
     }
   }
 
-  def random(json: JValue, scalaType: ScalaType)(implicit formats: RandomFormats): Any = {
+  def random(scalaType: ScalaType)(implicit formats: Randomizers): Any = {
     if (scalaType.isEither) {
       (allCatch opt {
-        Left(random(json, scalaType.typeArgs.head))
+        Left(random(scalaType.typeArgs.head))
       } orElse (allCatch opt {
-        Right(random(json, scalaType.typeArgs(1)))
-      })).getOrElse(fail("Expected value but got " + json))
+        Right(random(scalaType.typeArgs(1)))
+      })).getOrElse(fail("Expected value but got none"))
     } else if (scalaType.isOption) {
-      customOrElse(scalaType, json)(_.toOption flatMap (j => Option(random(j, scalaType.typeArgs.head))))
+      customOrElse(scalaType)(() => random(scalaType.typeArgs.head))
     } else if (scalaType.isMap) {
       Map()
     } else if (scalaType.isCollection) {
-      customOrElse(scalaType, json)(new CollectionBuilder(_, scalaType).result)
-    } else if (classOf[(_, _)].isAssignableFrom(scalaType.erasure) && (classOf[String].isAssignableFrom(scalaType.typeArgs.head.erasure) || classOf[Symbol].isAssignableFrom(scalaType.typeArgs.head.erasure))) {
-      val ta = scalaType.typeArgs(1)
-      json match {
-        case JObject(xs :: Nil) =>
-          if (classOf[Symbol].isAssignableFrom(scalaType.typeArgs.head.erasure)) (Symbol(xs._1), random(xs._2, ta))
-          else (xs._1, random(xs._2, ta))
-        case x => fail("Expected object with 1 element but got " + x)
-      }
+      customOrElse(scalaType)(() => new CollectionBuilder(scalaType).result)
     } else {
       Reflector.describe(scalaType) match {
-        case PrimitiveDescriptor(tpe, default) => convert(json, tpe, formats)
+        case PrimitiveDescriptor(tpe, default) => convert(tpe, formats)
         case o: ClassDescriptor if o.erasure.isSingleton =>
-          if (json == JObject(List.empty))
-            o.erasure.singletonInstance.getOrElse(sys.error(s"Not a case object: ${o.erasure}"))
-          else
-            sys.error(s"Expected empty parameter list for singleton instance, got $json instead")
-        case c: ClassDescriptor => new ClassInstanceBuilder(json, c).result
+          o.erasure.singletonInstance.getOrElse(sys.error(s"Not a case object: ${o.erasure}"))
+        case c: ClassDescriptor => new ClassInstanceBuilder(c).result
       }
     }
   }
 
-  private class CollectionBuilder(json: JValue, tpe: ScalaType)(implicit formats: RandomFormats) {
+  private class CollectionBuilder(tpe: ScalaType)(implicit formats: Randomizers) {
     def result: Any = {
-      val custom = formats.randomiser(formats)
+      val custom = formats.randomizer(formats)
       if (custom.isDefinedAt(tpe.typeInfo)) custom(tpe.typeInfo)
       else if (tpe.erasure == classOf[List[_]]) List()
       else if (tpe.erasure == classOf[Set[_]]) Set()
@@ -98,7 +86,7 @@ object Random {
     }
   }
 
-  private class ClassInstanceBuilder(json: JValue, descr: ClassDescriptor)(implicit formats: RandomFormats) {
+  private class ClassInstanceBuilder(descr: ClassDescriptor)(implicit formats: Randomizers) {
 
     private[this] var _constructor: ConstructorDescriptor = null
 
@@ -108,21 +96,21 @@ object Random {
           if (descr.constructors.size == 1) descr.constructors.head
           else {
             val r = descr.bestMatching(Nil)
-            r.getOrElse(fail("No constructor for type " + descr.erasure + ", " + json))
+            r.getOrElse(fail("No constructor for type " + descr.erasure))
           }
       }
       _constructor
     }
 
-    private[this] def setFields(a: AnyRef) =  a
+    private[this] def setFields(a: AnyRef) = a
 
-    private[this] def buildCtorArg(json: JValue, descr: ConstructorParamDescriptor) = {
+    private[this] def buildCtorArg(descr: ConstructorParamDescriptor) = {
       val default = descr.defaultValue
       def defv(v: Any) = if (default.isDefined) default.get() else v
-      if (descr.isOptional && json == JNothing) defv(None)
+      if (descr.isOptional) defv(None)
       else {
         try {
-          val x = if (json == JNothing && default.isDefined) default.get() else random(json, descr.argType)
+          val x = if (default.isDefined) default.get() else random(descr.argType)
           if (descr.isOptional) {
             if (x == null) defv(None) else x
           }
@@ -142,17 +130,9 @@ object Random {
     }
 
     private[this] def instantiate = {
-      val deserializedJson = json
-
       try {
-        if (constructor.constructor.getDeclaringClass == classOf[java.lang.Object]) {
-          deserializedJson match {
-            case v: JValue => v.values
-          }
-        } else {
-          val instance = constructor.constructor.invoke(descr.companion, constructor.params.map(a => buildCtorArg(deserializedJson \ a.name, a)))
-          setFields(instance.asInstanceOf[AnyRef])
-        }
+        val instance = constructor.constructor.invoke(descr.companion, constructor.params.map(a => buildCtorArg(a)))
+        setFields(instance.asInstanceOf[AnyRef])
       } catch {
         case e@(_: IllegalArgumentException | _: InstantiationException) =>
           fail("Could not construct class")
@@ -160,21 +140,20 @@ object Random {
     }
 
     def result: Any =
-      customOrElse(descr.erasure, json) {
-        case JNull => null
+      customOrElse(descr.erasure) {
         case _ => instantiate
       }
   }
 
-  private[this] def customOrElse(target: ScalaType, json: JValue)(thunk: JValue => Any)(implicit formats: RandomFormats): Any = {
-    val custom = formats.randomiser(formats)
+  private[this] def customOrElse(target: ScalaType)(thunk: () => Any)(implicit formats: Randomizers): Any = {
+    val custom = formats.randomizer(formats)
     val targetType = target.typeInfo
     if (custom.isDefinedAt(targetType)) {
       custom(targetType)
-    } else thunk(json)
+    } else thunk()
   }
 
-  private[this] def convert(json: JValue, target: ScalaType, formats: RandomFormats): Any = {
+  private[this] def convert(target: ScalaType, formats: Randomizers): Any = {
     if (target.erasure == classOf[Int]) 0
     else if (target.erasure == classOf[JavaInteger]) new JavaInteger(0)
     else if (target.erasure == classOf[BigInt]) 0
@@ -197,7 +176,7 @@ object Random {
     else if (target.erasure == classOf[Date]) new Date(0)
     else if (target.erasure == classOf[Timestamp]) new Timestamp(0)
     else {
-      val custom = formats.randomiser(formats)
+      val custom = formats.randomizer(formats)
       if (custom.isDefinedAt(target.typeInfo)) custom(target.typeInfo)
       else fail("Do not know how to make a " + target.erasure)
     }
