@@ -23,11 +23,6 @@ import org.json4s.prefs.EmptyValueStrategy
 
 import scala.annotation.implicitNotFound
 
-object RandomFormats {
-  def read[T](json: JValue)(implicit reader: Reader[T]): T = reader.read(json)
-  def write[T](obj: T)(implicit writer: Writer[T]): JValue = writer.write(obj)
-}
-
 /** Formats to use when converting JSON.
   * Formats are usually configured by using an implicit parameter:
   * <pre>
