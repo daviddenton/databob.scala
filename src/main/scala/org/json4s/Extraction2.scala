@@ -175,8 +175,6 @@ object Extraction2 {
     }
 
     private[this] def instantiate = {
-      val jconstructor = constructor.constructor
-
       val deserializedJson = json match {
         case JObject(fields) =>
           formats.fieldSerializer(descr.erasure.erasure) map { serializer =>
@@ -191,21 +189,18 @@ object Extraction2 {
 
       val args = constructor.params.map(a => buildCtorArg(deserializedJson \ a.name, a))
       try {
-        if (jconstructor.getDeclaringClass == classOf[java.lang.Object]) {
+        if (constructor.constructor.getDeclaringClass == classOf[java.lang.Object]) {
           deserializedJson match {
             case JObject(TypeHint(t, fs)) => mkWithTypeHint(t: String, fs: List[JField], descr.erasure)
             case v: JValue => v.values
           }
         } else {
-          val instance = jconstructor.invoke(descr.companion, args)
+          val instance = constructor.constructor.invoke(descr.companion, args)
           setFields(instance.asInstanceOf[AnyRef])
         }
       } catch {
         case e @ (_:IllegalArgumentException | _:InstantiationException) =>
-          fail("Parsed JSON values do not match with class constructor\nargs=" +
-            args.mkString(",") + "\narg types=" + args.map(a => if (a != null)
-            a.asInstanceOf[AnyRef].getClass.getName else "null").mkString(",") +
-            "\nconstructor=" + jconstructor)
+          fail("Could not constuct class")
       }
     }
 
@@ -248,8 +243,8 @@ object Extraction2 {
       case tt if tt == classOf[JavaLong] => new JavaLong(key.toLong)
       case tt if tt == classOf[Short] => key.toShort
       case tt if tt == classOf[JavaShort] => new JavaShort(key.toShort)
-      case tt if tt == classOf[Date] => formatDate(key, formats)
-      case tt if tt == classOf[Timestamp] => formatTimestamp(key, formats)
+      case tt if tt == classOf[Date] => new Date(0)
+      case tt if tt == classOf[Timestamp] => new Timestamp(0)
       case _ =>
         val deserializer = formats.customKeyDeserializer(formats)
         val typeInfo = TypeInfo(targetType, None)
@@ -320,8 +315,8 @@ object Extraction2 {
       case JDecimal(x) if (targetType == classOf[Number]) => x
       case JString(s) if (targetType == classOf[String]) => s
       case JString(s) if (targetType == classOf[Symbol]) => Symbol(s)
-      case JString(s) if (targetType == classOf[Date]) => formatDate(s, formats)
-      case JString(s) if (targetType == classOf[Timestamp]) => formatTimestamp(s, formats)
+      case JString(s) if (targetType == classOf[Date]) => new Date(0)
+      case JString(s) if (targetType == classOf[Timestamp]) => new Timestamp(0)
       case JBool(x) if (targetType == classOf[Boolean]) => x
       case JBool(x) if (targetType == classOf[JavaBoolean]) => new JavaBoolean(x)
       case _ =>
@@ -330,13 +325,5 @@ object Extraction2 {
         if (custom.isDefinedAt(typeInfo, json)) custom(typeInfo, json)
         else fail("Do not know how to convert " + json + " into " + targetType)
     }
-  }
-
-  private[this] def formatTimestamp(s: String, formats: Formats): Timestamp = {
-    new Timestamp(formats.dateFormat.parse(s).getOrElse(fail("Invalid date '" + s + "'")).getTime)
-  }
-
-  private[this] def formatDate(s: String, formats: Formats): Date = {
-    formats.dateFormat.parse(s).getOrElse(fail("Invalid date '" + s + "'"))
   }
 }
