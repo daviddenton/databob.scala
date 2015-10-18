@@ -208,7 +208,7 @@ object Random {
         }
       } catch {
         case e@(_: IllegalArgumentException | _: InstantiationException) =>
-          fail("Could not constuct class")
+          fail("Could not construct class")
       }
     }
 
