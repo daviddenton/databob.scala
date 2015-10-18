@@ -1,11 +1,13 @@
-package org.json4s
+package io.github.databob
 
 import java.lang.{Boolean => JavaBoolean, Byte => JavaByte, Double => JavaDouble, Float => JavaFloat, Integer => JavaInteger, Long => JavaLong, Short => JavaShort}
 import java.math.{BigDecimal => JavaBigDecimal}
 import java.sql.Timestamp
 import java.util.Date
 
-import org.json4s.reflect._
+import org.json4s.JsonAST.JObject
+import org.json4s._
+import org.json4s.reflect.{TypeInfo, _}
 
 import scala.reflect.Manifest
 import scala.util.control.Exception.allCatch
