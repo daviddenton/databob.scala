@@ -21,24 +21,13 @@ import scala.annotation.implicitNotFound
 @implicitNotFound(
   "No org.json4s.RandomFormats found. Try to bring an instance of org.json4s.RandomFormats in scope or use the org.json4s.DefaultRandomFormats."
 )
-trait RandomFormats {
-  def customDeserializers: List[Deserializer[_]] = Nil
+case class RandomFormats(customDeserializers: List[Deserializer[_]] = Nil,
+                         parameterNameReader: reflect.ParameterNameReader = reflect.ParanamerReader) {
 
-  def parameterNameReader: reflect.ParameterNameReader = reflect.ParanamerReader
-
-  private def copy(
-                    wParameterNameReader: reflect.ParameterNameReader = parameterNameReader,
-                    wCustomSerializers: List[Deserializer[_]] = customDeserializers): RandomFormats =
-    new RandomFormats {
-      override def parameterNameReader: reflect.ParameterNameReader = wParameterNameReader
-
-      override def customDeserializers: List[Deserializer[_]] = wCustomSerializers
-    }
-
-  def +(newSerializer: Deserializer[_]): RandomFormats = copy(wCustomSerializers = newSerializer :: customDeserializers)
+  def +(newSerializer: Deserializer[_]): RandomFormats = copy(customDeserializers = newSerializer :: customDeserializers)
 
   def ++(newSerializers: Traversable[Deserializer[_]]): RandomFormats =
-    copy(wCustomSerializers = newSerializers.foldRight(customDeserializers)(_ :: _))
+    copy(customDeserializers = newSerializers.foldRight(customDeserializers)(_ :: _))
 
   def customDeserializer(implicit format: RandomFormats) =
     customDeserializers.foldLeft(Map(): PartialFunction[(TypeInfo, JValue), Any]) { (acc, x) =>
@@ -63,12 +52,6 @@ private[json4s] object ClassDelta {
     }
     else sys.error("Don't call delta unless one class is assignable from the other")
   }
-}
-
-object DefaultRandomFormats extends DefaultRandomFormats
-
-trait DefaultRandomFormats extends RandomFormats {
-  override val customDeserializers: List[Deserializer[_]] = Nil
 }
 
 class CustomDeserializer[A: Manifest](
