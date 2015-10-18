@@ -12,7 +12,7 @@ import scala.util.control.Exception.allCatch
 
 object Random {
 
-  def random[A](json: JValue)(implicit formats: Formats, mf: Manifest[A]): A = {
+  def random[A](json: JValue)(implicit formats: RandomFormats, mf: Manifest[A]): A = {
     try {
       random(json, Reflector.scalaTypeOf[A]).asInstanceOf[A]
     } catch {
@@ -23,7 +23,7 @@ object Random {
   }
 
 
-  def random(json: JValue, target: TypeInfo)(implicit formats: Formats): Any = random(json, ScalaType(target))
+  def random(json: JValue, target: TypeInfo)(implicit formats: RandomFormats): Any = random(json, ScalaType(target))
 
 
   /** Load lazy val value
@@ -50,7 +50,7 @@ object Random {
     }
   }
 
-  def random(json: JValue, scalaType: ScalaType)(implicit formats: Formats): Any = {
+  def random(json: JValue, scalaType: ScalaType)(implicit formats: RandomFormats): Any = {
     if (scalaType.isEither) {
       (allCatch opt {
         Left(random(json, scalaType.typeArgs.head))
@@ -84,7 +84,7 @@ object Random {
     }
   }
 
-  private class CollectionBuilder(json: JValue, tpe: ScalaType)(implicit formats: Formats) {
+  private class CollectionBuilder(json: JValue, tpe: ScalaType)(implicit formats: RandomFormats) {
     def result: Any = {
       val custom = formats.customDeserializer(formats)
       if (custom.isDefinedAt(tpe.typeInfo, json)) custom(tpe.typeInfo, json)
@@ -97,7 +97,7 @@ object Random {
     }
   }
 
-  private class ClassInstanceBuilder(json: JValue, descr: ClassDescriptor)(implicit formats: Formats) {
+  private class ClassInstanceBuilder(json: JValue, descr: ClassDescriptor)(implicit formats: RandomFormats) {
 
     private object TypeHint {
       def unapply(fs: List[JField]): Option[(String, List[JField])] =
@@ -195,7 +195,6 @@ object Random {
         case other: JValue => other
       }
 
-      val args = constructor.params.map(a => buildCtorArg(deserializedJson \ a.name, a))
       try {
         if (constructor.constructor.getDeclaringClass == classOf[java.lang.Object]) {
           deserializedJson match {
@@ -203,7 +202,7 @@ object Random {
             case v: JValue => v.values
           }
         } else {
-          val instance = constructor.constructor.invoke(descr.companion, args)
+          val instance = constructor.constructor.invoke(descr.companion, constructor.params.map(a => buildCtorArg(deserializedJson \ a.name, a)))
           setFields(instance.asInstanceOf[AnyRef])
         }
       } catch {
@@ -231,7 +230,7 @@ object Random {
       }
   }
 
-  private[this] def customOrElse(target: ScalaType, json: JValue)(thunk: JValue => Any)(implicit formats: Formats): Any = {
+  private[this] def customOrElse(target: ScalaType, json: JValue)(thunk: JValue => Any)(implicit formats: RandomFormats): Any = {
     val custom = formats.customDeserializer(formats)
     val targetType = target.typeInfo
     if (custom.isDefinedAt(targetType, json)) {
@@ -239,7 +238,7 @@ object Random {
     } else thunk(json)
   }
 
-  private[this] def convert(json: JValue, target: ScalaType, formats: Formats): Any = {
+  private[this] def convert(json: JValue, target: ScalaType, formats: RandomFormats): Any = {
     if (target.erasure == classOf[Int]) 0
     else if (target.erasure == classOf[JavaInteger]) new JavaInteger(0)
     else if (target.erasure == classOf[BigInt]) 0
@@ -263,9 +262,8 @@ object Random {
     else if (target.erasure == classOf[Timestamp]) new Timestamp(0)
     else {
       val custom = formats.customDeserializer(formats)
-      val typeInfo = target.typeInfo
-      if (custom.isDefinedAt(typeInfo, json)) custom(typeInfo, json)
-      else fail("Do not know how to convert " + json + " into " + target.erasure)
+      if (custom.isDefinedAt(target.typeInfo, json)) custom(target.typeInfo, json)
+      else fail("Do not know how to make a " + target.erasure)
     }
   }
 }
