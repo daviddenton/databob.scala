@@ -149,13 +149,8 @@ trait KeyDeserializer[A] {
   * </pre>
   */
 trait TypeHints {
-  import ClassDelta._
 
   val hints: List[Class[_]]
-
-  /** Return hint for given type.
-    */
-  def hintFor(clazz: Class[_]): String
 
   /** Return type for given hint.
     */
@@ -178,16 +173,6 @@ trait TypeHints {
 
   private[TypeHints] case class CompositeTypeHints(override val components: List[TypeHints]) extends TypeHints {
     val hints: List[Class[_]] = components.flatMap(_.hints)
-
-    /**
-     * Chooses most specific class.
-     */
-    def hintFor(clazz: Class[_]): String = {
-      (components.reverse
-        filter (_.containsHint(clazz))
-        map (th => (th.hintFor(clazz), th.classFor(th.hintFor(clazz)).getOrElse(sys.error("hintFor/classFor not invertible for " + th))))
-        sortWith ((x, y) => (delta(x._2, clazz) - delta(y._2, clazz)) <= 0)).head._1
-    }
 
     def classFor(hint: String): Option[Class[_]] = {
       def hasClass(h: TypeHints) =
