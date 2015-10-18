@@ -103,7 +103,7 @@ object Random {
       def unapply(fs: List[JField]): Option[(String, List[JField])] =
         if (formats.typeHints == NoTypeHints) None
         else {
-          fs.partition(_._1 == formats.typeHintFieldName) match {
+          fs.partition(_._1 == "jsonClass") match {
             case (Nil, _) => None
             case (t, f) => Some((t.head._2.values.toString, f))
           }
@@ -212,7 +212,7 @@ object Random {
     }
 
     private[this] def mkWithTypeHint(typeHint: String, fields: List[JField], typeInfo: ScalaType) = {
-      val obj = JObject(fields filterNot (_._1 == formats.typeHintFieldName))
+      val obj = JObject(fields filterNot (_._1 == "jsonClass"))
       val deserializer = formats.typeHints.deserialize
       if (!deserializer.isDefinedAt(typeHint, obj)) {
         val concreteClass = formats.typeHints.classFor(typeHint) getOrElse fail("Do not know how to deserialize '" + typeHint + "'")

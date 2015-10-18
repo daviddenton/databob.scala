@@ -42,11 +42,6 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
   def allowNull: Boolean = true
 
   /**
-   * The name of the field in JSON where type hints are added (jsonClass by default)
-   */
-  def typeHintFieldName: String = "jsonClass"
-
-  /**
    * Parameter name reading strategy. By default 'paranamer' is used.
    */
   def parameterNameReader: reflect.ParameterNameReader = reflect.ParanamerReader
@@ -54,7 +49,6 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
   def emptyValueStrategy: EmptyValueStrategy = EmptyValueStrategy.default
 
   private def copy(
-                    wTypeHintFieldName: String = self.typeHintFieldName,
                     wParameterNameReader: reflect.ParameterNameReader = self.parameterNameReader,
                     wTypeHints: TypeHints = self.typeHints,
                     wCustomSerializers: List[Deserializer[_]] = self.customSerializers,
@@ -64,7 +58,6 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
                     wCompanions: List[(Class[_], AnyRef)] = self.companions,
                     wEmptyValueStrategy: EmptyValueStrategy = self.emptyValueStrategy): RandomFormats =
     new RandomFormats {
-      override def typeHintFieldName: String = wTypeHintFieldName
       override def parameterNameReader: reflect.ParameterNameReader = wParameterNameReader
       override def typeHints: TypeHints = wTypeHints
       override def customSerializers: List[Deserializer[_]] = wCustomSerializers
@@ -234,7 +227,6 @@ object DefaultRandomFormats extends DefaultRandomFormats
 
 trait DefaultRandomFormats extends RandomFormats {
 
-  override val typeHintFieldName: String = "jsonClass"
   override val parameterNameReader: reflect.ParameterNameReader = reflect.ParanamerReader
   override val typeHints: TypeHints = new TypeHints {
     val hints: List[Class[_]] = Nil
