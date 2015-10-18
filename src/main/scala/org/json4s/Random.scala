@@ -98,17 +98,6 @@ object Random {
 
   private class ClassInstanceBuilder(json: JValue, descr: ClassDescriptor)(implicit formats: RandomFormats) {
 
-    private object TypeHint {
-      def unapply(fs: List[JField]): Option[(String, List[JField])] =
-        if (formats.typeHints == NoTypeHints) None
-        else {
-          fs.partition(_._1 == "jsonClass") match {
-            case (Nil, _) => None
-            case (t, f) => Some((t.head._2.values.toString, f))
-          }
-        }
-    }
-
     private[this] var _constructor: ConstructorDescriptor = null
 
     private[this] def constructor = {
@@ -116,11 +105,7 @@ object Random {
         _constructor =
           if (descr.constructors.size == 1) descr.constructors.head
           else {
-            val argNames = json match {
-              case JObject(fs) => fs.map(_._1)
-              case _ => Nil
-            }
-            val r = descr.bestMatching(argNames)
+            val r = descr.bestMatching(Nil)
             r.getOrElse(fail("No constructor for type " + descr.erasure + ", " + json))
           }
       }
@@ -197,7 +182,6 @@ object Random {
       try {
         if (constructor.constructor.getDeclaringClass == classOf[java.lang.Object]) {
           deserializedJson match {
-            case JObject(TypeHint(t, fs)) => mkWithTypeHint(t: String, fs: List[JField], descr.erasure)
             case v: JValue => v.values
           }
         } else {
@@ -210,19 +194,9 @@ object Random {
       }
     }
 
-    private[this] def mkWithTypeHint(typeHint: String, fields: List[JField], typeInfo: ScalaType) = {
-      val obj = JObject(fields filterNot (_._1 == "jsonClass"))
-      val deserializer = formats.typeHints.deserialize
-      if (!deserializer.isDefinedAt(typeHint, obj)) {
-        val concreteClass = formats.typeHints.classFor(typeHint) getOrElse fail("Do not know how to deserialize '" + typeHint + "'")
-        random(obj, typeInfo.copy(erasure = concreteClass))
-      } else deserializer(typeHint, obj)
-    }
-
     def result: Any =
       customOrElse(descr.erasure, json) {
         case JNull => null
-        case JObject(TypeHint(t, fs)) => mkWithTypeHint(t, fs, descr.erasure)
         case _ => instantiate
       }
   }

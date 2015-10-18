@@ -17,8 +17,6 @@
 package org.json4s
 
 
-import java.lang.reflect.Type
-
 import org.json4s.prefs.EmptyValueStrategy
 
 import scala.annotation.implicitNotFound
@@ -33,7 +31,6 @@ import scala.annotation.implicitNotFound
   "No org.json4s.RandomFormats found. Try to bring an instance of org.json4s.RandomFormats in scope or use the org.json4s.DefaultRandomFormats."
 )
 trait RandomFormats extends Serializable { self: RandomFormats =>
-  def typeHints: TypeHints = NoTypeHints
   def customSerializers: List[Deserializer[_]] = Nil
   def customKeyDeserializers: List[KeyDeserializer[_]] = Nil
   def fieldSerializers: List[(Class[_], FieldSerializer[_])] = Nil
@@ -48,7 +45,6 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
 
   private def copy(
                     wParameterNameReader: reflect.ParameterNameReader = self.parameterNameReader,
-                    wTypeHints: TypeHints = self.typeHints,
                     wCustomSerializers: List[Deserializer[_]] = self.customSerializers,
                     wCustomKeyDeserializers: List[KeyDeserializer[_]] = self.customKeyDeserializers,
                     wFieldSerializers: List[(Class[_], FieldSerializer[_])] = self.fieldSerializers,
@@ -56,7 +52,6 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
                     wEmptyValueStrategy: EmptyValueStrategy = self.emptyValueStrategy): RandomFormats =
     new RandomFormats {
       override def parameterNameReader: reflect.ParameterNameReader = wParameterNameReader
-      override def typeHints: TypeHints = wTypeHints
       override def customSerializers: List[Deserializer[_]] = wCustomSerializers
       override val customKeyDeserializers: List[KeyDeserializer[_]] = wCustomKeyDeserializers
       override def fieldSerializers: List[(Class[_], FieldSerializer[_])] = wFieldSerializers
@@ -142,10 +137,6 @@ object DefaultRandomFormats extends DefaultRandomFormats
 trait DefaultRandomFormats extends RandomFormats {
 
   override val parameterNameReader: reflect.ParameterNameReader = reflect.ParanamerReader
-  override val typeHints: TypeHints = new TypeHints {
-    val hints: List[Class[_]] = Nil
-    def classFor(hint: String) = None
-  }
   override val customSerializers: List[Deserializer[_]] = Nil
   override val customKeyDeserializers: List[KeyDeserializer[_]] = Nil
   override val fieldSerializers: List[(Class[_], FieldSerializer[_])] = Nil
