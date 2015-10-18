@@ -37,7 +37,7 @@ object RandomFormats {
   * </pre>
   */
 @implicitNotFound(
-  "No org.json4s.Formats2 found. Try to bring an instance of org.json4s.Formats22 in scope or use the org.json4s.Formats2."
+  "No org.json4s.RandomFormats found. Try to bring an instance of org.json4s.RandomFormats in scope or use the org.json4s.DefaultRandomFormats."
 )
 trait RandomFormats extends Serializable { self: RandomFormats =>
   def dateFormat: DateFormat
