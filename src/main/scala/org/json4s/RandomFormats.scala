@@ -112,31 +112,10 @@ trait KeyDeserializer[A] {
   def deserialize(implicit format: RandomFormats): PartialFunction[(TypeInfo, String), A]
 }
 
-/** Type hints can be used to alter the default conversion rules when converting
-  * Scala instances into JSON and vice versa. Type hints must be used when converting
-  * class which is not supported by default (for instance when class is not a case class).
-  * <p>
-  * Example:<pre>
-  * class DateTime(val time: Long)
-  *
-  * val hints = new ShortTypeHints(classOf[DateTime] :: Nil) {
-  *   override def serialize: PartialFunction[Any, JObject] = {
-  *     case t: DateTime => JObject(JField("t", JInt(t.time)) :: Nil)
-  *   }
-  *
-  *   override def deserialize: PartialFunction[(String, JObject), Any] = {
-  *     case ("DateTime", JObject(JField("t", JInt(t)) :: Nil)) => new DateTime(t.longValue)
-  *   }
-  * }
-  * implicit val formats = DefaultFormats2.withHints(hints)
-  * </pre>
-  */
 trait TypeHints {
 
   val hints: List[Class[_]]
 
-  /** Return type for given hint.
-    */
   def classFor(hint: String): Option[Class[_]]
 
   def deserialize: PartialFunction[(String, JObject), Any] = Map()
@@ -177,12 +156,6 @@ trait DefaultRandomFormats extends RandomFormats {
   override val primitives: Set[Type] = Set(classOf[JValue], classOf[JObject], classOf[JArray])
   override val companions: List[(Class[_], AnyRef)] = Nil
   override val emptyValueStrategy: EmptyValueStrategy = EmptyValueStrategy.default
-
-  /** Default formats with given <code>TypeHint</code>s.
-    */
-  def withHints(hints: TypeHints): RandomFormats = new DefaultRandomFormats{
-    override val typeHints = hints
-  }
 }
 
 class CustomDeserializer[A: Manifest](
