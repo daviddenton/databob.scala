@@ -16,7 +16,8 @@
 
 package org.json4s
 
-import scala.annotation.implicitNotFound
+import ClassDelta._
+˚import scala.annotation.implicitNotFound
 
 /** Formats to use when converting JSON.
   * Formats are usually configured by using an implicit parameter:
@@ -55,7 +56,6 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
     copy(wFieldSerializers = (newSerializer.mf.runtimeClass -> newSerializer) :: self.fieldSerializers)
 
   private[json4s] def fieldSerializer(clazz: Class[_]): Option[FieldSerializer[_]] = {
-    import ClassDelta._
 
     val ord = Ordering[Int].on[(Class[_], FieldSerializer[_])](x => delta(x._1, clazz))
     fieldSerializers filter (_._1.isAssignableFrom(clazz)) match {
