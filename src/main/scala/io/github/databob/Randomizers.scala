@@ -9,7 +9,6 @@ object Randomizers {
     Randomizer(r => LocalDate.of(2000, 1, 1)),
     Randomizer(r => LocalTime.of(0, 0, 0)),
     Randomizer(r => {
-      r
       LocalDateTime.of(LocalDate.of(2000, 1, 1), LocalTime.of(0, 0, 0))
     }),
     Randomizer(r => {

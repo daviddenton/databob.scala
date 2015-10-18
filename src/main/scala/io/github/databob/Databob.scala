@@ -27,7 +27,7 @@ object Databob {
     }
   }
 
-  def random(scalaType: ScalaType)(implicit randomizers: Randomizers): Any = {
+  private def random(scalaType: ScalaType)(implicit randomizers: Randomizers): Any = {
     if (scalaType.isEither) {
       (allCatch opt {
         Left(random(scalaType.typeArgs.head))
