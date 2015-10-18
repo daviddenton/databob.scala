@@ -69,8 +69,6 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
 
   def withCompanions(comps: (Class[_], AnyRef)*): RandomFormats = copy(wCompanions = comps.toList ::: self.companions)
 
-  def + (extraHints: TypeHints): RandomFormats = copy(wTypeHints = self.typeHints + extraHints)
-
   def + (newSerializer: Deserializer[_]): RandomFormats = copy(wCustomSerializers = newSerializer :: self.customSerializers)
 
   def + (newSerializer: KeyDeserializer[_]): RandomFormats =
@@ -149,12 +147,6 @@ trait TypeHints {
 
   def components: List[TypeHints] = List(this)
 
-
-
-  /**
-   * Adds the specified type hints to this type hints.
-   */
-  def + (hints: TypeHints): TypeHints = CompositeTypeHints(hints.components ::: components)
 
   private[TypeHints] case class CompositeTypeHints(override val components: List[TypeHints]) extends TypeHints {
     val hints: List[Class[_]] = components.flatMap(_.hints)
