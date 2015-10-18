@@ -3,19 +3,19 @@ package io.github.databob
 import org.json4s.reflect.TypeInfo
 
 trait Randomizer[A] {
-  def newRandom(implicit format: Randomizers): PartialFunction[TypeInfo, A]
+  def newRandom(implicit r: Randomizers): PartialFunction[TypeInfo, A]
 }
 
 object Randomizer {
-  private class CustomRandomizer[A: Manifest](r: Randomizers => A) extends Randomizer[A] {
+  private class CustomRandomizer[A: Manifest](mk: Randomizers => A) extends Randomizer[A] {
 
     val Class = implicitly[Manifest[A]].runtimeClass
 
-    def newRandom(implicit format: Randomizers) = {
-      case TypeInfo(Class, _) => r(format)
+    def newRandom(implicit r: Randomizers) = {
+      case TypeInfo(Class, _) => mk(r)
     }
   }
 
-  def apply[A: Manifest](r: Randomizers => A): Randomizer[A] = new CustomRandomizer[A](r)
+  def apply[A: Manifest](mk: Randomizers => A): Randomizer[A] = new CustomRandomizer[A](mk)
 
 }
