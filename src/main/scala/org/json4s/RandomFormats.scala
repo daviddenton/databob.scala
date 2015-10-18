@@ -33,7 +33,6 @@ import scala.annotation.implicitNotFound
 trait RandomFormats extends Serializable { self: RandomFormats =>
   def customSerializers: List[Deserializer[_]] = Nil
   def fieldSerializers: List[(Class[_], FieldSerializer[_])] = Nil
-  def companions: List[(Class[_], AnyRef)] = Nil
 
   /**
    * Parameter name reading strategy. By default 'paranamer' is used.
@@ -46,17 +45,13 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
                     wParameterNameReader: reflect.ParameterNameReader = self.parameterNameReader,
                     wCustomSerializers: List[Deserializer[_]] = self.customSerializers,
                     wFieldSerializers: List[(Class[_], FieldSerializer[_])] = self.fieldSerializers,
-                    wCompanions: List[(Class[_], AnyRef)] = self.companions,
                     wEmptyValueStrategy: EmptyValueStrategy = self.emptyValueStrategy): RandomFormats =
     new RandomFormats {
       override def parameterNameReader: reflect.ParameterNameReader = wParameterNameReader
       override def customSerializers: List[Deserializer[_]] = wCustomSerializers
       override def fieldSerializers: List[(Class[_], FieldSerializer[_])] = wFieldSerializers
-      override def companions: List[(Class[_], AnyRef)] = wCompanions
       override def emptyValueStrategy: EmptyValueStrategy = wEmptyValueStrategy
     }
-
-  def withCompanions(comps: (Class[_], AnyRef)*): RandomFormats = copy(wCompanions = comps.toList ::: self.companions)
 
   def + (newSerializer: Deserializer[_]): RandomFormats = copy(wCustomSerializers = newSerializer :: self.customSerializers)
 
@@ -128,7 +123,6 @@ trait DefaultRandomFormats extends RandomFormats {
   override val parameterNameReader: reflect.ParameterNameReader = reflect.ParanamerReader
   override val customSerializers: List[Deserializer[_]] = Nil
   override val fieldSerializers: List[(Class[_], FieldSerializer[_])] = Nil
-  override val companions: List[(Class[_], AnyRef)] = Nil
   override val emptyValueStrategy: EmptyValueStrategy = EmptyValueStrategy.default
 }
 
