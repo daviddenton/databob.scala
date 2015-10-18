@@ -10,7 +10,7 @@ import org.json4s.reflect._
 import scala.reflect.Manifest
 import scala.util.control.Exception.allCatch
 
-object Extraction2 {
+object Random {
 
   def random[A](json: JValue)(implicit formats: Formats, mf: Manifest[A]): A = {
     try {
