@@ -18,12 +18,6 @@ package org.json4s
 
 import scala.annotation.implicitNotFound
 
-/** Formats to use when converting JSON.
-  * Formats are usually configured by using an implicit parameter:
-  * <pre>
-  * implicit val formats = org.json4s.Formats2
-  * </pre>
-  */
 @implicitNotFound(
   "No org.json4s.RandomFormats found. Try to bring an instance of org.json4s.RandomFormats in scope or use the org.json4s.DefaultRandomFormats."
 )
@@ -56,10 +50,6 @@ trait Deserializer[A] {
   def deserialize(implicit format: RandomFormats): PartialFunction[(TypeInfo, JValue), A]
 }
 
-trait KeyDeserializer[A] {
-  def deserialize(implicit format: RandomFormats): PartialFunction[(TypeInfo, String), A]
-}
-
 private[json4s] object ClassDelta {
   def delta(class1: Class[_], class2: Class[_]): Int = {
     if (class1 == class2) 0
@@ -83,18 +73,6 @@ trait DefaultRandomFormats extends RandomFormats {
 
 class CustomDeserializer[A: Manifest](
                                        ser: RandomFormats => (PartialFunction[JValue, A], PartialFunction[Any, JValue])) extends Deserializer[A] {
-
-  val Class = implicitly[Manifest[A]].runtimeClass
-
-  def deserialize(implicit format: RandomFormats) = {
-    case (TypeInfo(Class, _), json) =>
-      if (ser(format)._1.isDefinedAt(json)) ser(format)._1(json)
-      else throw new MappingException("Can't convert " + json + " to " + Class)
-  }
-}
-
-class CustomKeyDeserializer[A: Manifest](
-                                          ser: RandomFormats => (PartialFunction[String, A], PartialFunction[Any, String])) extends KeyDeserializer[A] {
 
   val Class = implicitly[Manifest[A]].runtimeClass
 
