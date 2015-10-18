@@ -20,7 +20,6 @@ package org.json4s
 import java.lang.reflect.Type
 
 import org.json4s.prefs.EmptyValueStrategy
-import org.json4s.reflect.Reflector
 
 import scala.annotation.implicitNotFound
 
@@ -207,7 +206,7 @@ trait TypeHints {
       def hasClass(h: TypeHints) =
         scala.util.control.Exception.allCatch opt h.classFor(hint) exists (_.isDefined)
 
-      components find (hasClass) flatMap (_.classFor(hint))
+      components find hasClass flatMap (_.classFor(hint))
     }
 
     override def deserialize: PartialFunction[(String, JObject), Any] = components.foldLeft[PartialFunction[(String, JObject),Any]](Map()) {
@@ -235,30 +234,6 @@ private[json4s] object ClassDelta {
   }
 }
 
-/** Do not use any type hints.
-  */
-case object NoTypeHints extends TypeHints {
-  val hints: List[Class[_]] = Nil
-  def hintFor(clazz: Class[_]) = sys.error("NoTypeHints does not provide any type hints.")
-  def classFor(hint: String) = None
-}
-
-/** Use short class name as a type hint.
-  */
-case class ShortTypeHints(hints: List[Class[_]]) extends TypeHints {
-  def hintFor(clazz: Class[_]) = clazz.getName.substring(clazz.getName.lastIndexOf(".")+1)
-  def classFor(hint: String) = hints find (hintFor(_) == hint)
-}
-
-/** Use full class name as a type hint.
-  */
-case class FullTypeHints(hints: List[Class[_]]) extends TypeHints {
-  def hintFor(clazz: Class[_]) = clazz.getName
-  def classFor(hint: String) = {
-    Reflector.scalaTypeOf(hint).map(_.erasure)//.find(h => hints.exists(l => l.isAssignableFrom(h.erasure)))
-  }
-}
-
 object DefaultRandomFormats extends DefaultRandomFormats
 
 
@@ -266,7 +241,11 @@ trait DefaultRandomFormats extends RandomFormats {
 
   override val typeHintFieldName: String = "jsonClass"
   override val parameterNameReader: reflect.ParameterNameReader = reflect.ParanamerReader
-  override val typeHints: TypeHints = NoTypeHints
+  override val typeHints: TypeHints = new TypeHints {
+    val hints: List[Class[_]] = Nil
+    def hintFor(clazz: Class[_]) = sys.error("NoTypeHints does not provide any type hints.")
+    def classFor(hint: String) = None
+  }
   override val customSerializers: List[Deserializer[_]] = Nil
   override val customKeyDeserializers: List[KeyDeserializer[_]] = Nil
   override val fieldSerializers: List[(Class[_], FieldSerializer[_])] = Nil
