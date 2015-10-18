@@ -22,7 +22,6 @@ object Random {
     }
   }
 
-
   def random(json: JValue, target: TypeInfo)(implicit formats: RandomFormats): Any = random(json, ScalaType(target))
 
 
