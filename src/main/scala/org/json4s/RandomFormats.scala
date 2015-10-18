@@ -71,26 +71,14 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
 
   def + (extraHints: TypeHints): RandomFormats = copy(wTypeHints = self.typeHints + extraHints)
 
-  /**
-   * Adds the specified custom serializer to this formats.
-   */
   def + (newSerializer: Deserializer[_]): RandomFormats = copy(wCustomSerializers = newSerializer :: self.customSerializers)
 
-  /**
-   * Adds the specified custom key serializer to this formats.
-   */
   def + (newSerializer: KeyDeserializer[_]): RandomFormats =
     copy(wCustomKeyDeserializers = newSerializer :: self.customKeyDeserializers)
 
-  /**
-   * Adds the specified custom serializers to this formats.
-   */
   def ++ (newSerializers: Traversable[Deserializer[_]]): RandomFormats =
     copy(wCustomSerializers = newSerializers.foldRight(self.customSerializers)(_ :: _))
 
-  /**
-   * Adds the specified custom serializers to this formats.
-   */
   def addKeyDeserializers (newKeyDeserializers: Traversable[KeyDeserializer[_]]): RandomFormats =
     newKeyDeserializers.foldLeft(this)(_ + _)
 
@@ -156,9 +144,6 @@ trait TypeHints {
     */
   def classFor(hint: String): Option[Class[_]]
 
-  @deprecated("Use `containsHint` without `_?` instead", "3.2.0")
-  def containsHint_?(clazz: Class[_]): Boolean = containsHint(clazz)
-  def containsHint(clazz: Class[_]): Boolean = hints exists (_ isAssignableFrom clazz)
   def deserialize: PartialFunction[(String, JObject), Any] = Map()
   def serialize: PartialFunction[Any, JObject] = Map()
 
