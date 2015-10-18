@@ -239,31 +239,6 @@ object Random {
     } else thunk(json)
   }
 
-  private[this] def convert(key: String, target: ScalaType, formats: Formats): Any = {
-    val targetType = target.erasure
-    targetType match {
-      case tt if tt == classOf[String] => key
-      case tt if tt == classOf[Symbol] => Symbol(key)
-      case tt if tt == classOf[Int] => key.toInt
-      case tt if tt == classOf[JavaInteger] => new JavaInteger(key.toInt)
-      case tt if tt == classOf[BigInt] => key.toInt
-      case tt if tt == classOf[Long] => key.toLong
-      case tt if tt == classOf[JavaLong] => new JavaLong(key.toLong)
-      case tt if tt == classOf[Short] => key.toShort
-      case tt if tt == classOf[JavaShort] => new JavaShort(key.toShort)
-      case tt if tt == classOf[Date] => new Date(0)
-      case tt if tt == classOf[Timestamp] => new Timestamp(0)
-      case _ =>
-        val deserializer = formats.customKeyDeserializer(formats)
-        val typeInfo = TypeInfo(targetType, None)
-        if (deserializer.isDefinedAt((typeInfo, key))) {
-          deserializer((typeInfo, key))
-        } else {
-          fail("Do not know how to deserialize key of type " + targetType + ". Consider implementing a CustomKeyDeserializer.")
-        }
-    }
-  }
-
   private[this] def convert(json: JValue, target: ScalaType, formats: Formats): Any = {
     if (target.erasure == classOf[Int]) 0
     else if (target.erasure == classOf[JavaInteger]) new JavaInteger(0)
