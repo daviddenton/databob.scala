@@ -175,7 +175,7 @@ object Random {
           else x
         } catch {
           case e@MappingException(msg, _) =>
-            if (descr.isOptional && !formats.strictOptionParsing) defv(None) else fail("No usable value for " + descr.name + "\n" + msg, e)
+            if (descr.isOptional) defv(None) else fail("No usable value for " + descr.name + "\n" + msg, e)
         }
       }
     }

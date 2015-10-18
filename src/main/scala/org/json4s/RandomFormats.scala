@@ -46,7 +46,6 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
   def primitives: Set[Type] = Set(classOf[JValue], classOf[JObject], classOf[JArray])
   def companions: List[(Class[_], AnyRef)] = Nil
   def allowNull: Boolean = true
-  def strictOptionParsing: Boolean = false
 
   /**
    * The name of the field in JSON where type hints are added (jsonClass by default)
@@ -69,7 +68,6 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
                     wFieldSerializers: List[(Class[_], FieldSerializer[_])] = self.fieldSerializers,
                     withPrimitives: Set[Type] = self.primitives,
                     wCompanions: List[(Class[_], AnyRef)] = self.companions,
-                    wStrict: Boolean = self.strictOptionParsing,
                     wEmptyValueStrategy: EmptyValueStrategy = self.emptyValueStrategy): RandomFormats =
     new RandomFormats {
       override def typeHintFieldName: String = wTypeHintFieldName
@@ -80,7 +78,6 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
       override def fieldSerializers: List[(Class[_], FieldSerializer[_])] = wFieldSerializers
       override def primitives: Set[Type] = withPrimitives
       override def companions: List[(Class[_], AnyRef)] = wCompanions
-      override def strictOptionParsing: Boolean = wStrict
       override def emptyValueStrategy: EmptyValueStrategy = wEmptyValueStrategy
     }
 
@@ -208,7 +205,7 @@ trait TypeHints {
 
     def classFor(hint: String): Option[Class[_]] = {
       def hasClass(h: TypeHints) =
-        scala.util.control.Exception.allCatch opt (h.classFor(hint)) map (_.isDefined) getOrElse(false)
+        scala.util.control.Exception.allCatch opt h.classFor(hint) exists (_.isDefined)
 
       components find (hasClass) flatMap (_.classFor(hint))
     }
@@ -278,7 +275,6 @@ trait DefaultRandomFormats extends RandomFormats {
   override val fieldSerializers: List[(Class[_], FieldSerializer[_])] = Nil
   override val primitives: Set[Type] = Set(classOf[JValue], classOf[JObject], classOf[JArray])
   override val companions: List[(Class[_], AnyRef)] = Nil
-  override val strictOptionParsing: Boolean = false
   override val emptyValueStrategy: EmptyValueStrategy = EmptyValueStrategy.default
   override val allowNull: Boolean = true
 
