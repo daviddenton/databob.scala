@@ -16,7 +16,6 @@
 
 package org.json4s
 
-import ClassDelta._
 import scala.annotation.implicitNotFound
 
 /** Formats to use when converting JSON.
@@ -28,44 +27,28 @@ import scala.annotation.implicitNotFound
 @implicitNotFound(
   "No org.json4s.RandomFormats found. Try to bring an instance of org.json4s.RandomFormats in scope or use the org.json4s.DefaultRandomFormats."
 )
-trait RandomFormats extends Serializable { self: RandomFormats =>
-  def customSerializers: List[Deserializer[_]] = Nil
-  def fieldSerializers: List[(Class[_], FieldSerializer[_])] = Nil
+trait RandomFormats extends Serializable {
+  self: RandomFormats =>
+  def customDeserializers: List[Deserializer[_]] = Nil
 
   def parameterNameReader: reflect.ParameterNameReader = reflect.ParanamerReader
 
   private def copy(
                     wParameterNameReader: reflect.ParameterNameReader = self.parameterNameReader,
-                    wCustomSerializers: List[Deserializer[_]] = self.customSerializers,
-                    wFieldSerializers: List[(Class[_], FieldSerializer[_])] = self.fieldSerializers): RandomFormats =
+                    wCustomSerializers: List[Deserializer[_]] = self.customDeserializers): RandomFormats =
     new RandomFormats {
       override def parameterNameReader: reflect.ParameterNameReader = wParameterNameReader
-      override def customSerializers: List[Deserializer[_]] = wCustomSerializers
-      override def fieldSerializers: List[(Class[_], FieldSerializer[_])] = wFieldSerializers
+
+      override def customDeserializers: List[Deserializer[_]] = wCustomSerializers
     }
 
-  def + (newSerializer: Deserializer[_]): RandomFormats = copy(wCustomSerializers = newSerializer :: self.customSerializers)
+  def +(newSerializer: Deserializer[_]): RandomFormats = copy(wCustomSerializers = newSerializer :: self.customDeserializers)
 
-  def ++ (newSerializers: Traversable[Deserializer[_]]): RandomFormats =
-    copy(wCustomSerializers = newSerializers.foldRight(self.customSerializers)(_ :: _))
-
-  /**
-   * Adds a field serializer for a given type to this formats.
-   */
-  def + [A](newSerializer: FieldSerializer[A]): RandomFormats =
-    copy(wFieldSerializers = (newSerializer.mf.runtimeClass -> newSerializer) :: self.fieldSerializers)
-
-  private[json4s] def fieldSerializer(clazz: Class[_]): Option[FieldSerializer[_]] = {
-
-    val ord = Ordering[Int].on[(Class[_], FieldSerializer[_])](x => delta(x._1, clazz))
-    fieldSerializers filter (_._1.isAssignableFrom(clazz)) match {
-      case Nil => None
-      case xs  => Some((xs min ord)._2)
-    }
-  }
+  def ++(newSerializers: Traversable[Deserializer[_]]): RandomFormats =
+    copy(wCustomSerializers = newSerializers.foldRight(self.customDeserializers)(_ :: _))
 
   def customDeserializer(implicit format: RandomFormats) =
-    customSerializers.foldLeft(Map(): PartialFunction[(TypeInfo, JValue), Any]) { (acc, x) =>
+    customDeserializers.foldLeft(Map(): PartialFunction[(TypeInfo, JValue), Any]) { (acc, x) =>
       acc.orElse(x.deserialize)
     }
 }
@@ -97,12 +80,11 @@ object DefaultRandomFormats extends DefaultRandomFormats
 
 
 trait DefaultRandomFormats extends RandomFormats {
-  override val customSerializers: List[Deserializer[_]] = Nil
-  override val fieldSerializers: List[(Class[_], FieldSerializer[_])] = Nil
+  override val customDeserializers: List[Deserializer[_]] = Nil
 }
 
 class CustomDeserializer[A: Manifest](
-                                     ser: RandomFormats => (PartialFunction[JValue, A], PartialFunction[Any, JValue])) extends Deserializer[A] {
+                                       ser: RandomFormats => (PartialFunction[JValue, A], PartialFunction[Any, JValue])) extends Deserializer[A] {
 
   val Class = implicitly[Manifest[A]].runtimeClass
 
@@ -114,7 +96,7 @@ class CustomDeserializer[A: Manifest](
 }
 
 class CustomKeyDeserializer[A: Manifest](
-                                        ser: RandomFormats => (PartialFunction[String, A], PartialFunction[Any, String])) extends KeyDeserializer[A] {
+                                          ser: RandomFormats => (PartialFunction[String, A], PartialFunction[Any, String])) extends KeyDeserializer[A] {
 
   val Class = implicitly[Manifest[A]].runtimeClass
 

@@ -112,32 +112,7 @@ object Random {
       _constructor
     }
 
-    private[this] def setFields(a: AnyRef) = json match {
-      case JObject(fields) =>
-        formats.fieldSerializer(a.getClass) foreach { serializer =>
-          val ctorArgs = constructor.params.map(_.name)
-          val fieldsToSet = descr.properties.filterNot(f => ctorArgs.contains(f.name))
-          val idPf: PartialFunction[JField, JField] = {
-            case f => f
-          }
-          val jsonSerializers = (fields map { f =>
-            val JField(n, v) = (serializer.deserializer orElse idPf)(f)
-            (n, (n, v))
-          }).toMap
-
-          fieldsToSet foreach { prop =>
-            jsonSerializers get prop.name foreach { case (_, v) =>
-              val vv = random(v, prop.returnType)
-              // If includeLazyVal is set, try to find and initialize lazy val.
-              // This is to prevent the extracted value to be overwritten by the lazy val initialization.
-              if (serializer.includeLazyVal) loadLazyValValue(a, prop.name, vv) else ()
-              prop.set(a, vv)
-            }
-          }
-        }
-        a
-      case _ => a
-    }
+    private[this] def setFields(a: AnyRef) =  a
 
     private[this] def buildCtorArg(json: JValue, descr: ConstructorParamDescriptor) = {
       val default = descr.defaultValue
@@ -165,19 +140,7 @@ object Random {
     }
 
     private[this] def instantiate = {
-      val deserializedJson = json match {
-        case JObject(fields) =>
-          formats.fieldSerializer(descr.erasure.erasure) map { serializer =>
-            val idPf: PartialFunction[JField, JField] = {
-              case f => f
-            }
-
-            JObject(fields map { f =>
-              (serializer.deserializer orElse idPf)(f)
-            })
-          } getOrElse json
-        case other: JValue => other
-      }
+      val deserializedJson = json
 
       try {
         if (constructor.constructor.getDeclaringClass == classOf[java.lang.Object]) {
