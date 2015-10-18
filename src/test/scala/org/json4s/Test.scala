@@ -6,5 +6,5 @@ case class Person(age: Int, names: Seq[Other])
 
 object Test extends App {
   implicit val f = DefaultFormats
-  println(Extraction2.extract[Person](JObject()))
+  println(Extraction2.random[Person](JObject()))
 }
