@@ -63,7 +63,7 @@ object Extraction2 {
       Map()
     } else if (scalaType.isCollection) {
       customOrElse(scalaType, json)(new CollectionBuilder(_, scalaType).result)
-    } else if (classOf[(_, _)].isAssignableFrom(scalaType.erasure) && (classOf[String].isAssignableFrom(scalaType.typeArgs.head.erasure) || classOf[Symbol].isAssignableFrom(scalaType.typeArgs.head.erasure) )) {
+    } else if (classOf[(_, _)].isAssignableFrom(scalaType.erasure) && (classOf[String].isAssignableFrom(scalaType.typeArgs.head.erasure) || classOf[Symbol].isAssignableFrom(scalaType.typeArgs.head.erasure))) {
       val ta = scalaType.typeArgs(1)
       json match {
         case JObject(xs :: Nil) =>
@@ -73,12 +73,12 @@ object Extraction2 {
       }
     } else {
       Reflector.describe(scalaType) match {
-        case PrimitiveDescriptor(tpe, default) => convert(json, tpe, formats, default)
-        case o : ClassDescriptor if o.erasure.isSingleton =>
-          if (json==JObject(List.empty))
+        case PrimitiveDescriptor(tpe, default) => convert(json, tpe, formats)
+        case o: ClassDescriptor if o.erasure.isSingleton =>
+          if (json == JObject(List.empty))
             o.erasure.singletonInstance.getOrElse(sys.error(s"Not a case object: ${o.erasure}"))
           else
-            sys.error(s"Expected empty parameter list for singleton instance, got ${json} instead")
+            sys.error(s"Expected empty parameter list for singleton instance, got $json instead")
         case c: ClassDescriptor => new ClassInstanceBuilder(json, c).result
       }
     }
@@ -109,7 +109,9 @@ object Extraction2 {
           }
         }
     }
+
     private[this] var _constructor: ConstructorDescriptor = null
+
     private[this] def constructor = {
       if (_constructor == null) {
         _constructor =
@@ -131,7 +133,9 @@ object Extraction2 {
         formats.fieldSerializer(a.getClass) foreach { serializer =>
           val ctorArgs = constructor.params.map(_.name)
           val fieldsToSet = descr.properties.filterNot(f => ctorArgs.contains(f.name))
-          val idPf: PartialFunction[JField, JField] = { case f => f }
+          val idPf: PartialFunction[JField, JField] = {
+            case f => f
+          }
           val jsonSerializers = (fields map { f =>
             val JField(n, v) = (serializer.deserializer orElse idPf)(f)
             (n, (n, v))
@@ -158,9 +162,11 @@ object Extraction2 {
       else {
         try {
           val x = if (json == JNothing && default.isDefined) default.get() else random(json, descr.argType)
-          if (descr.isOptional) { if (x == null) defv(None) else x }
+          if (descr.isOptional) {
+            if (x == null) defv(None) else x
+          }
           else if (x == null) {
-            if(default.isEmpty && descr.argType <:< ScalaType(manifest[AnyVal])) {
+            if (default.isEmpty && descr.argType <:< ScalaType(manifest[AnyVal])) {
               throw new MappingException("Null invalid value for a sub-type of AnyVal")
             } else {
               defv(x)
@@ -168,8 +174,8 @@ object Extraction2 {
           }
           else x
         } catch {
-          case e @ MappingException(msg, _) =>
-            if (descr.isOptional  && !formats.strictOptionParsing) defv(None) else fail("No usable value for " + descr.name + "\n" + msg, e)
+          case e@MappingException(msg, _) =>
+            if (descr.isOptional && !formats.strictOptionParsing) defv(None) else fail("No usable value for " + descr.name + "\n" + msg, e)
         }
       }
     }
@@ -178,7 +184,9 @@ object Extraction2 {
       val deserializedJson = json match {
         case JObject(fields) =>
           formats.fieldSerializer(descr.erasure.erasure) map { serializer =>
-            val idPf: PartialFunction[JField, JField] = { case f => f }
+            val idPf: PartialFunction[JField, JField] = {
+              case f => f
+            }
 
             JObject(fields map { f =>
               (serializer.deserializer orElse idPf)(f)
@@ -199,7 +207,7 @@ object Extraction2 {
           setFields(instance.asInstanceOf[AnyRef])
         }
       } catch {
-        case e @ (_:IllegalArgumentException | _:InstantiationException) =>
+        case e@(_: IllegalArgumentException | _: InstantiationException) =>
           fail("Could not constuct class")
       }
     }
@@ -214,7 +222,7 @@ object Extraction2 {
     }
 
     def result: Any =
-      customOrElse(descr.erasure, json){
+      customOrElse(descr.erasure, json) {
         case JNull if formats.allowNull => null
         case JNull if !formats.allowNull =>
           fail("Did not find value which can be converted into " + descr.fullName)
@@ -248,7 +256,7 @@ object Extraction2 {
       case _ =>
         val deserializer = formats.customKeyDeserializer(formats)
         val typeInfo = TypeInfo(targetType, None)
-        if(deserializer.isDefinedAt((typeInfo, key))) {
+        if (deserializer.isDefinedAt((typeInfo, key))) {
           deserializer((typeInfo, key))
         } else {
           fail("Do not know how to deserialize key of type " + targetType + ". Consider implementing a CustomKeyDeserializer.")
@@ -256,74 +264,33 @@ object Extraction2 {
     }
   }
 
-  private[this] def convert(json: JValue, target: ScalaType, formats: Formats, default: Option[() => Any]): Any = {
-    val targetType = target.erasure
-    json match {
-      case JInt(x) if (targetType == classOf[Int]) => x.intValue
-      case JInt(x) if (targetType == classOf[JavaInteger]) => new JavaInteger(x.intValue)
-      case JInt(x) if (targetType == classOf[BigInt]) => x
-      case JInt(x) if (targetType == classOf[Long]) => x.longValue
-      case JInt(x) if (targetType == classOf[JavaLong]) => new JavaLong(x.longValue)
-      case JInt(x) if (targetType == classOf[Double]) => x.doubleValue
-      case JInt(x) if (targetType == classOf[JavaDouble]) => new JavaDouble(x.doubleValue)
-      case JInt(x) if (targetType == classOf[Float]) => x.floatValue
-      case JInt(x) if (targetType == classOf[JavaFloat]) => new JavaFloat(x.floatValue)
-      case JInt(x) if (targetType == classOf[Short]) => x.shortValue
-      case JInt(x) if (targetType == classOf[JavaShort]) => new JavaShort(x.shortValue)
-      case JInt(x) if (targetType == classOf[Byte]) => x.byteValue
-      case JInt(x) if (targetType == classOf[JavaByte]) => new JavaByte(x.byteValue)
-      case JInt(x) if (targetType == classOf[String]) => x.toString
-      case JInt(x) if (targetType == classOf[Number]) => x.longValue
-      case JInt(x) if (targetType == classOf[BigDecimal]) => BigDecimal(x)
-      case JInt(x) if (targetType == classOf[JavaBigDecimal]) => BigDecimal(x).bigDecimal
-      case JLong(x) if (targetType == classOf[Int]) => x.intValue
-      case JLong(x) if (targetType == classOf[JavaInteger]) => new JavaInteger(x.intValue)
-      case JLong(x) if (targetType == classOf[BigInt]) => x
-      case JLong(x) if (targetType == classOf[Long]) => x.longValue
-      case JLong(x) if (targetType == classOf[JavaLong]) => new JavaLong(x.longValue)
-      case JLong(x) if (targetType == classOf[Double]) => x.doubleValue
-      case JLong(x) if (targetType == classOf[JavaDouble]) => new JavaDouble(x.doubleValue)
-      case JLong(x) if (targetType == classOf[Float]) => x.floatValue
-      case JLong(x) if (targetType == classOf[JavaFloat]) => new JavaFloat(x.floatValue)
-      case JLong(x) if (targetType == classOf[Short]) => x.shortValue
-      case JLong(x) if (targetType == classOf[JavaShort]) => new JavaShort(x.shortValue)
-      case JLong(x) if (targetType == classOf[Byte]) => x.byteValue
-      case JLong(x) if (targetType == classOf[JavaByte]) => new JavaByte(x.byteValue)
-      case JLong(x) if (targetType == classOf[String]) => x.toString
-      case JLong(x) if (targetType == classOf[Number]) => x.longValue
-      case JLong(x) if (targetType == classOf[BigDecimal]) => BigDecimal(x)
-      case JLong(x) if (targetType == classOf[JavaBigDecimal]) => BigDecimal(x).bigDecimal
-      case JDouble(x) if (targetType == classOf[Double]) => x
-      case JDouble(x) if (targetType == classOf[JavaDouble]) => new JavaDouble(x)
-      case JDouble(x) if (targetType == classOf[Float]) => x.floatValue
-      case JDouble(x) if (targetType == classOf[JavaFloat]) => new JavaFloat(x.floatValue)
-      case JDouble(x) if (targetType == classOf[String]) => x.toString
-      case JDouble(x) if (targetType == classOf[Int]) => x.intValue
-      case JDouble(x) if (targetType == classOf[Long]) => x.longValue
-      case JDouble(x) if (targetType == classOf[Number]) => x
-      case JDouble(x) if (targetType == classOf[BigDecimal]) => BigDecimal(x)
-      case JDouble(x) if (targetType == classOf[JavaBigDecimal]) => BigDecimal(x).bigDecimal
-      case JDecimal(x) if (targetType == classOf[Double]) => x.doubleValue()
-      case JDecimal(x) if (targetType == classOf[JavaDouble]) => new JavaDouble(x.doubleValue())
-      case JDecimal(x) if (targetType == classOf[BigDecimal]) => x
-      case JDecimal(x) if (targetType == classOf[JavaBigDecimal]) => x.bigDecimal
-      case JDecimal(x) if (targetType == classOf[Float]) => x.floatValue
-      case JDecimal(x) if (targetType == classOf[JavaFloat]) => new JavaFloat(x.floatValue)
-      case JDecimal(x) if (targetType == classOf[String]) => x.toString
-      case JDecimal(x) if (targetType == classOf[Int]) => x.intValue
-      case JDecimal(x) if (targetType == classOf[Long]) => x.longValue
-      case JDecimal(x) if (targetType == classOf[Number]) => x
-      case JString(s) if (targetType == classOf[String]) => s
-      case JString(s) if (targetType == classOf[Symbol]) => Symbol(s)
-      case JString(s) if (targetType == classOf[Date]) => new Date(0)
-      case JString(s) if (targetType == classOf[Timestamp]) => new Timestamp(0)
-      case JBool(x) if (targetType == classOf[Boolean]) => x
-      case JBool(x) if (targetType == classOf[JavaBoolean]) => new JavaBoolean(x)
-      case _ =>
-        val custom = formats.customDeserializer(formats)
-        val typeInfo = target.typeInfo
-        if (custom.isDefinedAt(typeInfo, json)) custom(typeInfo, json)
-        else fail("Do not know how to convert " + json + " into " + targetType)
+  private[this] def convert(json: JValue, target: ScalaType, formats: Formats): Any = {
+    if (target.erasure == classOf[Int]) 0
+    else if (target.erasure == classOf[JavaInteger]) new JavaInteger(0)
+    else if (target.erasure == classOf[BigInt]) 0
+    else if (target.erasure == classOf[Long]) 0L
+    else if (target.erasure == classOf[JavaLong]) new JavaLong(0L)
+    else if (target.erasure == classOf[Double]) 0.0d
+    else if (target.erasure == classOf[JavaDouble]) new JavaDouble(0.0d)
+    else if (target.erasure == classOf[Float]) 0.0f
+    else if (target.erasure == classOf[JavaFloat]) new JavaFloat(0.0f)
+    else if (target.erasure == classOf[Short]) 0
+    else if (target.erasure == classOf[JavaShort]) new JavaShort(0.shortValue)
+    else if (target.erasure == classOf[Byte]) 0.byteValue
+    else if (target.erasure == classOf[JavaByte]) new JavaByte(0.byteValue)
+    else if (target.erasure == classOf[String]) ""
+    else if (target.erasure == classOf[Number]) 0L
+    else if (target.erasure == classOf[BigDecimal]) BigDecimal(0)
+    else if (target.erasure == classOf[JavaBigDecimal]) BigDecimal(0).bigDecimal
+    else if (target.erasure == classOf[Date]) new Date(0)
+    else if (target.erasure == classOf[Timestamp]) new Timestamp(0)
+    else if (target.erasure == classOf[Boolean]) false
+    else if (target.erasure == classOf[JavaBoolean]) new JavaBoolean(false)
+    else {
+      val custom = formats.customDeserializer(formats)
+      val typeInfo = target.typeInfo
+      if (custom.isDefinedAt(typeInfo, json)) custom(typeInfo, json)
+      else fail("Do not know how to convert " + json + " into " + target.erasure)
     }
   }
 }
