@@ -12,7 +12,7 @@ import scala.util.control.Exception.allCatch
 
 object Random {
 
-  def random[A](json: JValue)(implicit formats: RandomFormats, mf: Manifest[A]): A = {
+  def random[A](json: JValue)(implicit formats: RandomFormats = RandomFormats(), mf: Manifest[A]): A = {
     try {
       random(json, Reflector.scalaTypeOf[A]).asInstanceOf[A]
     } catch {
