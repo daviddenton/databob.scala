@@ -8,6 +8,7 @@ import java.util.Date
 import org.json4s.reflect._
 
 import scala.reflect.Manifest
+import scala.util.control.Exception.allCatch
 
 object Extraction2 {
 
@@ -51,7 +52,6 @@ object Extraction2 {
 
   def random(json: JValue, scalaType: ScalaType)(implicit formats: Formats): Any = {
     if (scalaType.isEither) {
-      import scala.util.control.Exception.allCatch
       (allCatch opt {
         Left(random(json, scalaType.typeArgs.head))
       } orElse (allCatch opt {
@@ -60,14 +60,7 @@ object Extraction2 {
     } else if (scalaType.isOption) {
       customOrElse(scalaType, json)(_.toOption flatMap (j => Option(random(j, scalaType.typeArgs.head))))
     } else if (scalaType.isMap) {
-      json match {
-        case JObject(xs) => {
-          val kta = scalaType.typeArgs.head
-          val ta = scalaType.typeArgs(1)
-          Map(xs.map(x => (convert(x._1, kta, formats), random(x._2, ta))): _*)
-        }
-        case x => fail("Expected object but got " + x)
-      }
+      Map()
     } else if (scalaType.isCollection) {
       customOrElse(scalaType, json)(new CollectionBuilder(_, scalaType).result)
     } else if (classOf[(_, _)].isAssignableFrom(scalaType.erasure) && (classOf[String].isAssignableFrom(scalaType.typeArgs.head.erasure) || classOf[Symbol].isAssignableFrom(scalaType.typeArgs.head.erasure) )) {
@@ -80,7 +73,7 @@ object Extraction2 {
       }
     } else {
       Reflector.describe(scalaType) match {
-        case PrimitiveDescriptor(tpe, default) => convert(json, tpe, formats, default) //customOrElse(tpe, json)(convert(_, tpe, formats, default))
+        case PrimitiveDescriptor(tpe, default) => convert(json, tpe, formats, default)
         case o : ClassDescriptor if o.erasure.isSingleton =>
           if (json==JObject(List.empty))
             o.erasure.singletonInstance.getOrElse(sys.error(s"Not a case object: ${o.erasure}"))
