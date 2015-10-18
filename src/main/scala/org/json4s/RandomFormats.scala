@@ -17,7 +17,7 @@
 package org.json4s
 
 import ClassDelta._
-˚import scala.annotation.implicitNotFound
+import scala.annotation.implicitNotFound
 
 /** Formats to use when converting JSON.
   * Formats are usually configured by using an implicit parameter:
