@@ -10,7 +10,7 @@ import org.json4s.reflect._
 import scala.collection.JavaConverters._
 import scala.reflect.Manifest
 
-object Extraction {
+object Extraction2 {
 
   def extract[A](json: JValue)(implicit formats: Formats, mf: Manifest[A]): A = {
     try {
