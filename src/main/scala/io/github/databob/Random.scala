@@ -88,7 +88,7 @@ object Random {
   private class CollectionBuilder(json: JValue, tpe: ScalaType)(implicit formats: RandomFormats) {
     def result: Any = {
       val custom = formats.customDeserializer(formats)
-      if (custom.isDefinedAt(tpe.typeInfo, json)) custom(tpe.typeInfo, json)
+      if (custom.isDefinedAt(tpe.typeInfo)) custom(tpe.typeInfo)
       else if (tpe.erasure == classOf[List[_]]) List()
       else if (tpe.erasure == classOf[Set[_]]) Set()
       else if (tpe.erasure == classOf[java.util.ArrayList[_]]) new java.util.ArrayList[Any]()
@@ -169,8 +169,8 @@ object Random {
   private[this] def customOrElse(target: ScalaType, json: JValue)(thunk: JValue => Any)(implicit formats: RandomFormats): Any = {
     val custom = formats.customDeserializer(formats)
     val targetType = target.typeInfo
-    if (custom.isDefinedAt(targetType, json)) {
-      custom(targetType, json)
+    if (custom.isDefinedAt(targetType)) {
+      custom(targetType)
     } else thunk(json)
   }
 
@@ -198,7 +198,7 @@ object Random {
     else if (target.erasure == classOf[Timestamp]) new Timestamp(0)
     else {
       val custom = formats.customDeserializer(formats)
-      if (custom.isDefinedAt(target.typeInfo, json)) custom(target.typeInfo, json)
+      if (custom.isDefinedAt(target.typeInfo)) custom(target.typeInfo)
       else fail("Do not know how to make a " + target.erasure)
     }
   }
