@@ -261,10 +261,7 @@ case class FullTypeHints(hints: List[Class[_]]) extends TypeHints {
 
 object DefaultRandomFormats extends DefaultRandomFormats
 
-private[json4s] class ThreadLocal[A](init: => A) extends java.lang.ThreadLocal[A] with (() => A) {
-  override def initialValue = init
-  def apply = get
-}
+
 trait DefaultRandomFormats extends RandomFormats {
 
   override val typeHintFieldName: String = "jsonClass"
@@ -284,9 +281,6 @@ trait DefaultRandomFormats extends RandomFormats {
     override val typeHints = hints
   }
 }
-
-
-
 
 class CustomDeserializer[A: Manifest](
                                      ser: RandomFormats => (PartialFunction[JValue, A], PartialFunction[Any, JValue])) extends Deserializer[A] {
