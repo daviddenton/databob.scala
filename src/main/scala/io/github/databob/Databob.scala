@@ -8,40 +8,40 @@ import java.math.{BigDecimal => JavaBigDecimal}
 import java.sql.Timestamp
 import java.util.Date
 
-import org.json4s._
 import org.json4s.reflect._
 
 import scala.reflect.Manifest
 import scala.util.control.Exception.allCatch
 
+case class RandomFailure(msg: String) extends Exception(msg)
+
 object Databob {
 
-  def random[A](implicit formats: Randomizers = Randomizers(), mf: Manifest[A]): A = {
+  def random[A](implicit randomizers: Randomizers = Randomizers(), mf: Manifest[A]): A = {
     try {
       random(Reflector.scalaTypeOf[A]).asInstanceOf[A]
     } catch {
-      case e: MappingException => throw e
+      case e: RandomFailure => throw e
       case e: Exception =>
-        throw new MappingException("unknown error", e)
+        throw new RandomFailure("unknown error" + e.getMessage)
     }
   }
 
-  def random(scalaType: ScalaType)(implicit formats: Randomizers): Any = {
+  def random(scalaType: ScalaType)(implicit randomizers: Randomizers): Any = {
     if (scalaType.isEither) {
       (allCatch opt {
         Left(random(scalaType.typeArgs.head))
       } orElse (allCatch opt {
         Right(random(scalaType.typeArgs(1)))
-      })).getOrElse(fail("Expected value but got none"))
-    } else if (scalaType.isOption) {
-      customOrElse(scalaType)(() => random(scalaType.typeArgs.head))
-    } else if (scalaType.isMap) {
-      Map()
-    } else if (scalaType.isCollection) {
+      })).getOrElse(throw new RandomFailure("Expected value but got none"))
+    }
+    else if (scalaType.isOption) Option(random(scalaType.typeArgs.head))
+    else if (scalaType.isMap) Map()
+    else if (scalaType.isCollection) {
       customOrElse(scalaType)(() => new CollectionBuilder(scalaType).result)
     } else {
       Reflector.describe(scalaType) match {
-        case PrimitiveDescriptor(tpe, default) => convert(tpe, formats)
+        case PrimitiveDescriptor(tpe, default) => convert(tpe, randomizers)
         case o: ClassDescriptor if o.erasure.isSingleton =>
           o.erasure.singletonInstance.getOrElse(sys.error(s"Not a case object: ${o.erasure}"))
         case c: ClassDescriptor => new ClassInstanceBuilder(c).result
@@ -49,20 +49,20 @@ object Databob {
     }
   }
 
-  private class CollectionBuilder(tpe: ScalaType)(implicit formats: Randomizers) {
+  private class CollectionBuilder(tpe: ScalaType)(implicit randomizers: Randomizers) {
     def result: Any = {
-      val custom = formats.randomizer(formats)
+      val custom = randomizers.randomizer(randomizers)
       if (custom.isDefinedAt(tpe.typeInfo)) custom(tpe.typeInfo)
       else if (tpe.erasure == classOf[List[_]]) List()
       else if (tpe.erasure == classOf[Set[_]]) Set()
       else if (tpe.erasure == classOf[java.util.ArrayList[_]]) new java.util.ArrayList[Any]()
       else if (tpe.erasure.isArray) java.lang.reflect.Array.newInstance(tpe.typeArgs.head.erasure, 0)
       else if (classOf[Seq[_]].isAssignableFrom(tpe.erasure)) Seq()
-      else fail("Expected collection but got " + tpe)
+      else throw new RandomFailure("Expected collection but got " + tpe)
     }
   }
 
-  private class ClassInstanceBuilder(descr: ClassDescriptor)(implicit formats: Randomizers) {
+  private class ClassInstanceBuilder(descr: ClassDescriptor)(implicit randomizers: Randomizers) {
 
     private[this] var _constructor: ConstructorDescriptor = null
 
@@ -72,46 +72,17 @@ object Databob {
           if (descr.constructors.size == 1) descr.constructors.head
           else {
             val r = descr.bestMatching(Nil)
-            r.getOrElse(fail("No constructor for type " + descr.erasure))
+            r.getOrElse(throw new RandomFailure("No constructor for type " + descr.erasure))
           }
       }
       _constructor
     }
 
-    private[this] def setFields(a: AnyRef) = a
-
-    private[this] def buildCtorArg(descr: ConstructorParamDescriptor) = {
-      val default = descr.defaultValue
-      def defv(v: Any) = if (default.isDefined) default.get() else v
-      if (descr.isOptional) defv(None)
-      else {
-        try {
-          val x = if (default.isDefined) default.get() else random(descr.argType)
-          if (descr.isOptional) {
-            if (x == null) defv(None) else x
-          }
-          else if (x == null) {
-            if (default.isEmpty && descr.argType <:< ScalaType(manifest[AnyVal])) {
-              throw new MappingException("Null invalid value for a sub-type of AnyVal")
-            } else {
-              defv(x)
-            }
-          }
-          else x
-        } catch {
-          case e@MappingException(msg, _) =>
-            if (descr.isOptional) defv(None) else fail("No usable value for " + descr.name + "\n" + msg, e)
-        }
-      }
-    }
-
     private[this] def instantiate = {
       try {
-        val instance = constructor.constructor.invoke(descr.companion, constructor.params.map(a => buildCtorArg(a)))
-        setFields(instance.asInstanceOf[AnyRef])
+        constructor.constructor.invoke(descr.companion, constructor.params.map(a => random(a.argType))).asInstanceOf[AnyRef]
       } catch {
-        case e@(_: IllegalArgumentException | _: InstantiationException) =>
-          fail("Could not construct class")
+        case e@(_: IllegalArgumentException | _: InstantiationException) => throw new RandomFailure("Could not construct class")
       }
     }
 
@@ -123,9 +94,8 @@ object Databob {
 
   private[this] def customOrElse(target: ScalaType)(thunk: () => Any)(implicit formats: Randomizers): Any = {
     val custom = formats.randomizer(formats)
-    val targetType = target.typeInfo
-    if (custom.isDefinedAt(targetType)) {
-      custom(targetType)
+    if (custom.isDefinedAt(target.typeInfo)) {
+      custom(target.typeInfo)
     } else thunk()
   }
 
@@ -154,7 +124,7 @@ object Databob {
     else {
       val custom = formats.randomizer(formats)
       if (custom.isDefinedAt(target.typeInfo)) custom(target.typeInfo)
-      else fail("Do not know how to make a " + target.erasure)
+      else throw new RandomFailure("Do not know how to make a " + target.erasure)
     }
   }
 }
