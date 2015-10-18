@@ -222,9 +222,7 @@ object Random {
 
     def result: Any =
       customOrElse(descr.erasure, json) {
-        case JNull if formats.allowNull => null
-        case JNull if !formats.allowNull =>
-          fail("Did not find value which can be converted into " + descr.fullName)
+        case JNull => null
         case JObject(TypeHint(t, fs)) => mkWithTypeHint(t, fs, descr.erasure)
         case _ => instantiate
       }

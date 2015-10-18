@@ -39,7 +39,6 @@ trait RandomFormats extends Serializable { self: RandomFormats =>
   def fieldSerializers: List[(Class[_], FieldSerializer[_])] = Nil
   def primitives: Set[Type] = Set(classOf[JValue], classOf[JObject], classOf[JArray])
   def companions: List[(Class[_], AnyRef)] = Nil
-  def allowNull: Boolean = true
 
   /**
    * Parameter name reading strategy. By default 'paranamer' is used.
@@ -239,7 +238,6 @@ trait DefaultRandomFormats extends RandomFormats {
   override val primitives: Set[Type] = Set(classOf[JValue], classOf[JObject], classOf[JArray])
   override val companions: List[(Class[_], AnyRef)] = Nil
   override val emptyValueStrategy: EmptyValueStrategy = EmptyValueStrategy.default
-  override val allowNull: Boolean = true
 
   /** Default formats with given <code>TypeHint</code>s.
     */
