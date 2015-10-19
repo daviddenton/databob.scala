@@ -10,7 +10,7 @@ private class TypeRandomizer[A: Manifest](mk: Databob => A) extends Randomizer[A
   val Class = implicitly[Manifest[A]].runtimeClass
 
   def newRandom(databob: Databob): PartialFunction[RandomType, A] = {
-    case RandomType(TypeInfo(Class, _), _) => mk(databob)
+    case RandomType(TypeInfo(Class, _), _, _) => mk(databob)
   }
 }
 
@@ -18,7 +18,7 @@ private class ErasureRandomizer[A: Manifest](mk: Databob => A) extends Randomize
   val Class = implicitly[Manifest[A]].runtimeClass
 
   def newRandom(databob: Databob): PartialFunction[RandomType, A] = {
-    case RandomType(_, Class) => mk(databob)
+    case RandomType(_, Class, _) => mk(databob)
   }
 }
 
