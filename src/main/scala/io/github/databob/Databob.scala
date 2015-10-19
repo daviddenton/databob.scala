@@ -15,9 +15,9 @@ import scala.util.control.Exception.allCatch
 
 case class RandomFailure(msg: String) extends Exception(msg)
 
-class Databob {
+class Databob(randomizers: Randomizers = Randomizers()) {
 
-  def random[A](implicit randomizers: Randomizers = Randomizers(), mf: Manifest[A]): A = {
+  def random[A](implicit mf: Manifest[A]): A = {
     try {
       random(Reflector.scalaTypeOf[A]).asInstanceOf[A]
     } catch {
@@ -27,7 +27,7 @@ class Databob {
     }
   }
 
-  private def random(scalaType: ScalaType)(implicit randomizers: Randomizers): Any = {
+  private def random(scalaType: ScalaType): Any = {
     if (scalaType.isEither) {
       (allCatch opt {
         Left(random(scalaType.typeArgs.head))
@@ -49,7 +49,7 @@ class Databob {
     }
   }
 
-  private class CollectionBuilder(tpe: ScalaType)(implicit randomizers: Randomizers) {
+  private class CollectionBuilder(tpe: ScalaType) {
     def result: Any = {
       val custom = randomizers.randomizer(Databob.this)
       if (custom.isDefinedAt(tpe.typeInfo)) custom(tpe.typeInfo)
@@ -62,7 +62,7 @@ class Databob {
     }
   }
 
-  private class ClassInstanceBuilder(descr: ClassDescriptor)(implicit randomizers: Randomizers) {
+  private class ClassInstanceBuilder(descr: ClassDescriptor) {
 
     private[this] var _constructor: ConstructorDescriptor = null
 
@@ -92,7 +92,7 @@ class Databob {
       }
   }
 
-  private[this] def customOrElse(target: ScalaType)(thunk: () => Any)(implicit randomizers: Randomizers): Any = {
+  private[this] def customOrElse(target: ScalaType)(thunk: () => Any): Any = {
     val custom = randomizers.randomizer(this)
     if (custom.isDefinedAt(target.typeInfo)) {
       custom(target.typeInfo)
@@ -129,4 +129,6 @@ class Databob {
   }
 }
 
-object Databob extends Databob
+object Databob {
+  def random[A](implicit randomizers: Randomizers = Randomizers(), mf: Manifest[A]): A = new Databob(randomizers).random[A]
+}
