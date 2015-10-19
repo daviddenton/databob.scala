@@ -6,6 +6,8 @@ import java.sql.Timestamp
 import java.time._
 import java.util.Date
 
+import scala.util.control.Exception._
+
 case class Randomizers(randomizers: List[Randomizer[_]] = Nil) {
 
   implicit val RD = this
@@ -73,7 +75,18 @@ object MonadRandomizers extends Randomizers(
   List(
     new Randomizer[Option[_]]() {
       override def newRandom(databob: Databob) = {
-        case x if classOf[Option[_]].isAssignableFrom(x.erasure) => Option(databob.random(x.typeArgs.head))
+        case randomType if classOf[Option[_]].isAssignableFrom(randomType.erasure) => Option(databob.random(randomType.typeArgs.head))
+      }
+    },
+    new Randomizer[Either[_, _]]() {
+      override def newRandom(databob: Databob) = {
+        case randomTyppe if classOf[Either[_, _]].isAssignableFrom(randomTyppe.erasure) => {
+          (allCatch opt {
+            Left(databob.random(randomTyppe.typeArgs.head))
+          } orElse (allCatch opt {
+            Right(databob.random(randomTyppe.typeArgs(1)))
+          })).getOrElse(throw new RandomFailure("Expected value but got none"))
+        }
       }
     }
   )
@@ -86,12 +99,18 @@ object CollectionRandomizers extends Randomizers(
     Randomizer.erasure[java.util.ArrayList[_]](databob => new java.util.ArrayList[Any]()),
     new Randomizer[Any]() {
       override def newRandom(databob: Databob) = {
-        case tpe if tpe.erasure.isArray => java.lang.reflect.Array.newInstance(tpe.typeArgs.head.erasure, 0)
+        case randomType if randomType.erasure.isArray => java.lang.reflect.Array.newInstance(randomType.typeArgs.head.erasure, 0)
+      }
+    },
+    new Randomizer[Map[_, _]]() {
+      override def newRandom(databob: Databob) = {
+        case randomType if classOf[collection.immutable.Map[_, _]].isAssignableFrom(randomType.erasure) ||
+          classOf[collection.Map[_, _]].isAssignableFrom(randomType.erasure) => Map()
       }
     },
     new Randomizer[Seq[_]]() {
       override def newRandom(databob: Databob) = {
-        case x if classOf[Seq[_]].isAssignableFrom(x.erasure) => Seq()
+        case randomType if classOf[Seq[_]].isAssignableFrom(randomType.erasure) => Seq()
       }
     }
   )
