@@ -82,19 +82,18 @@ class DatabobTest extends FunSpec with ShouldMatchers {
   describe("Custom randomizer") {
     it("is used") {
       val custom = LocalTime.of(12, 12, 12)
-      implicit val r = Randomizers() + Randomizer(databob => custom)
+      implicit val r = new Randomizers() + Randomizer(databob => custom)
       Databob.random[LocalTime] shouldBe custom
     }
   }
 
   describe("Failure cases") {
     it("Blows up when there are no randomizers") {
-      implicit val r = Randomizers()
+      implicit val r = new Randomizers()
       intercept[RandomFailure](Databob.random[Int])
     }
 
     it("Blows up when there are no constructor to call") {
-      implicit val r = Randomizers()
       intercept[RandomFailure](Databob.random[APrivateClass])
     }
   }

@@ -9,7 +9,7 @@ import scala.reflect.Manifest
 
 case class RandomFailure(msg: String) extends Exception(msg)
 
-class Databob(randomizers: Randomizers = Randomizers()) {
+class Databob(randomizers: Randomizers = new Randomizers()) {
 
   def random[A](implicit mf: Manifest[A]): A = {
     try {
@@ -55,5 +55,5 @@ class Databob(randomizers: Randomizers = Randomizers()) {
 }
 
 object Databob {
-  def random[A](implicit randomizers: Randomizers = Randomizers(), mf: Manifest[A]): A = new Databob(randomizers).random[A]
+  def random[A](implicit randomizers: Randomizers = DefaultRandomizers, mf: Manifest[A]): A = new Databob(randomizers).random[A]
 }
