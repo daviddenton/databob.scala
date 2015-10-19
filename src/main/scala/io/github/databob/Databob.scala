@@ -6,7 +6,6 @@ package io.github.databob
 import org.json4s.reflect._
 
 import scala.reflect.Manifest
-import scala.util.control.Exception.allCatch
 
 case class RandomFailure(msg: String) extends Exception(msg)
 
@@ -26,14 +25,6 @@ class Databob(randomizers: Randomizers = Randomizers()) {
     val randomType = RandomType(scalaType.typeInfo, scalaType.erasure, scalaType.typeArgs)
     val r = randomizers.randomizer(this)
     if (r.isDefinedAt(randomType)) r(randomType)
-    else if (scalaType.isEither) {
-      (allCatch opt {
-        Left(random(scalaType.typeArgs.head))
-      } orElse (allCatch opt {
-        Right(random(scalaType.typeArgs(1)))
-      })).getOrElse(throw new RandomFailure("Expected value but got none"))
-    }
-    else if (scalaType.isMap) Map()
     else {
       Reflector.describe(scalaType) match {
         case PrimitiveDescriptor(tpe, default) => convert(tpe, randomizers)

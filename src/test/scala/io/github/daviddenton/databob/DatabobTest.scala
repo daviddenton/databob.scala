@@ -72,6 +72,11 @@ class DatabobTest extends FunSpec with ShouldMatchers {
     itSupports[Vector[Int]]
   }
 
+  describe(MonadRandomizers.getClass.getSimpleName) {
+    itSupports[Option[Int]]
+    itSupports[Either[Int, String]]
+  }
+
   describe("Custom case classes") {
     itSupports[Person]
   }
