@@ -63,23 +63,9 @@ class Databob(randomizers: Randomizers = Randomizers()) {
   }
 
   private class ClassInstanceBuilder(descr: ClassDescriptor) {
-
-    private[this] var _constructor: ConstructorDescriptor = null
-
-    private[this] def constructor = {
-      if (_constructor == null) {
-        _constructor =
-          if (descr.constructors.size == 1) descr.constructors.head
-          else {
-            val r = descr.bestMatching(Nil)
-            r.getOrElse(throw new RandomFailure("No constructor for type " + descr.erasure))
-          }
-      }
-      _constructor
-    }
-
-    private[this] def instantiate = {
+    private def instantiate = {
       try {
+        val constructor = descr.constructors.headOption.getOrElse(throw new RandomFailure("No constructor found for type " + descr.erasure))
         constructor.constructor.invoke(descr.companion, constructor.params.map(a => random(a.argType))).asInstanceOf[AnyRef]
       } catch {
         case e@(_: IllegalArgumentException | _: InstantiationException) => throw new RandomFailure("Could not construct class")
