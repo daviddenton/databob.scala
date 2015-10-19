@@ -12,8 +12,6 @@ import scala.util.control.Exception._
 
 case class Randomizers(randomizers: Iterable[Randomizer[_]] = Nil) extends Iterable[Randomizer[_]] {
 
-  implicit val RD = this
-
   def +(newRandomizer: Randomizer[_]): Randomizers = copy(randomizers = newRandomizer :: randomizers.toList)
 
   def ++(that: Randomizers): Randomizers = copy(randomizers = that.randomizers ++ randomizers)

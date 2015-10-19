@@ -23,8 +23,7 @@ class DatabobTest extends FunSpec with ShouldMatchers {
 
   private def itSupports[A: Manifest](implicit mf: Manifest[A]): Unit = {
     it(mf.runtimeClass.getSimpleName) {
-      val value1 = Databob.random[A](DefaultRandomizers, mf)
-      value1 === null shouldBe false
+      Databob.random[A](DefaultRandomizers, mf) === null shouldBe false
     }
   }
 
