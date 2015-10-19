@@ -3,7 +3,7 @@ package io.github.databob
 import org.json4s.reflect.TypeInfo
 
 trait Randomizer[A] {
-  def newRandom(databob: Databob): PartialFunction[TypeInfo, A]
+  def newRandom(databob: Databob): PartialFunction[RandomType, A]
 }
 
 object Randomizer {
@@ -11,8 +11,8 @@ object Randomizer {
 
     val Class = implicitly[Manifest[A]].runtimeClass
 
-    def newRandom(databob: Databob) = {
-      case TypeInfo(Class, _) => mk(databob)
+    def newRandom(databob: Databob): PartialFunction[RandomType, A] = {
+      case RandomType(TypeInfo(Class, _), _) => mk(databob)
     }
   }
 

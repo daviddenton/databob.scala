@@ -51,8 +51,9 @@ class Databob(randomizers: Randomizers = Randomizers()) {
 
   private class CollectionBuilder(tpe: ScalaType) {
     def result: Any = {
+      val randomMatch = RandomType(tpe.typeInfo, tpe.erasure)
       val custom = randomizers.randomizer(Databob.this)
-      if (custom.isDefinedAt(tpe.typeInfo)) custom(tpe.typeInfo)
+      if (custom.isDefinedAt(randomMatch)) custom(randomMatch)
       else if (tpe.erasure == classOf[List[_]]) List()
       else if (tpe.erasure == classOf[Set[_]]) Set()
       else if (tpe.erasure == classOf[java.util.ArrayList[_]]) new java.util.ArrayList[Any]()
@@ -79,37 +80,39 @@ class Databob(randomizers: Randomizers = Randomizers()) {
   }
 
   private[this] def customOrElse(target: ScalaType)(thunk: () => Any): Any = {
+    val randomMatch = RandomType(target.typeInfo, target.erasure)
     val custom = randomizers.randomizer(this)
-    if (custom.isDefinedAt(target.typeInfo)) {
-      custom(target.typeInfo)
+    if (custom.isDefinedAt(randomMatch)) {
+      custom(randomMatch)
     } else thunk()
   }
 
   private[this] def convert(target: ScalaType, r: Randomizers): Any = {
     if (target.erasure == classOf[Int]) 0
     else if (target.erasure == classOf[JavaInteger]) new JavaInteger(0)
-    else if (target.erasure == classOf[BigInt]) 0
-    else if (target.erasure == classOf[Long]) 0L
     else if (target.erasure == classOf[JavaLong]) new JavaLong(0L)
-    else if (target.erasure == classOf[Double]) 0.0d
     else if (target.erasure == classOf[JavaDouble]) new JavaDouble(0.0d)
-    else if (target.erasure == classOf[BigDecimal]) BigDecimal(0)
     else if (target.erasure == classOf[JavaBigDecimal]) BigDecimal(0).bigDecimal
-    else if (target.erasure == classOf[Float]) 0.0f
     else if (target.erasure == classOf[JavaFloat]) new JavaFloat(0.0f)
-    else if (target.erasure == classOf[Short]) 0
     else if (target.erasure == classOf[JavaShort]) new JavaShort(0.shortValue)
-    else if (target.erasure == classOf[Byte]) 0.byteValue
     else if (target.erasure == classOf[JavaByte]) new JavaByte(0.byteValue)
-    else if (target.erasure == classOf[Boolean]) false
     else if (target.erasure == classOf[JavaBoolean]) new JavaBoolean(false)
-    else if (target.erasure == classOf[String]) ""
     else if (target.erasure == classOf[Number]) 0L
     else if (target.erasure == classOf[Date]) new Date(0)
     else if (target.erasure == classOf[Timestamp]) new Timestamp(0)
+    else if (target.erasure == classOf[BigInt]) 0
+    else if (target.erasure == classOf[Long]) 0L
+    else if (target.erasure == classOf[Double]) 0.0d
+    else if (target.erasure == classOf[BigDecimal]) BigDecimal(0)
+    else if (target.erasure == classOf[Float]) 0.0f
+    else if (target.erasure == classOf[Short]) 0
+    else if (target.erasure == classOf[Byte]) 0.byteValue
+    else if (target.erasure == classOf[Boolean]) false
+    else if (target.erasure == classOf[String]) ""
     else {
       val custom = r.randomizer(this)
-      if (custom.isDefinedAt(target.typeInfo)) custom(target.typeInfo)
+      val randomMatch = RandomType(target.typeInfo, target.erasure)
+      if (custom.isDefinedAt(randomMatch)) custom(randomMatch)
       else throw new RandomFailure("Do not know how to make a " + target.erasure)
     }
   }
