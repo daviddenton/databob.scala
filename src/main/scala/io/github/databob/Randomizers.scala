@@ -24,7 +24,8 @@ object DefaultRandomizers extends Randomizers(
   JavaDateTimeRandomizers.randomizers ++
     JavaPrimitiveRandomizers.randomizers ++
     ScalaPrimitiveRandomizers.randomizers ++
-    CollectionRandomizers.randomizers
+    CollectionRandomizers.randomizers ++
+    MonadRandomizers.randomizers
 )
 
 object JavaDateTimeRandomizers extends Randomizers(
@@ -65,6 +66,16 @@ object ScalaPrimitiveRandomizers extends Randomizers(
     Randomizer.erasure[Byte](databob => 0.toByte),
     Randomizer.erasure[Boolean](databob => false),
     Randomizer.erasure[String](databob => "")
+  )
+)
+
+object MonadRandomizers extends Randomizers(
+  List(
+    new Randomizer[Option[_]]() {
+      override def newRandom(databob: Databob) = {
+        case x if classOf[Option[_]].isAssignableFrom(x.erasure) => Option(databob.random(x.typeArgs.head))
+      }
+    }
   )
 )
 
