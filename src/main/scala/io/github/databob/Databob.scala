@@ -21,9 +21,10 @@ class Databob(randomizers: Randomizers = Randomizers()) {
     }
   }
 
-  def random(scalaType: ScalaType): Any = {
+  private[databob] def random(scalaType: ScalaType): Any = {
     val randomType = RandomType(scalaType.typeInfo, scalaType.erasure, scalaType.typeArgs)
     val r = randomizers.randomizer(this)
+
     if (r.isDefinedAt(randomType)) r(randomType)
     else {
       Reflector.describe(scalaType) match {
