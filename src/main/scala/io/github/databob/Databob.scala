@@ -22,34 +22,25 @@ class Databob(randomizers: Randomizers = Randomizers()) {
     }
   }
 
-  private def random(scalaType: ScalaType): Any = {
-    if (scalaType.isEither) {
+  def random(scalaType: ScalaType): Any = {
+    val randomType = RandomType(scalaType.typeInfo, scalaType.erasure, scalaType.typeArgs)
+    val r = randomizers.randomizer(this)
+    if (r.isDefinedAt(randomType)) r(randomType)
+    else if (scalaType.isEither) {
       (allCatch opt {
         Left(random(scalaType.typeArgs.head))
       } orElse (allCatch opt {
         Right(random(scalaType.typeArgs(1)))
       })).getOrElse(throw new RandomFailure("Expected value but got none"))
     }
-    else if (scalaType.isOption) Option(random(scalaType.typeArgs.head))
     else if (scalaType.isMap) Map()
-    else if (scalaType.isCollection) {
-      customOrElse(scalaType)(() => new CollectionBuilder(scalaType).result)
-    } else {
+    else {
       Reflector.describe(scalaType) match {
         case PrimitiveDescriptor(tpe, default) => convert(tpe, randomizers)
         case o: ClassDescriptor if o.erasure.isSingleton =>
-          o.erasure.singletonInstance.getOrElse(sys.error(s"Not a case object: ${o.erasure}"))
+          o.erasure.singletonInstance.getOrElse(sys.error(s"Not r case object: ${o.erasure}"))
         case c: ClassDescriptor => new ClassInstanceBuilder(c).result
       }
-    }
-  }
-
-  private class CollectionBuilder(tpe: ScalaType) {
-    def result: Any = {
-      val randomMatch = RandomType(tpe.typeInfo, tpe.erasure, tpe.typeArgs)
-      val custom = randomizers.randomizer(Databob.this)
-      if (custom.isDefinedAt(randomMatch)) custom(randomMatch)
-      else throw new RandomFailure("Expected collection but got " + tpe)
     }
   }
 
