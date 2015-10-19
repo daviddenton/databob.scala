@@ -24,5 +24,6 @@ private class ErasureRandomizer[A: Manifest](mk: Databob => A) extends Randomize
 
 object Randomizer {
   def apply[A: Manifest](mk: Databob => A): Randomizer[A] = new TypeRandomizer[A](mk)
-  def erasure[A: Manifest](mk: Databob => A): Randomizer[A] = new ErasureRandomizer[A](mk)
+  def erasureBased[A: Manifest](mk: Databob => A): Randomizer[A] = new ErasureRandomizer[A](mk)
+  def typeBased[A: Manifest](mk: Databob => A): Randomizer[A] = new TypeRandomizer[A](mk)
 }

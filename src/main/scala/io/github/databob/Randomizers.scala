@@ -6,7 +6,7 @@ import java.sql.Timestamp
 import java.time._
 import java.util.Date
 
-import io.github.databob.Randomizer.erasure
+import io.github.databob.Randomizer.erasureBased
 
 import scala.util.control.Exception._
 
@@ -40,38 +40,38 @@ object JavaDateTimeRandomizers extends Randomizers(
     Randomizer(databob => LocalTime.of(0, 0, 0)),
     Randomizer(databob => LocalDateTime.of(databob.random[LocalDate], databob.random[LocalTime])),
     Randomizer(databob => ZonedDateTime.of(databob.random[LocalDateTime], ZoneId.systemDefault())),
-    erasure(databob => new Date(0)),
-    erasure(databob => new Timestamp(0))
+    erasureBased(databob => new Date(0)),
+    erasureBased(databob => new Timestamp(0))
   )
 )
 
 object JavaPrimitiveRandomizers extends Randomizers(
   List(
-    erasure[JavaInteger](databob => new JavaInteger(0)),
-    erasure[JavaLong](databob => new JavaLong(0)),
-    erasure[JavaDouble](databob => new JavaDouble(0)),
-    erasure[JavaBigDecimal](databob => BigDecimal(0).bigDecimal),
-    erasure[JavaBigInteger](databob => BigInt(0).bigInteger),
-    erasure[JavaFloat](databob => new JavaFloat(0)),
-    erasure[JavaShort](databob => new JavaShort(0.toShort)),
-    erasure[JavaByte](databob => new JavaByte(0.toByte)),
-    erasure[JavaBoolean](databob => new JavaBoolean(false)),
-    erasure[JavaString](databob => new JavaString(""))
+    erasureBased[JavaInteger](databob => new JavaInteger(0)),
+    erasureBased[JavaLong](databob => new JavaLong(0)),
+    erasureBased[JavaDouble](databob => new JavaDouble(0)),
+    erasureBased[JavaBigDecimal](databob => BigDecimal(0).bigDecimal),
+    erasureBased[JavaBigInteger](databob => BigInt(0).bigInteger),
+    erasureBased[JavaFloat](databob => new JavaFloat(0)),
+    erasureBased[JavaShort](databob => new JavaShort(0.toShort)),
+    erasureBased[JavaByte](databob => new JavaByte(0.toByte)),
+    erasureBased[JavaBoolean](databob => new JavaBoolean(false)),
+    erasureBased[JavaString](databob => new JavaString(""))
   )
 )
 
 object ScalaPrimitiveRandomizers extends Randomizers(
   List(
-    erasure[Int](databob => 0),
-    erasure[Long](databob => 0L),
-    erasure[Double](databob => 0.0d),
-    erasure[BigDecimal](databob => BigDecimal(0)),
-    erasure[BigInt](databob => BigInt(0)),
-    erasure[Float](databob => 0.0f),
-    erasure[Short](databob => 0),
-    erasure[Byte](databob => 0.toByte),
-    erasure[Boolean](databob => false),
-    erasure[String](databob => "")
+    erasureBased[Int](databob => 0),
+    erasureBased[Long](databob => 0L),
+    erasureBased[Double](databob => 0.0d),
+    erasureBased[BigDecimal](databob => BigDecimal(0)),
+    erasureBased[BigInt](databob => BigInt(0)),
+    erasureBased[Float](databob => 0.0f),
+    erasureBased[Short](databob => 0),
+    erasureBased[Byte](databob => 0.toByte),
+    erasureBased[Boolean](databob => false),
+    erasureBased[String](databob => "")
   )
 )
 
@@ -98,9 +98,9 @@ object MonadRandomizers extends Randomizers(
 
 object CollectionRandomizers extends Randomizers(
   List(
-    erasure[List[_]](databob => List()),
-    erasure[Set[_]](databob => Set()),
-    erasure[java.util.ArrayList[_]](databob => new java.util.ArrayList[Any]()),
+    erasureBased[List[_]](databob => List()),
+    erasureBased[Set[_]](databob => Set()),
+    erasureBased[java.util.ArrayList[_]](databob => new java.util.ArrayList[Any]()),
     new Randomizer[Any]() {
       override def newRandom(databob: Databob) = {
         case randomType if randomType.erasure.isArray => java.lang.reflect.Array.newInstance(randomType.typeArgs.head.erasure, 0)
