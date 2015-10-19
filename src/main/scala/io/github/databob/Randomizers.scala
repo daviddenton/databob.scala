@@ -2,8 +2,6 @@ package io.github.databob
 
 import java.time._
 
-import org.json4s._
-
 case class Randomizers(randomizers: List[Randomizer[_]] = DefaultRandomizers.randomizers) {
 
   implicit val RD = this
@@ -13,7 +11,7 @@ case class Randomizers(randomizers: List[Randomizer[_]] = DefaultRandomizers.ran
   def ++(that: Randomizers): Randomizers = copy(randomizers = that.randomizers ++ randomizers)
 
   def randomizer(databob: Databob) =
-    randomizers.foldLeft(Map(): PartialFunction[TypeInfo, Any]) { (acc, x) =>
+    randomizers.foldLeft(Map(): PartialFunction[RandomType, Any]) { (acc, x) =>
       acc.orElse(x.newRandom(databob))
     }
 }
