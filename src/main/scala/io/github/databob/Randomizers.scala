@@ -10,11 +10,11 @@ import io.github.databob.Randomizer.erasureBased
 
 import scala.util.control.Exception._
 
-case class Randomizers(randomizers: Iterable[Randomizer[_]] = Nil) extends Iterable[Randomizer[_]] {
+class Randomizers(randomizers: Iterable[Randomizer[_]] = Nil) extends Iterable[Randomizer[_]] {
 
-  def +(newRandomizer: Randomizer[_]): Randomizers = copy(randomizers = newRandomizer :: randomizers.toList)
+  def +(newRandomizer: Randomizer[_]): Randomizers = new Randomizers(randomizers = newRandomizer :: randomizers.toList)
 
-  def ++(that: Randomizers): Randomizers = copy(randomizers = that.randomizers ++ randomizers)
+  def ++(that: Randomizers): Randomizers = new Randomizers(randomizers = that ++ randomizers)
 
   def randomizer(databob: Databob) =
     randomizers.foldLeft(Map(): PartialFunction[RandomType, Any]) { (acc, x) =>
