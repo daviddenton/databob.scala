@@ -6,7 +6,7 @@ import java.sql.Timestamp
 import java.time._
 import java.util.Date
 
-import io.github.databob.Randomizer.erasureBased
+import io.github.databob.Randomizer.{typeBased, erasureBased}
 
 import scala.util.control.Exception._
 
@@ -34,10 +34,10 @@ object DefaultRandomizers extends Randomizers(
 
 object JavaDateTimeRandomizers extends Randomizers(
   List(
-    Randomizer(databob => LocalDate.of(2000, 1, 1)),
-    Randomizer(databob => LocalTime.of(0, 0, 0)),
-    Randomizer(databob => LocalDateTime.of(databob.random[LocalDate], databob.random[LocalTime])),
-    Randomizer(databob => ZonedDateTime.of(databob.random[LocalDateTime], ZoneId.systemDefault())),
+    typeBased(databob => LocalDate.of(2000, 1, 1)),
+    typeBased(databob => LocalTime.of(0, 0, 0)),
+    typeBased(databob => LocalDateTime.of(databob.random[LocalDate], databob.random[LocalTime])),
+    typeBased(databob => ZonedDateTime.of(databob.random[LocalDateTime], ZoneId.systemDefault())),
     erasureBased(databob => new Date(0)),
     erasureBased(databob => new Timestamp(0))
   )
@@ -96,8 +96,6 @@ object MonadRandomizers extends Randomizers(
 
 object CollectionRandomizers extends Randomizers(
   List(
-    erasureBased[List[_]](databob => List()),
-    erasureBased[Set[_]](databob => Set()),
     erasureBased[java.util.ArrayList[_]](databob => new java.util.ArrayList[Any]()),
     new Randomizer[Any]() {
       override def newRandom(databob: Databob) = {
@@ -108,6 +106,16 @@ object CollectionRandomizers extends Randomizers(
       override def newRandom(databob: Databob) = {
         case randomType if classOf[collection.immutable.Map[_, _]].isAssignableFrom(randomType.erasure) ||
           classOf[collection.Map[_, _]].isAssignableFrom(randomType.erasure) => Map()
+      }
+    },
+    new Randomizer[Set[_]]() {
+      override def newRandom(databob: Databob) = {
+        case randomType if classOf[Set[_]].isAssignableFrom(randomType.erasure) => Set()
+      }
+    },
+    new Randomizer[List[_]]() {
+      override def newRandom(databob: Databob) = {
+        case randomType if classOf[List[_]].isAssignableFrom(randomType.erasure) => List()
       }
     },
     new Randomizer[Seq[_]]() {
