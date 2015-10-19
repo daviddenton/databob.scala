@@ -49,9 +49,7 @@ class Databob(randomizers: Randomizers = Randomizers()) {
       val target = descr.erasure
       val randomMatch = RandomType(target.typeInfo, target.erasure, target.typeArgs)
       val custom = randomizers.randomizer(Databob.this)
-      if (custom.isDefinedAt(randomMatch)) {
-        custom(randomMatch)
-      } else instantiate
+      if (custom.isDefinedAt(randomMatch)) custom(randomMatch) else instantiate
     }
   }
 }
