@@ -3,9 +3,6 @@
  */
 package io.github.databob
 
-import java.lang.{Boolean => JavaBoolean, Byte => JavaByte, Double => JavaDouble, Float => JavaFloat, Integer => JavaInteger, Long => JavaLong, Short => JavaShort}
-import java.math.{BigDecimal => JavaBigDecimal}
-
 import org.json4s.reflect._
 
 import scala.reflect.Manifest
