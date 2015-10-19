@@ -23,7 +23,8 @@ case class Randomizers(randomizers: List[Randomizer[_]] = Nil) {
 object DefaultRandomizers extends Randomizers(
   JavaDateTimeRandomizers.randomizers ++
     JavaPrimitiveRandomizers.randomizers ++
-    ScalaPrimitiveRandomizers.randomizers
+    ScalaPrimitiveRandomizers.randomizers ++
+    CollectionRandomizers.randomizers
 )
 
 object JavaDateTimeRandomizers extends Randomizers(
@@ -64,6 +65,24 @@ object ScalaPrimitiveRandomizers extends Randomizers(
     Randomizer.erasure[Byte](databob => 0.toByte),
     Randomizer.erasure[Boolean](databob => false),
     Randomizer.erasure[String](databob => "")
+  )
+)
+
+object CollectionRandomizers extends Randomizers(
+  List(
+    Randomizer.erasure[List[_]](databob => List()),
+    Randomizer.erasure[Set[_]](databob => Set()),
+    Randomizer.erasure[java.util.ArrayList[_]](databob => new java.util.ArrayList[Any]()),
+    new Randomizer[Any]() {
+      override def newRandom(databob: Databob) = {
+        case tpe if tpe.erasure.isArray => java.lang.reflect.Array.newInstance(tpe.typeArgs.head.erasure, 0)
+      }
+    },
+    new Randomizer[Seq[_]]() {
+      override def newRandom(databob: Databob) = {
+        case x if classOf[Seq[_]].isAssignableFrom(x.erasure) => Seq()
+      }
+    }
   )
 )
 

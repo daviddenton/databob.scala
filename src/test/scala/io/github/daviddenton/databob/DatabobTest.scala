@@ -23,7 +23,9 @@ class DatabobTest extends FunSpec with ShouldMatchers {
 
   private def itSupports[A: Manifest](implicit mf: Manifest[A]): Unit = {
     it(mf.runtimeClass.getSimpleName) {
-      Databob.random[A](DefaultRandomizers, mf) === null shouldBe false
+      val value1 = Databob.random[A](DefaultRandomizers, mf)
+      println(value1)
+      value1 === null shouldBe false
     }
   }
 
@@ -59,6 +61,15 @@ class DatabobTest extends FunSpec with ShouldMatchers {
     itSupports[Short]
     itSupports[Byte]
     itSupports[Boolean]
+  }
+
+  describe(CollectionRandomizers.getClass.getSimpleName) {
+    itSupports[List[Int]]
+    itSupports[Map[Int, Int]]
+    itSupports[Set[Int]]
+    itSupports[Seq[Int]]
+    itSupports[Array[Int]]
+    itSupports[Vector[Int]]
   }
 
   describe("Custom case classes") {

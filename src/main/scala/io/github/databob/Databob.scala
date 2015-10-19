@@ -46,14 +46,9 @@ class Databob(randomizers: Randomizers = Randomizers()) {
 
   private class CollectionBuilder(tpe: ScalaType) {
     def result: Any = {
-      val randomMatch = RandomType(tpe.typeInfo, tpe.erasure)
+      val randomMatch = RandomType(tpe.typeInfo, tpe.erasure, tpe.typeArgs)
       val custom = randomizers.randomizer(Databob.this)
       if (custom.isDefinedAt(randomMatch)) custom(randomMatch)
-      else if (tpe.erasure == classOf[List[_]]) List()
-      else if (tpe.erasure == classOf[Set[_]]) Set()
-      else if (tpe.erasure == classOf[java.util.ArrayList[_]]) new java.util.ArrayList[Any]()
-      else if (tpe.erasure.isArray) java.lang.reflect.Array.newInstance(tpe.typeArgs.head.erasure, 0)
-      else if (classOf[Seq[_]].isAssignableFrom(tpe.erasure)) Seq()
       else throw new RandomFailure("Expected collection but got " + tpe)
     }
   }
@@ -75,7 +70,7 @@ class Databob(randomizers: Randomizers = Randomizers()) {
   }
 
   private def customOrElse(target: ScalaType)(thunk: () => Any): Any = {
-    val randomMatch = RandomType(target.typeInfo, target.erasure)
+    val randomMatch = RandomType(target.typeInfo, target.erasure, target.typeArgs)
     val custom = randomizers.randomizer(this)
     if (custom.isDefinedAt(randomMatch)) {
       custom(randomMatch)
@@ -84,7 +79,7 @@ class Databob(randomizers: Randomizers = Randomizers()) {
 
   private def convert(target: ScalaType, r: Randomizers): Any = {
     val custom = r.randomizer(this)
-    val randomMatch = RandomType(target.typeInfo, target.erasure)
+    val randomMatch = RandomType(target.typeInfo, target.erasure, target.typeArgs)
     if (custom.isDefinedAt(randomMatch)) custom(randomMatch)
     else throw new RandomFailure("Do not know how to make a " + target.erasure)
   }
