@@ -1,8 +1,6 @@
-/**
- * Reflector logic taken from Json4S
- */
 package io.github.databob
 
+import org.json4s.reflect.Reflector._
 import org.json4s.reflect._
 
 import scala.reflect.Manifest
@@ -13,11 +11,10 @@ class Databob(randomizers: Randomizers = new Randomizers()) {
 
   def random[A](implicit mf: Manifest[A]): A = {
     try {
-      random(Reflector.scalaTypeOf[A]).asInstanceOf[A]
+      random(scalaTypeOf[A]).asInstanceOf[A]
     } catch {
       case e: RandomFailure => throw e
-      case e: Exception =>
-        throw new RandomFailure("unknown error" + e.getMessage)
+      case e: Exception => throw new RandomFailure("unknown error" + e.getMessage)
     }
   }
 
@@ -27,9 +24,8 @@ class Databob(randomizers: Randomizers = new Randomizers()) {
 
     if (r.isDefinedAt(randomType)) r(randomType)
     else {
-      Reflector.describe(scalaType) match {
-        case o: ClassDescriptor if o.erasure.isSingleton =>
-          o.erasure.singletonInstance.getOrElse(sys.error(s"Not r case object: ${o.erasure}"))
+      describe(scalaType) match {
+        case o: ClassDescriptor if o.erasure.isSingleton => o.erasure.singletonInstance.getOrElse(sys.error(s"Not r case object: ${o.erasure}"))
         case c: ClassDescriptor => new ClassInstanceBuilder(c).result
       }
     }
@@ -47,9 +43,9 @@ class Databob(randomizers: Randomizers = new Randomizers()) {
 
     def result: Any = {
       val target = descr.erasure
-      val randomMatch = RandomType(target.typeInfo, target.erasure, target.typeArgs)
-      val custom = randomizers.randomizer(Databob.this)
-      if (custom.isDefinedAt(randomMatch)) custom(randomMatch) else instantiate
+      val randomType = RandomType(target.typeInfo, target.erasure, target.typeArgs)
+      val r = randomizers.randomizer(Databob.this)
+      if (r.isDefinedAt(randomType)) r(randomType) else instantiate
     }
   }
 }
