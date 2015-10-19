@@ -25,11 +25,11 @@ case class Randomizers(randomizers: Iterable[Randomizer[_]] = Nil) extends Itera
 }
 
 object DefaultRandomizers extends Randomizers(
-  JavaDateTimeRandomizers ++
-    JavaPrimitiveRandomizers ++
+  JavaPrimitiveRandomizers ++
     ScalaPrimitiveRandomizers ++
     CollectionRandomizers ++
-    MonadRandomizers
+    MonadRandomizers ++
+    JavaDateTimeRandomizers
 )
 
 object JavaDateTimeRandomizers extends Randomizers(
