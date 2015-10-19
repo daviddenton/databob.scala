@@ -27,7 +27,6 @@ class Databob(randomizers: Randomizers = Randomizers()) {
     if (r.isDefinedAt(randomType)) r(randomType)
     else {
       Reflector.describe(scalaType) match {
-        case PrimitiveDescriptor(tpe, default) => convert(tpe, randomizers)
         case o: ClassDescriptor if o.erasure.isSingleton =>
           o.erasure.singletonInstance.getOrElse(sys.error(s"Not r case object: ${o.erasure}"))
         case c: ClassDescriptor => new ClassInstanceBuilder(c).result
@@ -45,25 +44,14 @@ class Databob(randomizers: Randomizers = Randomizers()) {
       }
     }
 
-    def result: Any =
-      customOrElse(descr.erasure) {
-        case _ => instantiate
-      }
-  }
-
-  private def customOrElse(target: ScalaType)(thunk: () => Any): Any = {
-    val randomMatch = RandomType(target.typeInfo, target.erasure, target.typeArgs)
-    val custom = randomizers.randomizer(this)
-    if (custom.isDefinedAt(randomMatch)) {
-      custom(randomMatch)
-    } else thunk()
-  }
-
-  private def convert(target: ScalaType, r: Randomizers): Any = {
-    val custom = r.randomizer(this)
-    val randomMatch = RandomType(target.typeInfo, target.erasure, target.typeArgs)
-    if (custom.isDefinedAt(randomMatch)) custom(randomMatch)
-    else throw new RandomFailure("Do not know how to make a " + target.erasure)
+    def result: Any = {
+      val target = descr.erasure
+      val randomMatch = RandomType(target.typeInfo, target.erasure, target.typeArgs)
+      val custom = randomizers.randomizer(Databob.this)
+      if (custom.isDefinedAt(randomMatch)) {
+        custom(randomMatch)
+      } else instantiate
+    }
   }
 }
 
