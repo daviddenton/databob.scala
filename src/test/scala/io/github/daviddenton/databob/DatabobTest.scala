@@ -19,6 +19,7 @@ case class Person(other: Other, age: Option[ZonedDateTime], bob: LocalDate, name
 
 class APrivateClass private()
 
+
 class DatabobTest extends FunSpec with ShouldMatchers {
 
   private def itSupports[A: Manifest](implicit mf: Manifest[A]): Unit = {
