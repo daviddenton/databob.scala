@@ -1,12 +1,12 @@
 package io.github.databob
 
 import java.lang.{Boolean => JavaBoolean, Byte => JavaByte, Double => JavaDouble, Float => JavaFloat, Integer => JavaInteger, Long => JavaLong, Short => JavaShort, String => JavaString}
-import java.math.{BigDecimal => JavaBigDecimal, BigInteger}
+import java.math.{BigDecimal => JavaBigDecimal, BigInteger => JavaBigInteger}
 import java.sql.Timestamp
 import java.time._
 import java.util.Date
 
-case class Randomizers(randomizers: List[Randomizer[_]] = DefaultRandomizers.randomizers) {
+case class Randomizers(randomizers: List[Randomizer[_]] = Nil) {
 
   implicit val RD = this
 
@@ -43,7 +43,7 @@ object JavaPrimitiveRandomizers extends Randomizers(
     Randomizer.erasure[JavaLong](databob => new JavaLong(0)),
     Randomizer.erasure[JavaDouble](databob => new JavaDouble(0)),
     Randomizer.erasure[JavaBigDecimal](databob => BigDecimal(0).bigDecimal),
-    Randomizer.erasure[BigInteger](databob => BigInt(0).bigInteger),
+    Randomizer.erasure[JavaBigInteger](databob => BigInt(0).bigInteger),
     Randomizer.erasure[JavaFloat](databob => new JavaFloat(0)),
     Randomizer.erasure[JavaShort](databob => new JavaShort(0.toShort)),
     Randomizer.erasure[JavaByte](databob => new JavaByte(0.toByte)),
