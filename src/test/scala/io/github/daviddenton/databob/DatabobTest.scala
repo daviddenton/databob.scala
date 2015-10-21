@@ -7,6 +7,7 @@ import java.time.{LocalDate, LocalDateTime, LocalTime, ZonedDateTime}
 import java.util.Date
 
 import io.github.databob._
+import io.github.databob.generators._
 import org.scalatest.{FunSpec, ShouldMatchers}
 
 import scala.reflect.Manifest
@@ -19,16 +20,15 @@ case class Person(other: Other, age: Option[ZonedDateTime], bob: LocalDate, name
 
 class APrivateClass private()
 
-
 class DatabobTest extends FunSpec with ShouldMatchers {
 
   private def itSupports[A: Manifest](implicit mf: Manifest[A]): Unit = {
     it(mf.runtimeClass.getSimpleName) {
-      Databob.random[A](DefaultRandomizers, mf) === null shouldBe false
+      Databob.random[A](DefaultGenerators, mf) === null shouldBe false
     }
   }
 
-  describe(JavaPrimitiveRandomizers.getClass.getSimpleName) {
+  describe(DefaultJavaPrimitiveGenerators.getClass.getSimpleName) {
     itSupports[JavaInteger]
     itSupports[JavaBigDecimal]
     itSupports[JavaBigInteger]
@@ -41,7 +41,7 @@ class DatabobTest extends FunSpec with ShouldMatchers {
     itSupports[JavaBoolean]
   }
 
-  describe(JavaDateTimeRandomizers.getClass.getSimpleName) {
+  describe(DefaultJavaDateTimeGenerators.getClass.getSimpleName) {
     itSupports[LocalDate]
     itSupports[LocalTime]
     itSupports[LocalDateTime]
@@ -50,7 +50,7 @@ class DatabobTest extends FunSpec with ShouldMatchers {
     itSupports[Timestamp]
   }
 
-  describe(ScalaPrimitiveRandomizers.getClass.getSimpleName) {
+  describe(DefaultScalaPrimitiveGenerators.getClass.getSimpleName) {
     itSupports[Int]
     itSupports[Long]
     itSupports[Double]
@@ -62,7 +62,7 @@ class DatabobTest extends FunSpec with ShouldMatchers {
     itSupports[Boolean]
   }
 
-  describe(CollectionRandomizers.getClass.getSimpleName) {
+  describe(EmptyCollectionGenerators.getClass.getSimpleName) {
     itSupports[List[Int]]
     itSupports[Map[Int, Int]]
     itSupports[Set[Int]]
@@ -71,7 +71,7 @@ class DatabobTest extends FunSpec with ShouldMatchers {
     itSupports[Vector[Int]]
   }
 
-  describe(MonadRandomizers.getClass.getSimpleName) {
+  describe(DefaultMonadGenerators.getClass.getSimpleName) {
     itSupports[Option[Int]]
     itSupports[Either[Int, String]]
   }
@@ -80,22 +80,22 @@ class DatabobTest extends FunSpec with ShouldMatchers {
     itSupports[Person]
   }
 
-  describe("Custom randomizer") {
+  describe("Custom generator") {
     it("is used") {
       val custom = LocalTime.of(12, 12, 12)
-      implicit val r = new Randomizers() + Randomizer(databob => custom)
+      implicit val r = new Generators() + Generator(databob => custom)
       Databob.random[LocalTime] shouldBe custom
     }
   }
 
   describe("Failure cases") {
-    it("Blows up when there are no randomizers") {
-      implicit val r = new Randomizers()
-      intercept[RandomFailure](Databob.random[Int])
+    it("Blows up when there are no generators") {
+      implicit val r = new Generators()
+      intercept[GeneratorFailure](Databob.random[Int])
     }
 
     it("Blows up when there are no constructor to call") {
-      intercept[RandomFailure](Databob.random[APrivateClass])
+      intercept[GeneratorFailure](Databob.random[APrivateClass])
     }
   }
 }
