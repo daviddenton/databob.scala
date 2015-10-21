@@ -24,7 +24,7 @@ class DatabobTest extends FunSpec with ShouldMatchers {
 
   private def itSupports[A: Manifest](implicit mf: Manifest[A]): Unit = {
     it(mf.runtimeClass.getSimpleName) {
-      Databob.random[A](DefaultGenerators, mf) === null shouldBe false
+      Databob.default[A](DefaultGenerators, mf) === null shouldBe false
     }
   }
 
@@ -84,18 +84,18 @@ class DatabobTest extends FunSpec with ShouldMatchers {
     it("is used") {
       val custom = LocalTime.of(12, 12, 12)
       implicit val r = new Generators() + Generator(databob => custom)
-      Databob.random[LocalTime] shouldBe custom
+      Databob.default[LocalTime] shouldBe custom
     }
   }
 
   describe("Failure cases") {
     it("Blows up when there are no generators") {
       implicit val r = new Generators()
-      intercept[GeneratorFailure](Databob.random[Int])
+      intercept[GeneratorFailure](Databob.default[Int])
     }
 
     it("Blows up when there are no constructor to call") {
-      intercept[GeneratorFailure](Databob.random[APrivateClass])
+      intercept[GeneratorFailure](Databob.default[APrivateClass])
     }
   }
 }

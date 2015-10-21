@@ -6,24 +6,22 @@ import org.json4s.reflect._
 
 import scala.reflect.Manifest
 
+class Databob(generators: Generators = new Generators()) {
 
-
-class Databob(randomizers: Generators = new Generators()) {
-
-  def random[A](implicit mf: Manifest[A]): A = {
+  def mk[A](implicit mf: Manifest[A]): A = {
     try {
-      random(scalaTypeOf[A]).asInstanceOf[A]
+      mk(scalaTypeOf[A]).asInstanceOf[A]
     } catch {
       case e: GeneratorFailure => throw e
-      case e: Exception => throw new GeneratorFailure("unknown error" + e.getMessage)
+      case e: Exception => throw new GeneratorFailure(s"Generation error: ${e.getMessage}")
     }
   }
 
-  private[databob] def random(scalaType: ScalaType): Any = {
-    val randomType = GeneratorType(scalaType.typeInfo, scalaType.erasure, scalaType.typeArgs)
-    val r = randomizers.pf(this)
+  private[databob] def mk(scalaType: ScalaType): Any = {
+    val generatorType = GeneratorType(scalaType.typeInfo, scalaType.erasure, scalaType.typeArgs)
+    val r = generators.pf(this)
 
-    if (r.isDefinedAt(randomType)) r(randomType)
+    if (r.isDefinedAt(generatorType)) r(generatorType)
     else {
       describe(scalaType) match {
         case o: ClassDescriptor if o.erasure.isSingleton => o.erasure.singletonInstance.getOrElse(sys.error(s"Not r case object: ${o.erasure}"))
@@ -36,7 +34,7 @@ class Databob(randomizers: Generators = new Generators()) {
     private def instantiate = {
       try {
         val constructor = descr.constructors.headOption.getOrElse(throw new GeneratorFailure("No constructor found for type " + descr.erasure))
-        constructor.constructor.invoke(descr.companion, constructor.params.map(a => random(a.argType))).asInstanceOf[AnyRef]
+        constructor.constructor.invoke(descr.companion, constructor.params.map(a => mk(a.argType))).asInstanceOf[AnyRef]
       } catch {
         case e@(_: IllegalArgumentException | _: InstantiationException) => throw new GeneratorFailure("Could not construct class")
       }
@@ -44,13 +42,13 @@ class Databob(randomizers: Generators = new Generators()) {
 
     def result: Any = {
       val target = descr.erasure
-      val randomType = GeneratorType(target.typeInfo, target.erasure, target.typeArgs)
-      val r = randomizers.pf(Databob.this)
-      if (r.isDefinedAt(randomType)) r(randomType) else instantiate
+      val generatorType = GeneratorType(target.typeInfo, target.erasure, target.typeArgs)
+      val r = generators.pf(Databob.this)
+      if (r.isDefinedAt(generatorType)) r(generatorType) else instantiate
     }
   }
 }
 
 object Databob {
-  def random[A](implicit randomizers: Generators = DefaultGenerators, mf: Manifest[A]): A = new Databob(randomizers).random[A]
+  def default[A](implicit generators: Generators = DefaultGenerators, mf: Manifest[A]): A = new Databob(generators).mk[A]
 }

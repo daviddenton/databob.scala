@@ -10,11 +10,11 @@ import io.github.databob.Generators
 object DefaultJavaDateTimeGenerators extends Generators(
   List(
     typeBased(databob => Instant.ofEpochMilli(0)),
-    typeBased(databob => LocalDate.from(databob.random[Instant])),
-    typeBased(databob => LocalTime.from(databob.random[Instant])),
-    typeBased(databob => LocalDateTime.from(databob.random[Instant])),
-    typeBased(databob => ZonedDateTime.from(databob.random[Instant])),
-    erasureBased(databob => new Date(databob.random[Instant].toEpochMilli)),
-    erasureBased(databob => new Timestamp(databob.random[Instant].toEpochMilli))
+    typeBased(databob => LocalDate.from(databob.mk[ZonedDateTime])),
+    typeBased(databob => LocalTime.from(databob.mk[ZonedDateTime])),
+    typeBased(databob => LocalDateTime.from(databob.mk[ZonedDateTime])),
+    typeBased(databob => ZonedDateTime.ofInstant(databob.mk[Instant], ZoneId.systemDefault())),
+    erasureBased(databob => new Date(databob.mk[Instant].toEpochMilli)),
+    erasureBased(databob => new Timestamp(databob.mk[Instant].toEpochMilli))
   )
 )
