@@ -2,9 +2,9 @@ package io.github.databob
 
 class Generators(generators: Iterable[Generator[_]] = Nil) extends Iterable[Generator[_]] {
 
-  def +(newRandomizer: Generator[_]): Generators = new Generators(generators = newRandomizer :: generators.toList)
+  def +(newGenerator: Generator[_]): Generators = new Generators(generators ++ Seq(newGenerator))
 
-  def ++(that: Generators): Generators = new Generators(generators = that ++ generators)
+  def ++(that: Generators): Generators = new Generators(generators ++ that)
 
   def pf(databob: Databob) =
     generators.foldLeft(Map(): PartialFunction[GeneratorType, Any]) { (acc, x) =>

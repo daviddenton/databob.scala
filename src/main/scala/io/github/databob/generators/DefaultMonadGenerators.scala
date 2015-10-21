@@ -8,16 +8,16 @@ object DefaultMonadGenerators extends Generators(
   List(
     new Generator[Option[_]]() {
       override def mk(databob: Databob) = {
-        case randomType if classOf[Option[_]].isAssignableFrom(randomType.erasure) => Option(databob.random(randomType.typeArgs.head))
+        case generatorType if classOf[Option[_]].isAssignableFrom(generatorType.erasure) => Option(databob.mk(generatorType.typeArgs.head))
       }
     },
     new Generator[Either[_, _]]() {
       override def mk(databob: Databob) = {
-        case randomType if classOf[Either[_, _]].isAssignableFrom(randomType.erasure) => {
+        case generatorType if classOf[Either[_, _]].isAssignableFrom(generatorType.erasure) => {
           (allCatch opt {
-            Left(databob.random(randomType.typeArgs.head))
+            Left(databob.mk(generatorType.typeArgs.head))
           } orElse (allCatch opt {
-            Right(databob.random(randomType.typeArgs(1)))
+            Right(databob.mk(generatorType.typeArgs(1)))
           })).getOrElse(throw new GeneratorFailure("Expected value but got none"))
         }
       }
