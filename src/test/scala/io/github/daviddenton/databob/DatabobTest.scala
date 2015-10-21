@@ -83,7 +83,7 @@ class DatabobTest extends FunSpec with ShouldMatchers {
   describe("Custom generator") {
     it("is used") {
       val custom = LocalTime.of(12, 12, 12)
-      implicit val r = new Generators() + Generator(databob => custom)
+      implicit val r = Generator(databob => custom) +: DefaultGenerators
       Databob.default[LocalTime] shouldBe custom
     }
   }

@@ -2,7 +2,7 @@ package io.github.databob
 
 class Generators(generators: Iterable[Generator[_]] = Nil) extends Iterable[Generator[_]] {
 
-  def +(newGenerator: Generator[_]): Generators = new Generators(generators ++ Seq(newGenerator))
+  def +:(newGenerator: Generator[_]): Generators = new Generators(Seq(newGenerator) ++ generators)
 
   def ++(that: Generators): Generators = new Generators(generators ++ that)
 
