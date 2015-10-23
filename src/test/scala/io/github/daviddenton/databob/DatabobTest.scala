@@ -7,6 +7,7 @@ import java.time.{LocalDate, LocalDateTime, LocalTime, ZonedDateTime}
 import java.util.Date
 
 import io.github.databob._
+import io.github.databob.generators.Generators.Default
 import io.github.databob.generators._
 import org.scalatest.{FunSpec, ShouldMatchers}
 
@@ -24,11 +25,11 @@ class DatabobTest extends FunSpec with ShouldMatchers {
 
   private def itSupports[A: Manifest](implicit mf: Manifest[A]): Unit = {
     it(mf.runtimeClass.getSimpleName) {
-      Databob.default[A](DefaultGenerators, mf) === null shouldBe false
+      Databob.default[A](Default, mf) === null shouldBe false
     }
   }
 
-  describe(DefaultJavaPrimitiveGenerators.getClass.getSimpleName) {
+  describe(JavaPrimitiveGenerators.getClass.getSimpleName) {
     itSupports[JavaInteger]
     itSupports[JavaBigDecimal]
     itSupports[JavaBigInteger]
@@ -41,7 +42,7 @@ class DatabobTest extends FunSpec with ShouldMatchers {
     itSupports[JavaBoolean]
   }
 
-  describe(DefaultJavaDateTimeGenerators.getClass.getSimpleName) {
+  describe(JavaDateTimeGenerators.getClass.getSimpleName) {
     itSupports[LocalDate]
     itSupports[LocalTime]
     itSupports[LocalDateTime]
@@ -50,7 +51,7 @@ class DatabobTest extends FunSpec with ShouldMatchers {
     itSupports[Timestamp]
   }
 
-  describe(DefaultScalaPrimitiveGenerators.getClass.getSimpleName) {
+  describe(ScalaPrimitiveGenerators.getClass.getSimpleName) {
     itSupports[Int]
     itSupports[Long]
     itSupports[Double]
@@ -62,7 +63,7 @@ class DatabobTest extends FunSpec with ShouldMatchers {
     itSupports[Boolean]
   }
 
-  describe(EmptyCollectionGenerators.getClass.getSimpleName) {
+  describe(CollectionGenerators.getClass.getSimpleName) {
     itSupports[List[Int]]
     itSupports[Map[Int, Int]]
     itSupports[Set[Int]]
@@ -71,7 +72,7 @@ class DatabobTest extends FunSpec with ShouldMatchers {
     itSupports[Vector[Int]]
   }
 
-  describe(DefaultMonadGenerators.getClass.getSimpleName) {
+  describe(MonadGenerators.getClass.getSimpleName) {
     itSupports[Option[Int]]
     itSupports[Either[Int, String]]
   }
@@ -83,7 +84,7 @@ class DatabobTest extends FunSpec with ShouldMatchers {
   describe("Custom generator") {
     it("is used") {
       val custom = LocalTime.of(12, 12, 12)
-      implicit val r = Generator(databob => custom) +: DefaultGenerators
+      implicit val r = Generator(databob => custom) +: Default
       Databob.default[LocalTime] shouldBe custom
     }
   }

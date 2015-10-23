@@ -1,6 +1,6 @@
 package io.github.databob
 
-import io.github.databob.generators.DefaultGenerators
+import io.github.databob.generators.Generators.Default
 import org.json4s.reflect.Reflector._
 import org.json4s.reflect._
 
@@ -50,5 +50,5 @@ class Databob(generators: Generators = new Generators()) {
 }
 
 object Databob {
-  def default[A](implicit generators: Generators = DefaultGenerators, mf: Manifest[A]): A = new Databob(generators).mk[A]
+  def default[A](implicit generators: Generators = Default, mf: Manifest[A]): A = new Databob(generators).mk[A]
 }
