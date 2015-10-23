@@ -25,4 +25,6 @@ object MonadGenerators {
       }
     )
   )
+
+  val Random = Default
 }

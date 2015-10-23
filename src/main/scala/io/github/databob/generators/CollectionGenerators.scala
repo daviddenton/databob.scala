@@ -4,7 +4,7 @@ import io.github.databob.Generator._
 import io.github.databob.{Databob, Generator, Generators}
 
 object CollectionGenerators {
-  val Empty = new Generators(
+  val Default = new Generators(
     List(
       erasureBased[java.util.ArrayList[_]](databob => new java.util.ArrayList[Any]()),
       new Generator[Any]() {
@@ -35,4 +35,6 @@ object CollectionGenerators {
       }
     )
   )
+
+  val Random = Default
 }

@@ -6,5 +6,12 @@ object Generators {
       ScalaPrimitiveGenerators.Default ++
       MonadGenerators.Default ++
       JavaDateTimeGenerators.Default ++
-      CollectionGenerators.Empty
+      CollectionGenerators.Default
+
+  val Random =
+    JavaPrimitiveGenerators.Random ++
+      ScalaPrimitiveGenerators.Random ++
+      MonadGenerators.Random ++
+      JavaDateTimeGenerators.Random ++
+      CollectionGenerators.Random
 }
