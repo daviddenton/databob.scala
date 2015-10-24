@@ -27,7 +27,7 @@ class DatabobTest extends FunSpec with ShouldMatchers {
 
     def itSupports[A: Manifest](implicit mf: Manifest[A]): Unit = {
       it(name + " : " + mf.runtimeClass.getSimpleName) {
-        Databob.mk[A](Default, mf) === null shouldBe false
+        Databob.mk[A](generators, mf) === null shouldBe false
       }
     }
 

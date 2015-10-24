@@ -18,6 +18,9 @@ class Generators(generators: Iterable[Generator[_]] = Nil) extends Iterable[Gene
 
 
 object Generators {
+
+  val Empty = new Generators()
+
   val Default =
     JavaPrimitiveGenerators.Default ++
       ScalaPrimitiveGenerators.Default ++
