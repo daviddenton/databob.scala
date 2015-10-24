@@ -3,7 +3,7 @@ package io.github.databob.generators
 import io.github.databob.Generator._
 
 object ScalaPrimitiveGenerators {
-  val Default = new Generators(
+  val Defaults = new Generators(
     List(
       erasureBased[Int](databob => 0),
       erasureBased[Long](databob => 0L),
@@ -18,5 +18,5 @@ object ScalaPrimitiveGenerators {
     )
   )
 
-  val Random = erasureBased[Int](databob => 0) +: Default
+  val Random = erasureBased[Int](databob => 0) +: Defaults
 }

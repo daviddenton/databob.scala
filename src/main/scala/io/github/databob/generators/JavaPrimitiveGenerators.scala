@@ -6,7 +6,7 @@ import java.math.{BigDecimal => JavaBigDecimal, BigInteger => JavaBigInteger}
 import io.github.databob.Generator._
 
 object JavaPrimitiveGenerators {
-  val Default = new Generators(
+  val Defaults = new Generators(
     List(
       erasureBased[JavaInteger](databob => new JavaInteger(0)),
       erasureBased[JavaLong](databob => new JavaLong(0)),
@@ -21,5 +21,5 @@ object JavaPrimitiveGenerators {
     )
   )
 
-  val Random = erasureBased[JavaInteger](databob => new JavaInteger(0)) +: Default
+  val Random = erasureBased[JavaInteger](databob => new JavaInteger(0)) +: Defaults
 }

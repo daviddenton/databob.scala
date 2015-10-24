@@ -21,12 +21,12 @@ object Generators {
 
   val Empty = new Generators()
 
-  val Default =
-    JavaPrimitiveGenerators.Default ++
-      ScalaPrimitiveGenerators.Default ++
-      MonadGenerators.Default ++
+  val Defaults =
+    JavaPrimitiveGenerators.Defaults ++
+      ScalaPrimitiveGenerators.Defaults ++
+      MonadGenerators.Happy ++
       JavaDateTimeGenerators.Default ++
-      CollectionGenerators.Default
+      CollectionGenerators.Empty
 
   val Random =
     JavaPrimitiveGenerators.Random ++
