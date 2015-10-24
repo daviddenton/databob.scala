@@ -55,12 +55,14 @@ object Generators {
       ScalaPrimitiveGenerators.Defaults ++
       MonadGenerators.Happy ++
       JavaDateTimeGenerators.Default ++
-      CollectionGenerators.Empty
+      ScalaCollectionGenerators.Empty ++
+      JavaCollectionGenerators.Empty
 
   val Random =
     JavaPrimitiveGenerators.Random ++
       ScalaPrimitiveGenerators.Random ++
       MonadGenerators.Random ++
       JavaDateTimeGenerators.Random ++
-      CollectionGenerators.Random
+      ScalaCollectionGenerators.Random ++
+      JavaCollectionGenerators.Random
 }

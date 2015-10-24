@@ -4,6 +4,7 @@ import java.lang.{Boolean => JavaBoolean, Byte => JavaByte, Character => JavaCha
 import java.math.{BigDecimal => JavaBigDecimal, BigInteger => JavaBigInteger}
 import java.sql.Timestamp
 import java.time.{LocalDate, LocalDateTime, LocalTime, ZonedDateTime}
+import java.util
 import java.util.Date
 
 import io.github.databob._
@@ -70,13 +71,19 @@ class DatabobTest extends FunSpec with ShouldMatchers {
         itSupports[String]
       }
 
-      describe(CollectionGenerators.getClass.getSimpleName) {
+      describe(ScalaCollectionGenerators.getClass.getSimpleName) {
         itSupports[List[Int]]
         itSupports[Map[Int, Int]]
         itSupports[Set[Int]]
+        itSupports[Vector[Int]]
         itSupports[Seq[Int]]
         itSupports[Array[Int]]
-        itSupports[Vector[Int]]
+      }
+
+      describe(JavaCollectionGenerators.getClass.getSimpleName) {
+        itSupports[util.List[Int]]
+        itSupports[util.Map[Int, Int]]
+        itSupports[util.Set[Int]]
       }
 
       describe(MonadGenerators.getClass.getSimpleName) {
