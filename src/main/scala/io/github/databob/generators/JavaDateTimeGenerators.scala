@@ -5,6 +5,7 @@ import java.time._
 import java.util.Date
 
 import io.github.databob.Generator._
+import io.github.databob.generators.ErasureBasedGenerator._
 
 object JavaDateTimeGenerators {
   val Default = new Generators(
@@ -14,8 +15,8 @@ object JavaDateTimeGenerators {
       typeBased(databob => LocalTime.from(databob.mk[ZonedDateTime])),
       typeBased(databob => LocalDateTime.from(databob.mk[ZonedDateTime])),
       typeBased(databob => ZonedDateTime.ofInstant(databob.mk[Instant], ZoneId.systemDefault())),
-      erasureBased(databob => new Date(databob.mk[Instant].toEpochMilli)),
-      erasureBased(databob => new Timestamp(databob.mk[Instant].toEpochMilli))
+      erasureIs(databob => new Date(databob.mk[Instant].toEpochMilli)),
+      erasureIs(databob => new Timestamp(databob.mk[Instant].toEpochMilli))
     )
   )
 
