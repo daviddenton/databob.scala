@@ -54,7 +54,7 @@ class Databob(generators: Generators = new Generators()) {
 object Databob {
   def mk[A](implicit generators: Generators = Empty, mf: Manifest[A]): A = new Databob(generators).mk[A]
 
-  def default[A](implicit overrides: Generators = Empty, mf: Manifest[A]): A = mk[A](overrides ++ Default, mf)
+  def default[A](implicit overrides: Generators = Empty, mf: Manifest[A]): A = mk[A](overrides ++ Defaults, mf)
 
   def random[A](implicit overrides: Generators = Empty, mf: Manifest[A]): A =  mk[A](overrides ++ Random, mf)
 }

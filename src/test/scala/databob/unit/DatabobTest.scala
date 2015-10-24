@@ -11,7 +11,9 @@ import io.github.databob.generators.Generators._
 import io.github.databob.generators._
 import org.scalatest.{FunSpec, ShouldMatchers}
 
+import scala.concurrent.Future
 import scala.reflect.Manifest
+import scala.util.Try
 
 case class YetAnother(name: Int, which: Boolean, time: LocalDateTime)
 
@@ -76,6 +78,8 @@ class DatabobTest extends FunSpec with ShouldMatchers {
       }
 
       describe(MonadGenerators.getClass.getSimpleName) {
+        itSupports[Try[Int]]
+        itSupports[Future[Int]]
         itSupports[Option[Int]]
         itSupports[Either[Int, String]]
       }
@@ -86,13 +90,13 @@ class DatabobTest extends FunSpec with ShouldMatchers {
     }
   }
 
-  describe("default", Default)
+  describe("default", Defaults)
   describe("random", Random)
 
   describe("Custom generator") {
     it("is used") {
       val custom = LocalTime.of(12, 12, 12)
-      implicit val r = Generator(databob => custom) +: Default
+      implicit val r = Generator(databob => custom) +: Defaults
       Databob.mk[LocalTime] shouldBe custom
     }
   }

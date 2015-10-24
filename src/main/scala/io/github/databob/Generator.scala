@@ -1,9 +1,10 @@
 package io.github.databob
 
-import io.github.databob.generators.{ErasureGenerator, TypeGenerator}
+import io.github.databob.generators.{ErasureGenerator, Generators, TypeGenerator}
 
 trait Generator[A] {
   def mk(databob: Databob): PartialFunction[GeneratorType, A]
+  def +(that: Generator[_]): Generators = this +: (that +: Generators.Empty)
 }
 
 object Generator {
