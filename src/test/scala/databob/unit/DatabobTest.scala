@@ -1,4 +1,4 @@
-package io.github.daviddenton.databob
+package databob.unit
 
 import java.lang.{Boolean => JavaBoolean, Byte => JavaByte, Double => JavaDouble, Float => JavaFloat, Integer => JavaInteger, Long => JavaLong, Short => JavaShort, String => JavaString}
 import java.math.{BigDecimal => JavaBigDecimal, BigInteger => JavaBigInteger}
