@@ -9,7 +9,7 @@ import io.github.databob.generators.{ErasureBasedGenerator, Generators, TypeGene
 trait Generator[A] {
   /**
    * create the the partial function which will match the given type A and generate an instance of it
-   * @param databob the current databob instance (for generating sub-instances)
+   * @param databob to use for generating dependant objects
    * @return a generated A instance
    */
   def pf(databob: Databob): PartialFunction[GeneratorType, A]
