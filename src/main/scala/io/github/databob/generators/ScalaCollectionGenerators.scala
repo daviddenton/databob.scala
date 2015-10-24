@@ -17,7 +17,16 @@ object ScalaCollectionGenerators {
     erasureIsAssignableFrom[Seq[_]]((gt, databob) => Seq())
 
   /**
+   * Generates Non-Empty Scala collections
+   */
+  val NonEmpty = erasureIsAssignableFrom[Map[_, _]]((gt, databob) => Map(databob.mk(gt.typeArgs.head) -> databob.mk(gt.typeArgs(1)))) +
+    erasureIsAssignableFrom[Set[_]]((gt, databob) => Set(databob.mk(gt.typeArgs.head))) +
+    erasureIsAssignableFrom[List[_]]((gt, databob) => List(databob.mk(gt.typeArgs.head))) +
+    erasureIsAssignableFrom[Vector[_]]((gt, databob) => Vector(databob.mk(gt.typeArgs.head))) +
+    erasureIsAssignableFrom[Seq[_]]((gt, databob) => Seq(databob.mk(gt.typeArgs.head)))
+
+  /**
    * Generates Random Scala collections
    */
-  val Random = Empty
+  val Random = NonEmpty
 }
