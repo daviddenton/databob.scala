@@ -1,6 +1,6 @@
 package databob.unit
 
-import java.lang.{Boolean => JavaBoolean, Byte => JavaByte, Double => JavaDouble, Float => JavaFloat, Integer => JavaInteger, Long => JavaLong, Short => JavaShort, String => JavaString}
+import java.lang.{Boolean => JavaBoolean, Byte => JavaByte, Character => JavaChar, Double => JavaDouble, Float => JavaFloat, Integer => JavaInteger, Long => JavaLong, Short => JavaShort, String => JavaString}
 import java.math.{BigDecimal => JavaBigDecimal, BigInteger => JavaBigInteger}
 import java.sql.Timestamp
 import java.time.{LocalDate, LocalDateTime, LocalTime, ZonedDateTime}
@@ -42,6 +42,7 @@ class DatabobTest extends FunSpec with ShouldMatchers {
         itSupports[JavaFloat]
         itSupports[JavaShort]
         itSupports[JavaString]
+        itSupports[JavaChar]
         itSupports[JavaDouble]
         itSupports[JavaByte]
         itSupports[JavaBoolean]
@@ -66,6 +67,7 @@ class DatabobTest extends FunSpec with ShouldMatchers {
         itSupports[Short]
         itSupports[Byte]
         itSupports[Boolean]
+        itSupports[String]
       }
 
       describe(CollectionGenerators.getClass.getSimpleName) {

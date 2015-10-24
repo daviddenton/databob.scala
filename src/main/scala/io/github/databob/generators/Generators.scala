@@ -4,13 +4,15 @@ import io.github.databob.{Databob, Generator, GeneratorType}
 
 class Generators(generators: Iterable[Generator[_]] = Nil) extends Iterable[Generator[_]] {
 
+  def +(newGenerator: Generator[_]): Generators = new Generators(generators ++ Seq(newGenerator))
+
   def +:(newGenerator: Generator[_]): Generators = new Generators(Seq(newGenerator) ++ generators)
 
   def ++(that: Generators): Generators = new Generators(generators ++ that)
 
   def pf(databob: Databob) =
     generators.foldLeft(Map(): PartialFunction[GeneratorType, Any]) { (acc, x) =>
-      acc.orElse(x.mk(databob))
+      acc.orElse(x.pf(databob))
     }
 
   override def iterator: Iterator[Generator[_]] = generators.iterator
