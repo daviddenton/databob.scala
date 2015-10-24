@@ -7,10 +7,10 @@ databob
 <a href="https://bintray.com/daviddenton/maven/databob/view?source=watch" target="_top"><img src="https://www.bintray.com/docs/images/bintray_badge_color.png"/></a> 
 
 ###See it
-See the [example code](https://github.com/daviddenton/databob.scala/tree/master/src/test/scala/examples).
+See the [example code](https://github.com/daviddenton/databob.scala/tree/master/src/test/scala/databob.examples).
 
 ###Get it
-Add the following lines to ```build.sbt```:
+Add the following lines to ```build.sbt```:ππ
 
 ```scala
 resolvers += "JCenter" at "https://jcenter.bintray.com"
