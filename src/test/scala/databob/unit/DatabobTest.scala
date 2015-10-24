@@ -83,30 +83,29 @@ class DatabobTest extends FunSpec with ShouldMatchers {
       describe("Custom case classes") {
         itSupports[Person]
       }
-
-      describe("Custom generator") {
-        it("is used") {
-          val custom = LocalTime.of(12, 12, 12)
-          implicit val r = Generator(databob => custom) +: Default
-          Databob.mk[LocalTime] shouldBe custom
-        }
-      }
-
-      describe("Failure cases") {
-        it("Blows up when there are no generators") {
-          implicit val r = new Generators()
-          intercept[GeneratorFailure](Databob.mk[Int])
-        }
-
-        it("Blows up when there are no constructor to call") {
-          implicit val r = new Generators()
-          intercept[GeneratorFailure](Databob.mk[APrivateClass])
-        }
-      }
     }
   }
 
   describe("default", Default)
   describe("random", Random)
 
+  describe("Custom generator") {
+    it("is used") {
+      val custom = LocalTime.of(12, 12, 12)
+      implicit val r = Generator(databob => custom) +: Default
+      Databob.mk[LocalTime] shouldBe custom
+    }
+  }
+
+  describe("Failure cases") {
+    it("Blows up when there are no generators") {
+      implicit val r = new Generators()
+      intercept[GeneratorFailure](Databob.mk[Int])
+    }
+
+    it("Blows up when there are no constructor to call") {
+      implicit val r = new Generators()
+      intercept[GeneratorFailure](Databob.mk[APrivateClass])
+    }
+  }
 }
