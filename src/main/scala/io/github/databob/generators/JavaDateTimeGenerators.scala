@@ -5,7 +5,6 @@ import java.time._
 import java.util.Date
 
 import io.github.databob.Generator._
-import io.github.databob.Generators
 
 object JavaDateTimeGenerators {
   val Default = new Generators(

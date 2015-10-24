@@ -4,7 +4,6 @@ import java.lang.{Boolean => JavaBoolean, Byte => JavaByte, Double => JavaDouble
 import java.math.{BigDecimal => JavaBigDecimal, BigInteger => JavaBigInteger}
 
 import io.github.databob.Generator._
-import io.github.databob.Generators
 
 object JavaPrimitiveGenerators {
   val Default = new Generators(

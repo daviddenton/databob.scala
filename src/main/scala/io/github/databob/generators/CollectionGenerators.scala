@@ -1,7 +1,7 @@
 package io.github.databob.generators
 
 import io.github.databob.Generator._
-import io.github.databob.{Databob, Generator, Generators}
+import io.github.databob.{Databob, Generator}
 
 object CollectionGenerators {
   val Default = new Generators(
