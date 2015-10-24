@@ -12,6 +12,8 @@ description := "Randomized object generation"
 
 scalaVersion := "2.11.7"
 
+crossScalaVersions := Seq("2.11.7", "2.10.4")
+
 scalacOptions += "-deprecation"
 
 scalacOptions += "-feature"
