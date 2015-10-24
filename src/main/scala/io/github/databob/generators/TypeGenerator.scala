@@ -6,7 +6,7 @@ import org.json4s.reflect.TypeInfo
 class TypeGenerator[A: Manifest](mk: Databob => A) extends Generator[A] {
    val Class = implicitly[Manifest[A]].runtimeClass
 
-   def mk(databob: Databob): PartialFunction[GeneratorType, A] = {
+   def pf(databob: Databob): PartialFunction[GeneratorType, A] = {
      case GeneratorType(TypeInfo(Class, _), _, _) => mk(databob)
    }
  }
