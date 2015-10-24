@@ -1,6 +1,6 @@
 package io.github.databob
 
-import io.github.databob.generators.{ErasureBasedGenerator, Generators, TypeGenerator}
+import io.github.databob.generators.{ErasureMatchingGenerator, Generators, TypeMatchingGenerator}
 
 /**
  * A generator for a particular type. Essentially a wrapped partial function which when matched will instantiate an A
@@ -23,13 +23,13 @@ trait Generator[A] {
 }
 
 object Generator {
-  def apply[A: Manifest](mk: Databob => A): Generator[A] = new TypeGenerator[A](mk)
-  def typeIs[A: Manifest](mk: Databob => A): Generator[A] = new TypeGenerator[A](mk)
+  def apply[A: Manifest](mk: Databob => A): Generator[A] = new TypeMatchingGenerator[A](mk)
+  def typeIs[A: Manifest](mk: Databob => A): Generator[A] = new TypeMatchingGenerator[A](mk)
 
   def erasureIsAssignableFrom[R: Manifest](fn: (GeneratorType, Databob) => R) =
-    new ErasureBasedGenerator(_.isAssignableFrom(implicitly[Manifest[R]].runtimeClass), fn)
+    new ErasureMatchingGenerator(_.isAssignableFrom(implicitly[Manifest[R]].runtimeClass), fn)
 
   def erasureIs[R: Manifest](fn: Databob => R) =
-    new ErasureBasedGenerator(_ == implicitly[Manifest[R]].runtimeClass, (gt, databob) => fn(databob))
+    new ErasureMatchingGenerator(_ == implicitly[Manifest[R]].runtimeClass, (gt, databob) => fn(databob))
 
 }
