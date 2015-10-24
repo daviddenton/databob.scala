@@ -1,6 +1,6 @@
 package io.github.databob.generators
 
-import io.github.databob.{Databob, Generator, GeneratorFailure, Generators}
+import io.github.databob.{Databob, Generator, GeneratorFailure}
 
 import scala.util.control.Exception._
 

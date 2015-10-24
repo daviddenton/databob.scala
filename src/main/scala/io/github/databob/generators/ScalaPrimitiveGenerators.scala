@@ -1,7 +1,6 @@
 package io.github.databob.generators
 
 import io.github.databob.Generator._
-import io.github.databob.Generators
 
 object ScalaPrimitiveGenerators {
   val Default = new Generators(

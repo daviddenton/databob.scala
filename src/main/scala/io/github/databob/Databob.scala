@@ -1,5 +1,6 @@
 package io.github.databob
 
+import io.github.databob.generators.Generators
 import io.github.databob.generators.Generators._
 import org.json4s.reflect.Reflector._
 import org.json4s.reflect._
@@ -47,9 +48,13 @@ class Databob(generators: Generators = new Generators()) {
       if (r.isDefinedAt(generatorType)) r(generatorType) else instantiate
     }
   }
+
 }
 
 object Databob {
-  def default[A](implicit generators: Generators = Default, mf: Manifest[A]): A = new Databob(generators).mk[A]
-  def random[A](implicit generators: Generators = Random, mf: Manifest[A]): A = new Databob(generators).mk[A]
+  def mk[A](implicit generators: Generators, mf: Manifest[A]): A = new Databob(generators).mk[A]
+
+  def default[A](implicit mf: Manifest[A]): A = mk[A](Default, mf)
+
+  def random[A](implicit mf: Manifest[A]): A =  mk[A](Random, mf)
 }
