@@ -1,6 +1,6 @@
 package io.github.databob.generators
 
-import io.github.databob.generators.ErasureBasedGenerator.erasureIs
+import io.github.databob.Generator._
 
 object ScalaPrimitiveGenerators {
   val Defaults = new Generators(

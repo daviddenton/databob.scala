@@ -3,7 +3,7 @@ package io.github.databob.generators
 import java.lang.{Boolean => JavaBoolean, Byte => JavaByte, Double => JavaDouble, Float => JavaFloat, Integer => JavaInteger, Long => JavaLong, Short => JavaShort, String => JavaString}
 import java.math.{BigDecimal => JavaBigDecimal, BigInteger => JavaBigInteger}
 
-import io.github.databob.generators.ErasureBasedGenerator._
+import io.github.databob.Generator.erasureIs
 
 object JavaPrimitiveGenerators {
   val Defaults = new Generators(
