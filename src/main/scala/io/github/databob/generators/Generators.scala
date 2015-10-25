@@ -48,19 +48,17 @@ class Generators(generators: Iterable[Generator[_]] = Nil) extends Iterable[Gene
 
 object Generators {
 
-  val Empty = new Generators()
+  lazy val Empty = new Generators()
 
-  val Defaults =
-    JavaPrimitiveGenerators.Defaults ++
-      ScalaPrimitiveGenerators.Defaults ++
+  lazy val Defaults =
+      PrimitiveGenerators.Defaults ++
       MonadGenerators.Happy ++
       JavaDateTimeGenerators.Default ++
       ScalaCollectionGenerators.Empty ++
       JavaCollectionGenerators.Empty
 
-  val Random =
-    JavaPrimitiveGenerators.Random ++
-      ScalaPrimitiveGenerators.Random ++
+  lazy val Random =
+      PrimitiveGenerators.Random ++
       MonadGenerators.Random ++
       JavaDateTimeGenerators.Random ++
       ScalaCollectionGenerators.Random ++

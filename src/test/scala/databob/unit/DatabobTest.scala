@@ -29,26 +29,12 @@ class DatabobTest extends FunSpec with ShouldMatchers {
   def describe(name: String, generators: Generators): Unit = {
 
     def itSupports[A: Manifest](implicit mf: Manifest[A]): Unit = {
-      it(name + " : " + mf.runtimeClass.getSimpleName) {
+      it(name + " : " + mf.runtimeClass) {
         Databob.mk[A](generators, mf) === null shouldBe false
       }
     }
 
     describe(name) {
-      describe(JavaPrimitiveGenerators.getClass.getSimpleName) {
-        itSupports[JavaInteger]
-        itSupports[JavaBigDecimal]
-        itSupports[JavaBigInteger]
-        itSupports[JavaLong]
-        itSupports[JavaFloat]
-        itSupports[JavaShort]
-        itSupports[JavaString]
-        itSupports[JavaChar]
-        itSupports[JavaDouble]
-        itSupports[JavaByte]
-        itSupports[JavaBoolean]
-      }
-
       describe(JavaDateTimeGenerators.getClass.getSimpleName) {
         itSupports[LocalDate]
         itSupports[LocalTime]
@@ -56,19 +42,6 @@ class DatabobTest extends FunSpec with ShouldMatchers {
         itSupports[ZonedDateTime]
         itSupports[Date]
         itSupports[Timestamp]
-      }
-
-      describe(ScalaPrimitiveGenerators.getClass.getSimpleName) {
-        itSupports[Int]
-        itSupports[Long]
-        itSupports[Double]
-        itSupports[BigDecimal]
-        itSupports[BigInt]
-        itSupports[Float]
-        itSupports[Short]
-        itSupports[Byte]
-        itSupports[Boolean]
-        itSupports[String]
       }
 
       describe(ScalaCollectionGenerators.getClass.getSimpleName) {

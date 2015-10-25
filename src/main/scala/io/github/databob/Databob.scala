@@ -14,7 +14,7 @@ class Databob(generators: Generators = new Generators()) {
       mk(scalaTypeOf[A]).asInstanceOf[A]
     } catch {
       case e: GeneratorFailure => throw e
-      case e: Exception => throw new GeneratorFailure(s"Generation error: ${e.getMessage}")
+      case e: Exception => throw new GeneratorFailure(s"Generation error: ${e.getMessage}", e)
     }
   }
 
