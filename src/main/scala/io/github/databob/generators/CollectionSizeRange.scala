@@ -19,7 +19,7 @@ object CollectionSizeRange {
 
   val none = collectionSizeRange(empty)
 
-  def exactly(value: Int) = collectionSizeRange(CollectionSizeRange(value, value))
+  def exactly(value: Int) = collectionSizeRange(() => CollectionSizeRange(value, value))
 
   def atMost(value: Int) = collectionSizeRange(CollectionSizeRange(1, value))
 
