@@ -1,6 +1,6 @@
 package io.github.databob.generators
 
-import java.lang.{Boolean => JavaBoolean, Byte => JavaByte, Character => JavaCharacter, Double => JavaDouble, Float => JavaFloat, Long => JavaLong, Short => JavaShort}
+import java.lang.{Character => JavaCharacter}
 import java.util.UUID
 
 import io.github.databob.Generator._
@@ -18,17 +18,11 @@ object PrimitiveGenerators {
     erasureIs[BigInt](databob => databob.mk[BigDecimal].toBigInt()) +
     erasureIs[String](databob => "") +
     erasureIs[Long](databob => databob.mk[BigDecimal].toLong) +
-    erasureIs[JavaLong](databob => databob.mk[BigDecimal].toLong) +
     erasureIs[Double](databob => databob.mk[BigDecimal].toDouble) +
-    erasureIs[JavaDouble](databob => databob.mk[BigDecimal].toDouble) +
     erasureIs[Float](databob => databob.mk[BigDecimal].toFloat) +
-    erasureIs[JavaFloat](databob => databob.mk[BigDecimal].toFloat) +
     erasureIs[Short](databob => databob.mk[BigDecimal].toShort) +
-    erasureIs[JavaShort](databob => databob.mk[BigDecimal].toShort) +
     erasureIs[Byte](databob => databob.mk[BigDecimal].toByte) +
-    erasureIs[JavaByte](databob => databob.mk[BigDecimal].toByte) +
     erasureIs[Boolean](databob => false) +
-    erasureIs[JavaBoolean](databob => databob.mk[Boolean]) +
     erasureIs[Char](databob => databob.mk[BigDecimal].toChar) +
     erasureIs[JavaCharacter](databob => databob.mk[BigDecimal].toChar) +
     erasureIs[Exception](databob => new Exception(databob.mk[String])) +
