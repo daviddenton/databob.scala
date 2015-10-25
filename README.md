@@ -148,7 +148,7 @@ Or to get XML...
 - All Scala/Java primitives: Default, random
 - Scala and Java Collection classes: Empty, single-value, variable size, random
 - Java8 date-time values: Epoch, current-time, random
-- Some monadic types (Option/Either/Try/Future): Happy, Unhappy, random
+- Some monadic types (Option/Either/Try/Future): Happy, unhappy, random
 - Simple overriding mechanism for your own-types and custom generation rules
 
 ###See it in action
