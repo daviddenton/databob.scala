@@ -53,14 +53,14 @@ object Generators {
   lazy val Defaults =
       PrimitiveGenerators.Defaults ++
       MonadGenerators.Happy ++
-      JavaDateTimeGenerators.Default ++
+      DateTimeGenerators.Epoch ++
       ScalaCollectionGenerators.Empty ++
       JavaCollectionGenerators.Empty
 
   lazy val Random =
       PrimitiveGenerators.Random ++
       MonadGenerators.Random ++
-      JavaDateTimeGenerators.Random ++
+      DateTimeGenerators.Random ++
       ScalaCollectionGenerators.Random ++
       JavaCollectionGenerators.Random
 }
