@@ -21,7 +21,7 @@ case class Inbox(address: EmailAddress, emails: Seq[Email])
 /**
  * This set of examples shows how you can use databob to generate objects
  */
-object Examples extends App {
+object Generation extends App {
 
   def completelyRandomObject = Databob.random[Email]
 

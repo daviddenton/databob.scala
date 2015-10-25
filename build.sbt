@@ -20,6 +20,7 @@ scalacOptions += "-feature"
 
 libraryDependencies ++= Seq(
   "org.json4s" %% "json4s-core" % "3.3.0",
+  "org.json4s" %% "json4s-native" % "3.3.0" % "test",
   "org.scalatest" %% "scalatest" % "2.2.5" % "test"
 )
 
