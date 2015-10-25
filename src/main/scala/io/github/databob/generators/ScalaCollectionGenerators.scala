@@ -1,5 +1,6 @@
 package io.github.databob.generators
 
+import io.github.databob.Databob
 import io.github.databob.Generator._
 
 /**
@@ -28,5 +29,38 @@ object ScalaCollectionGenerators {
   /**
    * Generates Random Scala collections
    */
-  lazy val Random = NonEmpty
+  lazy val Random = erasureIsAssignableFrom[Map[_, _]]((gt, databob) => {
+    if (Databob.random[Boolean]) Map()
+    else {
+      Map(randomRange.map(i => databob.mk(gt.typeArgs.head) -> databob.mk(gt.typeArgs(1))): _*)
+    }
+  }) +
+    erasureIsAssignableFrom[Set[_]]((gt, databob) => {
+      if (Databob.random[Boolean]) Set()
+      else {
+        Set(randomRange.map(i => databob.mk(gt.typeArgs.head)): _*)
+      }
+    }) +
+    erasureIsAssignableFrom[List[_]]((gt, databob) => {
+      if (Databob.random[Boolean]) List()
+      else {
+        List(randomRange.map(i => databob.mk(gt.typeArgs.head)): _*)
+      }
+    }) +
+    erasureIsAssignableFrom[Vector[_]]((gt, databob) => {
+      if (Databob.random[Boolean]) Vector()
+      else {
+        Vector(randomRange.map(i => databob.mk(gt.typeArgs.head)): _*)
+      }
+    }) +
+    erasureIsAssignableFrom[Seq[_]]((gt, databob) => {
+      if (Databob.random[Boolean]) Seq()
+      else {
+        Seq(randomRange.map(i => databob.mk(gt.typeArgs.head)): _*)
+      }
+    })
+
+  private def randomRange: Range = {
+    Range(0, util.Random.nextInt(5))
+  }
 }
