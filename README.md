@@ -84,7 +84,7 @@ That's it. Want to override particular value(s)?
 Databob.random[Inbox].copy(address = EmailAddress("my@real.email.com")
 ```
 
-Or add your own rule for generating values:
+Or add your own rule for generating values?
 ```scala
 implicit val generators = typeIs(databob => EmailAddress(databob.mk[String] + "@" + databob.mk[String] + ".com")) +: Generators.EmptyGenerators
 
