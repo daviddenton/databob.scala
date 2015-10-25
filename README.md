@@ -6,6 +6,84 @@ databob
 <a href="https://bintray.com/daviddenton/maven/databob/_latestVersion" target="_top"><img src="https://api.bintray.com/packages/daviddenton/maven/databob/images/download.svg"/></a> 
 <a href="https://bintray.com/daviddenton/maven/databob/view?source=watch" target="_top"><img src="https://www.bintray.com/docs/images/bintray_badge_color.png"/></a> 
 
+Databob proves a way to generate completely randomised object builders with zero-boilerplate code.
+
+###Why?
+The problem of generating dummy test instances for our classes has been around for a long time. Given the following case classes...
+```scala
+case class EmailAddress(value: String)
+
+case class Email(from: EmailAddress, to: Seq[EmailAddress], date: ZonedDateTime, read: Boolean, subject: String, readReceipt: Try[ReadReceipt])
+
+case class Inbox(address: EmailAddress, emails: Seq[Email])
+```
+
+We could start to write objects using the [TestBuilder](http://www.javacodegeeks.com/2013/06/builder-pattern-good-for-code-great-for-tests.html) pattern using the traditional method:
+```scala
+class InboxAddressBuilder {
+  private var address = EmailAddress("some@email.address.com")
+  private var emails = Seq[Email]()
+
+  def withAddress(newAddress: EmailAddress) = {
+    address = newAddress
+    this
+  }
+
+  def withEmails(newEmails: Seq[Email]) = {
+    emails = newEmails
+    this
+  }
+
+  def build = Inbox(address, emails)
+}
+```
+
+Scala makes this easier for us somewhat by leveraging Case class ```copy()```. This also allows us to be compiler safe, as removing 
+a field will break the equivalent ```with``` method:
+```scala
+class InboxAddressBuilder {
+  private var inbox = Inbox(EmailAddress("some@email.address.com"), Seq[Email]())
+  
+  def withAddress(newAddress: EmailAddress) = {
+    inbox = inbox.copy(address = newAddress)
+    this
+  }
+
+  def withEmails(newEmails: Seq[Email]) = {
+    inbox = inbox.copy(emails = newEmails)
+    this
+  }
+
+  def build = inbox
+}
+
+```
+
+Taking this even further with default arguments, we can reduce this to:
+```scala
+object InboxAddressBuilder {
+  def apply(address: EmailAddress = EmailAddress("some@email.address.com"),
+            emails: Seq[Email] = Nil)
+    = Inbox(address, emails)
+}
+```
+
+So, better - but it still seems pretty tedious to maintain. Additionally, we don't really want tests to rely unknowingly on 
+bits of default test data for multiple tests which will lead to an explosion of [ObjectMother](http://martinfowler.com/bliki/ObjectMother.html)-type methods with small variations 
+to suit particular tests.
+
+What we really want are completely randomised instances, with important overrides set-up only for tests that rely on them. No sharing of test data across tests. Ever.
+
+Enter Databob. For a completely randomised instance:
+```scala
+Databob.random[Email]
+```
+
+Want to override particular value(s)?
+```scala
+Databob.random[Inbox].copy(address = EmailAddress("my@real.email.com")
+```
+
 ###See it
 See the [example code](https://github.com/daviddenton/databob.scala/tree/master/src/test/scala/databob/examples).
 
