@@ -74,7 +74,7 @@ to suit particular tests.
 
 What we really want are completely randomised instances, with important overrides set-up only for tests that rely on them. No sharing of test data across tests. Ever.
 
-Enter Databob. For a completely randomised instance:
+Enter Databob. For a completely randomised instance, including non-primitive sub-tree objects:
 ```scala
 Databob.random[Email]
 ```
@@ -93,6 +93,7 @@ Databob.random[Email]
 ```
 
 Out of the box, Databob supports:
+- Nested object-trees (ie. non-primitive fields)
 - All Scala/Java primitives: Default, random
 - Scala and Java Collection classes: Empty, single-value, variable size, random)
 - Java8 date-time values: Epoch, current-time, random
