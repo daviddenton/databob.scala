@@ -37,7 +37,7 @@ class Databob(generators: Generators = new Generators()) {
         val constructor = descr.constructors.headOption.getOrElse(throw new GeneratorFailure("No constructor found for type " + descr.erasure))
         constructor.constructor.invoke(descr.companion, constructor.params.map(a => mk(a.argType))).asInstanceOf[AnyRef]
       } catch {
-        case e@(_: IllegalArgumentException | _: InstantiationException) => throw new GeneratorFailure("Could not construct class")
+        case e@(_: IllegalArgumentException | _: InstantiationException) => throw new GeneratorFailure("Could not construct class:"  + descr.fullName, e)
       }
     }
 

@@ -1,5 +1,6 @@
 package io.github.databob.generators
 
+import io.github.databob.Databob
 import io.github.databob.Generator._
 
 import scala.concurrent.Future
@@ -29,5 +30,17 @@ object MonadGenerators {
   /**
    * Generates Random monad values
    */
-  lazy val Random = Happy
+  lazy val Random =
+    erasureIsAssignableFrom[Try[_]]((gt, databob) => {
+      if (Databob.random[Boolean]) Success(databob.mk(gt.typeArgs.head)) else Failure(databob.mk[Exception])
+    }) +
+      erasureIsAssignableFrom[Future[_]]((gt, databob) => {
+        if (Databob.random[Boolean]) Future.successful(databob.mk(gt.typeArgs.head)) else Future.failed(databob.mk[Exception])
+      }) +
+      erasureIsAssignableFrom[Option[_]]((gt, databob) => {
+        if (Databob.random[Boolean]) Option(databob.mk(gt.typeArgs.head)) else None
+      }) +
+      erasureIsAssignableFrom[Either[_, _]]((gt, databob) => {
+        if (Databob.random[Boolean]) Right(databob.mk(gt.typeArgs(1))) else Left(databob.mk(gt.typeArgs.head))
+      })
 }
