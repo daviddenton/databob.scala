@@ -10,7 +10,7 @@ import io.github.databob.generators.Generators._
 
 import scala.util.Try
 
-case class nReadReceipt(readDate: ZonedDateTime)
+case class ReadReceipt(readDate: ZonedDateTime)
 
 case class EmailAddress(value: String)
 
