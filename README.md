@@ -79,21 +79,35 @@ Enter Databob. For a completely randomised instance:
 Databob.random[Email]
 ```
 
-Want to override particular value(s)?
+That's it. Want to override particular value(s)?
 ```scala
 Databob.random[Inbox].copy(address = EmailAddress("my@real.email.com")
 ```
 
-###See it
+Or add your own rule for generating values:
+```scala
+implicit val generators = typeIs(databob => {
+  EmailAddress(databob.mk[String] + "@" + databob.mk[String] + ".com")
+}) +: Generators.EmptyGenerators
+Databob.random[Email]
+```
+
+Out of the box, Databob supports:
+- All Scala/Java primitives: Default, random
+- Scala and Java Collection classes: Empty, single-value, variable size, random)
+- Java8 date-time values: Epoch, current-time, random
+- Some monadic types (Option/Either/Try/Future): Happy, Unhappy, random
+- Simple overriding mechanism for your own-types and custom generation rules
+
+###See it in action
 See the [example code](https://github.com/daviddenton/databob.scala/tree/master/src/test/scala/databob/examples).
 
 ###Get it
 Add the following lines to ```build.sbt```:
-
 ```scala
 resolvers += "JCenter" at "https://jcenter.bintray.com"
 libraryDependencies += "io.github.daviddenton" %% "databob.scala" % "X.X.X"
 ```
 
 ###Acks
-To [Json4S](https://github.com/json4s/json4s) for the inspiration.
+To [Json4S](https://github.com/json4s/json4s) for the inspiration and reflection utils.

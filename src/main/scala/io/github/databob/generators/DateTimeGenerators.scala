@@ -28,6 +28,11 @@ object DateTimeGenerators {
     typeIs(databob => Duration.of(databob.mk[Instant].toEpochMilli, ChronoUnit.MILLIS))
 
   /**
+   * Creates "Now" Date and Time instances
+   */
+  lazy val Now = typeIs(databob => Instant.ofEpochMilli(System.currentTimeMillis())) +: Epoch
+
+  /**
    * Creates Random Date and Time instances (no boundaries)
    */
   lazy val Random = typeIs(databob => Instant.ofEpochMilli(Databob.random[Long])) +: Epoch
