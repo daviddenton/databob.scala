@@ -54,10 +54,31 @@ class Databob(generators: Generators = new Generators()) {
 
 }
 
+/**
+ * Main entry point for object generation
+ */
 object Databob {
+  /**
+   * Make an object using the set of generators provided with no fallbacks
+   * @param generators the set of generators to use for the generation
+   * @param mf manifest for the object to generate
+   * @return the generated object
+   */
   def mk[A](implicit generators: Generators = Empty, mf: Manifest[A]): A = new Databob(generators).mk[A]
 
+  /**
+   * Make a default object using the overrides provided and falling back to the set of Default generators
+   * @param overrides the set of override generators to apply to the generation
+   * @param mf manifest for the object to generate
+   * @return the generated object
+   */
   def default[A](implicit overrides: Generators = Empty, mf: Manifest[A]): A = mk[A](overrides ++ Defaults, mf)
 
+  /**
+   * Make a random object using the overrides provided and falling back to the set of Random generators
+   * @param overrides the set of override generators to apply to the generation
+   * @param mf manifest for the object to generate
+   * @return the generated object
+   */
   def random[A](implicit overrides: Generators = Empty, mf: Manifest[A]): A =  mk[A](overrides ++ Random, mf)
 }
