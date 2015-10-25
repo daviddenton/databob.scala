@@ -45,22 +45,19 @@ class Generators(generators: Iterable[Generator[_]] = Nil) extends Iterable[Gene
   override def iterator: Iterator[Generator[_]] = generators.iterator
 }
 
-
 object Generators {
 
   lazy val Empty = new Generators()
 
   lazy val Defaults =
-      PrimitiveGenerators.Defaults ++
+    PrimitiveGenerators.Defaults ++
       MonadGenerators.Happy ++
       DateTimeGenerators.Epoch ++
-      ScalaCollectionGenerators.Empty ++
-      JavaCollectionGenerators.Empty
+      CollectionGenerators.Empty
 
   lazy val Random =
-      PrimitiveGenerators.Random ++
+    PrimitiveGenerators.Random ++
       MonadGenerators.Random ++
       DateTimeGenerators.Random ++
-      ScalaCollectionGenerators.Random ++
-      JavaCollectionGenerators.Random
+      CollectionGenerators.Random
 }
