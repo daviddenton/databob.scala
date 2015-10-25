@@ -114,7 +114,7 @@ to suit particular tests.</p>
 
 <div class="highlight highlight-source-scala"><pre><span class="pl-en">Databob</span>.random[<span class="pl-en">Inbox</span>].copy(address <span class="pl-k">=</span> <span class="pl-en">EmailAddress</span>(<span class="pl-s"><span class="pl-pds">"</span>my@real.email.com<span class="pl-pds">"</span></span>)</pre></div>
 
-<p>Or add your own rule for generating values:</p>
+<p>Or add your own rule for generating values?</p>
 
 <div class="highlight highlight-source-scala"><pre><span class="pl-k">implicit</span> <span class="pl-k">val</span> <span class="pl-en">generators</span> <span class="pl-k">=</span> typeIs(databob <span class="pl-k">=&gt;</span> <span class="pl-en">EmailAddress</span>(databob.mk[<span class="pl-k">String</span>] <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>@<span class="pl-pds">"</span></span> <span class="pl-k">+</span> databob.mk[<span class="pl-k">String</span>] <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>.com<span class="pl-pds">"</span></span>)) <span class="pl-k">+</span><span class="pl-k">:</span> <span class="pl-en">Generators</span>.<span class="pl-en">EmptyGenerators</span>
 
