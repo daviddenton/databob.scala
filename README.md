@@ -108,17 +108,28 @@ pretty(render(decompose(Databob.random[SchoolLibrary])))
 ```json
 {
   "librarian":{
-    "firstName":"5a1ba933-f2c2-41a5-ab5e-cfafb4061060",
-    "lastName":"b624906e-462d-4f42-9b5f-3fe28c8cff47"
+    "firstName":"6c550709-bdc8-4ce8-8acd-607020f027bb",
+    "lastName":"11073325-20fb-4d81-832c-d2eacd5bc4f1"
   },
   "books":[{
-    "title":"c669c4ea-f320-4ba0-9c82-3481c3a6885e",
-    "pages":1633477063
-  },{
-    "title":"aaaf802d-2d20-4174-83c9-4031ee1d23b6",
-    "pages":1638223739
+    "title":"982c7e30-a969-40f1-99c1-f397d1c52494",
+    "pages":713182742
   }]
 }
+```
+
+Or to get XML...
+```scala
+<SchoolLibrary>
+  {Xml.toXml(decompose(Databob.random[SchoolLibrary]))}
+</SchoolLibrary>
+```
+...producing this:
+
+```XML
+<SchoolLibrary>
+  <librarian><firstName>60838e8a-c747-4b09-8653-e0272eca9024</firstName><lastName>62ee2c0e-570d-422f-92c5-82cb4911ae87</lastName></librarian>
+</SchoolLibrary>
 ```
 
 ###Out-of-the-box features:
