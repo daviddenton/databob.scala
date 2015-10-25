@@ -91,7 +91,37 @@ implicit val generators = typeIs(databob =>  EmailAddress(databob.mk[String] + "
 Databob.random[Email]
 ```
 
-Out of the box, Databob supports:
+Additionally, once we have this randomising structure in code, we can use it for other useful stuff. For example, generating JSON with
+a library such as [Json4S](https://github.com/json4s/json4s):
+```scala
+case class Book(title: String, pages: Int)
+
+case class Teacher(firstName: String, lastName: String)
+
+case class SchoolLibrary(librarian: Teacher, books: Seq[Book])
+
+implicit val f = DefaultFormats
+pretty(render(decompose(Databob.random[SchoolLibrary])))
+```
+
+... would generate us something like this:
+```json
+{
+  "librarian":{
+    "firstName":"5a1ba933-f2c2-41a5-ab5e-cfafb4061060",
+    "lastName":"b624906e-462d-4f42-9b5f-3fe28c8cff47"
+  },
+  "books":[{
+    "title":"c669c4ea-f320-4ba0-9c82-3481c3a6885e",
+    "pages":1633477063
+  },{
+    "title":"aaaf802d-2d20-4174-83c9-4031ee1d23b6",
+    "pages":1638223739
+  }]
+}
+```
+
+###Out-of-the-box features:
 - Nested object-trees (ie. non-primitive fields)
 - All Scala/Java primitives: Default, random
 - Scala and Java Collection classes: Empty, single-value, variable size, random)
