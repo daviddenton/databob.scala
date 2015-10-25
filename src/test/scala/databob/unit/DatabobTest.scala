@@ -12,9 +12,7 @@ import io.github.databob.generators.Generators._
 import io.github.databob.generators._
 import org.scalatest.{FunSpec, ShouldMatchers}
 
-import scala.concurrent.Future
 import scala.reflect.Manifest
-import scala.util.Try
 
 case class YetAnother(name: Int, which: Boolean, time: LocalDateTime)
 
@@ -57,13 +55,6 @@ class DatabobTest extends FunSpec with ShouldMatchers {
         itSupports[util.List[Int]]
         itSupports[util.Map[Int, Int]]
         itSupports[util.Set[Int]]
-      }
-
-      describe(MonadGenerators.getClass.getSimpleName) {
-        itSupports[Try[Int]]
-        itSupports[Future[Int]]
-        itSupports[Option[Int]]
-        itSupports[Either[Int, String]]
       }
 
       describe("Custom case classes") {

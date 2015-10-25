@@ -7,93 +7,88 @@ import io.github.databob.Databob
 import io.github.databob.generators._
 import org.scalatest.{FunSpec, ShouldMatchers}
 
-import scala.reflect.Manifest
+class PrimitiveGeneratorsTest extends FunSpec with ShouldMatchers with GeneratorSpecs {
 
-class PrimitiveGeneratorsTest extends FunSpec with ShouldMatchers {
+  describe("default") {
+    implicit val g = PrimitiveGenerators.Defaults
+    itSupports[Int](0)
+    itSupports[JavaInteger](0)
 
-  describe("makes") {
-    def itSupports[A: Manifest](expected: Any)(implicit generators: Generators, mf: Manifest[A]): Unit = {
-      it(mf.runtimeClass.getName + " at " + System.nanoTime()) {
-        Databob.mk[A](generators, mf) shouldBe expected
-      }
+    itSupports[Long](0)
+    itSupports[JavaLong](0L)
+
+    itSupports[Double](0)
+    itSupports[JavaDouble](0d)
+
+    itSupports[Float](0)
+    itSupports[JavaFloat](0f)
+
+    itSupports[Short](0)
+    itSupports[JavaShort](0.toShort)
+
+    itSupports[Byte](0)
+    itSupports[JavaByte](0.toByte)
+
+    itSupports[Boolean](false)
+    itSupports[JavaBoolean](false)
+
+    itSupports[Char](0.toChar)
+    itSupports[JavaChar](0.toChar)
+
+    itSupports[scala.BigDecimal](BigDecimal(0))
+    itSupports[JavaBigDecimal](BigDecimal(0))
+
+    itSupports[BigInt](BigInt(0))
+    itSupports[JavaBigInteger](BigInt(0))
+
+    itSupports[String]("")
+    itSupports[JavaString]("")
+
+    it("Exception") {
+      Databob.mk[Exception].getMessage shouldBe ""
     }
 
-    def itSupportsRandom[A: Manifest](implicit generators: Generators, mf: Manifest[A]): Unit = {
-      it(mf.runtimeClass.getName + " at " + System.nanoTime()) {
-        Range(1, 10).map(i => Databob.mk[A](generators, mf)).toSet.size should not be 1
-      }
+    it("RuntimeException") {
+      Databob.mk[RuntimeException].getMessage shouldBe ""
     }
+  }
 
-    describe("default") {
-      implicit val g = PrimitiveGenerators.Defaults
-      itSupports[Int](0)
-      itSupports[JavaInteger](0)
+  describe("random") {
+    implicit val g = PrimitiveGenerators.Random
+    itSupportsRandom[Int]
+    itSupportsRandom[JavaInteger]
 
-      itSupports[Long](0)
-      itSupports[JavaLong](0L)
+    itSupportsRandom[Long]
+    itSupportsRandom[JavaLong]
 
-      itSupports[Double](0)
-      itSupports[JavaDouble](0d)
+    itSupportsRandom[Double]
+    itSupportsRandom[JavaDouble]
 
-      itSupports[Float](0)
-      itSupports[JavaFloat](0f)
+    itSupportsRandom[Float]
+    itSupportsRandom[JavaFloat]
 
-      itSupports[Short](0)
-      itSupports[JavaShort](0.toShort)
+    itSupportsRandom[Short]
+    itSupportsRandom[JavaShort]
 
-      itSupports[Byte](0)
-      itSupports[JavaByte](0.toByte)
+    itSupportsRandom[Byte]
+    itSupportsRandom[JavaByte]
 
-      itSupports[Boolean](false)
-      itSupports[JavaBoolean](false)
+    itSupportsRandom[Boolean]
+    itSupportsRandom[JavaBoolean]
 
-      itSupports[Char](0.toChar)
-      itSupports[JavaChar](0.toChar)
+    itSupportsRandom[Char]
+    itSupportsRandom[JavaChar]
 
-      itSupports[scala.BigDecimal](BigDecimal(0))
-      itSupports[JavaBigDecimal](BigDecimal(0))
+    itSupportsRandom[scala.BigDecimal]
+    itSupportsRandom[JavaBigDecimal]
 
-      itSupports[BigInt](BigInt(0))
-      itSupports[JavaBigInteger](BigInt(0))
+    itSupportsRandom[BigInt]
+    itSupportsRandom[JavaBigInteger]
 
-      itSupports[String]("")
-      itSupports[JavaString]("")
-    }
+    itSupportsRandom[String]
+    itSupportsRandom[JavaString]
 
-    describe("random") {
-      implicit val g = PrimitiveGenerators.Random
-      itSupportsRandom[Int]
-      itSupportsRandom[JavaInteger]
-
-      itSupportsRandom[Long]
-      itSupportsRandom[JavaLong]
-
-      itSupportsRandom[Double]
-      itSupportsRandom[JavaDouble]
-
-      itSupportsRandom[Float]
-      itSupportsRandom[JavaFloat]
-
-      itSupportsRandom[Short]
-      itSupportsRandom[JavaShort]
-
-      itSupportsRandom[Byte]
-      itSupportsRandom[JavaByte]
-
-      itSupportsRandom[Boolean]
-      itSupportsRandom[JavaBoolean]
-
-      itSupportsRandom[Char]
-      itSupportsRandom[JavaChar]
-
-      itSupportsRandom[scala.BigDecimal]
-      itSupportsRandom[JavaBigDecimal]
-
-      itSupportsRandom[BigInt]
-      itSupportsRandom[JavaBigInteger]
-
-      itSupportsRandom[String]
-      itSupportsRandom[JavaString]
-    }
+    itSupportsRandom[Exception]
+    itSupportsRandom[RuntimeException]
   }
 }

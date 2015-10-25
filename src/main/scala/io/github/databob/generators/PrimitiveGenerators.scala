@@ -30,7 +30,9 @@ object PrimitiveGenerators {
     erasureIs[Boolean](databob => false) +
     erasureIs[JavaBoolean](databob => databob.mk[Boolean]) +
     erasureIs[Char](databob => databob.mk[BigDecimal].toChar) +
-    erasureIs[JavaCharacter](databob => databob.mk[BigDecimal].toChar)
+    erasureIs[JavaCharacter](databob => databob.mk[BigDecimal].toChar) +
+    erasureIs[Exception](databob => new Exception(databob.mk[String])) +
+    erasureIs[RuntimeException](databob => new RuntimeException(databob.mk[String]))
 
   /**
    * Creates random Primitive values
