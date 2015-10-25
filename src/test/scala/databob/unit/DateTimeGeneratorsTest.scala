@@ -19,6 +19,7 @@ class DateTimeGeneratorsTest extends FunSpec with ShouldMatchers with GeneratorS
     itSupports[Date](new Date(0))
     itSupports[Timestamp](new Timestamp(0))
     itSupports[Duration](Duration.ofMillis(0))
+    itSupports[Period](Period.ofDays(0))
   }
 
   describe("random") {
@@ -31,5 +32,6 @@ class DateTimeGeneratorsTest extends FunSpec with ShouldMatchers with GeneratorS
     itSupportsRandom[Date]
     itSupportsRandom[Timestamp]
     itSupportsRandom[Duration]
+    itSupportsRandom[Period]
   }
 }
