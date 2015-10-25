@@ -146,7 +146,7 @@ Or to get XML...
 ###Out-of-the-box features:
 - Nested object-trees (ie. non-primitive fields)
 - All Scala/Java primitives: Default, random
-- Scala and Java Collection classes: Empty, single-value, variable size, random)
+- Scala and Java Collection classes: Empty, single-value, variable size, random
 - Java8 date-time values: Epoch, current-time, random
 - Some monadic types (Option/Either/Try/Future): Happy, Unhappy, random
 - Simple overriding mechanism for your own-types and custom generation rules
@@ -160,6 +160,9 @@ Add the following lines to ```build.sbt```:
 resolvers += "JCenter" at "https://jcenter.bintray.com"
 libraryDependencies += "io.github.daviddenton" %% "databob.scala" % "X.X.X"
 ```
+
+###Contribute
+PRs gratefully accepted for other common types that might be useful.
 
 ###Acks
 To [Json4S](https://github.com/json4s/json4s) for the inspiration and reflection utils.
