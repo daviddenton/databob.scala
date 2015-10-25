@@ -18,9 +18,9 @@ class PrimitiveGeneratorsTest extends FunSpec with ShouldMatchers {
       }
     }
 
-    def itSupportsRandom[A: Manifest](expected: Any)(implicit generators: Generators, mf: Manifest[A]): Unit = {
-      it(mf.runtimeClass.getName) {
-        Databob.mk[A](generators, mf) shouldBe expected
+    def itSupportsRandom[A: Manifest](implicit generators: Generators, mf: Manifest[A]): Unit = {
+      it(mf.runtimeClass.getName + " at " + System.nanoTime()) {
+        Range(1, 10).map(i => Databob.mk[A](generators, mf)).toSet.size should not be 1
       }
     }
 
@@ -58,6 +58,42 @@ class PrimitiveGeneratorsTest extends FunSpec with ShouldMatchers {
 
       itSupports[String]("")
       itSupports[JavaString]("")
+    }
+
+    describe("random") {
+      implicit val g = PrimitiveGenerators.Random
+      itSupportsRandom[Int]
+      itSupportsRandom[JavaInteger]
+
+      itSupportsRandom[Long]
+      itSupportsRandom[JavaLong]
+
+      itSupportsRandom[Double]
+      itSupportsRandom[JavaDouble]
+
+      itSupportsRandom[Float]
+      itSupportsRandom[JavaFloat]
+
+      itSupportsRandom[Short]
+      itSupportsRandom[JavaShort]
+
+      itSupportsRandom[Byte]
+      itSupportsRandom[JavaByte]
+
+      itSupportsRandom[Boolean]
+      itSupportsRandom[JavaBoolean]
+
+      itSupportsRandom[Char]
+      itSupportsRandom[JavaChar]
+
+      itSupportsRandom[scala.BigDecimal]
+      itSupportsRandom[JavaBigDecimal]
+
+      itSupportsRandom[BigInt]
+      itSupportsRandom[JavaBigInteger]
+
+      itSupportsRandom[String]
+      itSupportsRandom[JavaString]
     }
   }
 }
