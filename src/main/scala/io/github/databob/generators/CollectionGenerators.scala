@@ -10,12 +10,12 @@ import scala.collection.JavaConverters._
  */
 object CollectionGenerators {
 
-  private def range(databob: Databob): Range = Range(0, databob.mk[GeneratedCollectionSize].value)
+  private def range(databob: Databob) = databob.mk[CollectionSizeRange].toRandomRange
 
   /**
    * Generates Empty collections
    */
-  lazy val Empty = typeIs((databob) => GeneratedCollectionSize(0)) +
+  lazy val Empty = typeIs((databob) => CollectionSizeRange(0, 0)) +
     erasureIsAssignableFrom[Map[_, _]]((gt, databob) => Map(range(databob).map(i => databob.mk(gt.typeArgs.head) -> databob.mk(gt.typeArgs(1))): _*)) +
     erasureIsAssignableFrom[Set[_]]((gt, databob) => Set(range(databob).map(i => databob.mk(gt.typeArgs.head)): _*)) +
     erasureIsAssignableFrom[List[_]]((gt, databob) => List(range(databob).map(i => databob.mk(gt.typeArgs.head)): _*)) +
@@ -42,10 +42,10 @@ object CollectionGenerators {
   /**
    * Generates Non-Empty collections
    */
-  lazy val NonEmpty = typeIs((databob) => GeneratedCollectionSize(1)) +: Empty
+  lazy val NonEmpty = typeIs((databob) => CollectionSizeRange(1, 1)) +: Empty
 
   /**
    * Generates Random collections
    */
-  lazy val Random = typeIs((databob) => if (Databob.random[Boolean]) GeneratedCollectionSize(scala.util.Random.nextInt(5)) else GeneratedCollectionSize(0)) +: Empty
+  lazy val Random = typeIs((databob) => if (Databob.random[Boolean]) CollectionSizeRange(1, 5) else CollectionSizeRange(0, 0)) +: Empty
 }
