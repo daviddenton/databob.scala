@@ -2,10 +2,8 @@ package databob.unit
 
 import java.lang.{Boolean => JavaBoolean, Byte => JavaByte, Character => JavaChar, Double => JavaDouble, Float => JavaFloat, Integer => JavaInteger, Long => JavaLong, Short => JavaShort, String => JavaString}
 import java.math.{BigDecimal => JavaBigDecimal, BigInteger => JavaBigInteger}
-import java.sql.Timestamp
 import java.time.{LocalDate, LocalDateTime, LocalTime, ZonedDateTime}
 import java.util
-import java.util.Date
 
 import io.github.databob._
 import io.github.databob.generators.Generators._
@@ -33,15 +31,6 @@ class DatabobTest extends FunSpec with ShouldMatchers {
     }
 
     describe(name) {
-      describe(JavaDateTimeGenerators.getClass.getSimpleName) {
-        itSupports[LocalDate]
-        itSupports[LocalTime]
-        itSupports[LocalDateTime]
-        itSupports[ZonedDateTime]
-        itSupports[Date]
-        itSupports[Timestamp]
-      }
-
       describe(ScalaCollectionGenerators.getClass.getSimpleName) {
         itSupports[List[Int]]
         itSupports[Map[Int, Int]]

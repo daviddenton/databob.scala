@@ -32,7 +32,7 @@ object Generator {
   def erasureIs[R: Manifest](fn: Databob => R) =
     new ErasureMatchingGenerator(_ == implicitly[Manifest[R]].runtimeClass, (gt, databob) => fn(databob))
 
-  def erasureIs2[R: Manifest](fn: (GeneratorType, Databob) => R) =
+  def erasureIsWithGen[R: Manifest](fn: (GeneratorType, Databob) => R) =
     new ErasureMatchingGenerator(_ == implicitly[Manifest[R]].runtimeClass, fn)
 
 }
