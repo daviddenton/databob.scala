@@ -27,6 +27,7 @@ class Databob(generators: Generators = new Generators()) {
       describe(scalaType) match {
         case o: ClassDescriptor if o.erasure.isSingleton => o.erasure.singletonInstance.getOrElse(sys.error(s"Not r case object: ${o.erasure}"))
         case c: ClassDescriptor => new ClassInstanceBuilder(c).result
+        case unknown => throw new GeneratorFailure("Could not find a generator to match " + unknown)
       }
     }
   }

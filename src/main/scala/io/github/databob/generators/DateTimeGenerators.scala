@@ -23,6 +23,7 @@ object DateTimeGenerators {
     typeIs(databob => LocalTime.from(databob.mk[ZonedDateTime])) +
     typeIs(databob => LocalDateTime.from(databob.mk[ZonedDateTime])) +
     typeIs(databob => ZonedDateTime.ofInstant(databob.mk[Instant], databob.mk[ZoneId])) +
+    typeIs(databob => Period.between(databob.mk[LocalDate], databob.mk[LocalDate])) +
     typeIs(databob => new Date(databob.mk[Instant].toEpochMilli)) +
     typeIs(databob => new Timestamp(databob.mk[Instant].toEpochMilli)) +
     typeIs(databob => Duration.of(databob.mk[Instant].toEpochMilli, ChronoUnit.MILLIS)) +
