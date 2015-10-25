@@ -37,7 +37,6 @@ object Examples extends App {
 
   def objectWithCustomCollectionSizes = {
     implicit val generators = collectionSizeRange(() => CollectionSizeRange(3, 5))
-    typeIs(databob => EmailAddress(databob.mk[String] + "@" + databob.mk[String] + ".com"))
     Databob.random[Email]
   }
 
