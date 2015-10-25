@@ -25,26 +25,14 @@ class Databob(generators: Generators = new Generators()) {
     if (r.isDefinedAt(generatorType)) r(generatorType)
     else {
       describe(scalaType) match {
-        case c: ClassDescriptor => new ClassInstanceBuilder(c).result
+        case cd: ClassDescriptor => {
+          val constructor = cd.constructors.headOption.getOrElse(throw new GeneratorFailure("No constructor found for type " + cd.erasure))
+          constructor.constructor.invoke(cd.companion, constructor.params.map(a => mk(a.argType))).asInstanceOf[AnyRef]
+        }
         case unknown => throw new GeneratorFailure("Could not find a generator to match " + unknown)
       }
     }
   }
-
-  private class ClassInstanceBuilder(descr: ClassDescriptor) {
-    private def instantiate = {
-      val constructor = descr.constructors.headOption.getOrElse(throw new GeneratorFailure("No constructor found for type " + descr.erasure))
-      constructor.constructor.invoke(descr.companion, constructor.params.map(a => mk(a.argType))).asInstanceOf[AnyRef]
-    }
-
-    def result: Any = {
-      val target = descr.erasure
-      val generatorType = GeneratorType(target.typeInfo, target.erasure, target.typeArgs)
-      val r = generators.pf(Databob.this)
-      if (r.isDefinedAt(generatorType)) r(generatorType) else instantiate
-    }
-  }
-
 }
 
 /**

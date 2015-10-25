@@ -4,7 +4,6 @@ import java.sql.Timestamp
 import java.time._
 import java.time.temporal.ChronoUnit
 import java.util.Date
-import java.util.concurrent.TimeUnit
 
 import io.github.databob.Databob
 import io.github.databob.Generator._
@@ -26,8 +25,7 @@ object DateTimeGenerators {
     typeIs(databob => Period.between(databob.mk[LocalDate], databob.mk[LocalDate])) +
     typeIs(databob => new Date(databob.mk[Instant].toEpochMilli)) +
     typeIs(databob => new Timestamp(databob.mk[Instant].toEpochMilli)) +
-    typeIs(databob => Duration.of(databob.mk[Instant].toEpochMilli, ChronoUnit.MILLIS)) +
-    erasureIs(databob => scala.concurrent.duration.Duration(databob.mk[Instant].toEpochMilli, TimeUnit.MILLISECONDS))
+    typeIs(databob => Duration.of(databob.mk[Instant].toEpochMilli, ChronoUnit.MILLIS))
 
   /**
    * Creates Random Date and Time instances (no boundaries)
