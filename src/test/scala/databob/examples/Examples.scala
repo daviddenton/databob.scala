@@ -4,8 +4,9 @@ import java.time.ZonedDateTime
 
 import io.github.databob.Databob
 import io.github.databob.Generator.typeIs
+import io.github.databob.generators.CollectionSizeRange
 import io.github.databob.generators.CollectionSizeRange._
-import io.github.databob.generators.{CollectionSizeRange, Generators}
+import io.github.databob.generators.Generators._
 
 import scala.util.Try
 
@@ -42,9 +43,7 @@ object Examples extends App {
   println(objectWithCustomCollectionSizes)
 
   def usingACustomGenerator = {
-    implicit val generators = typeIs(databob => {
-      EmailAddress(databob.mk[String] + "@" + databob.mk[String] + ".com")
-    }) +: Generators.EmptyGenerators
+    implicit val generators = typeIs(databob => EmailAddress(databob.mk[String] + "@" + databob.mk[String] + ".com")) +: EmptyGenerators
     Databob.random[Email]
   }
 
