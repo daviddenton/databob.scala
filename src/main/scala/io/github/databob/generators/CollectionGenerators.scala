@@ -15,7 +15,7 @@ object CollectionGenerators {
   /**
    * Generates Empty collections
    */
-  lazy val Empty = typeIs((databob) => CollectionSizeRange(0, 0)) +
+  lazy val Empty = typeIs((databob) => CollectionSizeRange.none) +
     erasureIsAssignableFrom[Map[_, _]]((gt, databob) => Map(range(databob).map(i => databob.mk(gt.typeArgs.head) -> databob.mk(gt.typeArgs(1))): _*)) +
     erasureIsAssignableFrom[Set[_]]((gt, databob) => Set(range(databob).map(i => databob.mk(gt.typeArgs.head)): _*)) +
     erasureIsAssignableFrom[List[_]]((gt, databob) => List(range(databob).map(i => databob.mk(gt.typeArgs.head)): _*)) +
@@ -42,10 +42,10 @@ object CollectionGenerators {
   /**
    * Generates Non-Empty collections
    */
-  lazy val NonEmpty = typeIs((databob) => CollectionSizeRange(1, 1)) +: Empty
+  lazy val NonEmpty = typeIs((databob) => CollectionSizeRange.exactly(1)) +: Empty
 
   /**
    * Generates Random collections
    */
-  lazy val Random = typeIs((databob) => if (Databob.random[Boolean]) CollectionSizeRange(1, 5) else CollectionSizeRange(0, 0)) +: Empty
+  lazy val Random = typeIs((databob) => if (Databob.random[Boolean]) CollectionSizeRange(1, 5) else CollectionSizeRange.empty) +: Empty
 }

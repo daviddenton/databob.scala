@@ -15,6 +15,10 @@ case class CollectionSizeRange(min: Int, max: Int) {
 
 object CollectionSizeRange {
 
+  val empty = CollectionSizeRange(0, 0)
+
+  val none = collectionSizeRange(empty)
+
   def exactly(value: Int) = collectionSizeRange(CollectionSizeRange(value, value))
 
   def atMost(value: Int) = collectionSizeRange(CollectionSizeRange(1, value))
