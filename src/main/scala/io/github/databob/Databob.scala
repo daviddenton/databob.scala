@@ -14,7 +14,7 @@ class Databob(generators: Generators = new Generators()) {
       mk(scalaTypeOf[A]).asInstanceOf[A]
     } catch {
       case e: GeneratorFailure => throw e
-      case e: Exception => throw new GeneratorFailure(s"Generation error: ${e.getMessage}", e)
+      case e: Exception => throw new GeneratorFailure(s"Unexpected generation error: ${e.getMessage}", e)
     }
   }
 
@@ -33,12 +33,8 @@ class Databob(generators: Generators = new Generators()) {
 
   private class ClassInstanceBuilder(descr: ClassDescriptor) {
     private def instantiate = {
-      try {
-        val constructor = descr.constructors.headOption.getOrElse(throw new GeneratorFailure("No constructor found for type " + descr.erasure))
-        constructor.constructor.invoke(descr.companion, constructor.params.map(a => mk(a.argType))).asInstanceOf[AnyRef]
-      } catch {
-        case e@(_: IllegalArgumentException | _: InstantiationException) => throw new GeneratorFailure("Could not construct class:"  + descr.fullName, e)
-      }
+      val constructor = descr.constructors.headOption.getOrElse(throw new GeneratorFailure("No constructor found for type " + descr.erasure))
+      constructor.constructor.invoke(descr.companion, constructor.params.map(a => mk(a.argType))).asInstanceOf[AnyRef]
     }
 
     def result: Any = {
@@ -77,5 +73,5 @@ object Databob {
    * @param mf manifest for the object to generate
    * @return the generated object
    */
-  def random[A](implicit overrides: Generators = Empty, mf: Manifest[A]): A =  mk[A](overrides ++ Random, mf)
+  def random[A](implicit overrides: Generators = Empty, mf: Manifest[A]): A = mk[A](overrides ++ Random, mf)
 }
