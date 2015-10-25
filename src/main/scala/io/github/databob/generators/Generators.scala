@@ -47,7 +47,7 @@ class Generators(generators: Iterable[Generator[_]] = Nil) extends Iterable[Gene
 
 object Generators {
 
-  lazy val Empty = new Generators()
+  lazy val EmptyGenerators = new Generators()
 
   lazy val Defaults =
     PrimitiveGenerators.Defaults ++

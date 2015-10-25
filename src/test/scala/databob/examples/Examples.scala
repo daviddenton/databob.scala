@@ -4,10 +4,9 @@ import java.time.ZonedDateTime
 
 import io.github.databob.Databob
 import io.github.databob.Generator.typeIs
-import io.github.databob.generators.CollectionSizeRange
-import io.github.databob.generators.CollectionSizeRange.collectionSizeRange
+import io.github.databob.generators.CollectionSizeRange._
+import io.github.databob.generators.{CollectionSizeRange, Generators}
 
-import scala.collection.immutable.Stream.Empty
 import scala.util.Try
 
 case class ReadReceipt(readDate: ZonedDateTime)
@@ -36,14 +35,16 @@ object Examples extends App {
   println(randomObjectWithOverridenField)
 
   def objectWithCustomCollectionSizes = {
-    implicit val generators = collectionSizeRange(() => CollectionSizeRange(3, 5))
+    implicit val generators = collectionSizeRange(CollectionSizeRange(3, 5))
     Databob.random[Email]
   }
 
   println(objectWithCustomCollectionSizes)
 
   def usingACustomGenerator = {
-    implicit val generators = typeIs(databob => EmailAddress(databob.mk[String] + "@" + databob.mk[String] + ".com")) +: Empty
+    implicit val generators = typeIs(databob => {
+      EmailAddress(databob.mk[String] + "@" + databob.mk[String] + ".com")
+    }) +: Generators.EmptyGenerators
     Databob.random[Email]
   }
 
