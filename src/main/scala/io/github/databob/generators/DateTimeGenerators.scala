@@ -26,10 +26,7 @@ object DateTimeGenerators {
     typeIs(databob => new Date(databob.mk[Instant].toEpochMilli)) +
     typeIs(databob => new Timestamp(databob.mk[Instant].toEpochMilli)) +
     typeIs(databob => Duration.of(databob.mk[Instant].toEpochMilli, ChronoUnit.MILLIS)) +
-    erasureIs(databob => {
-      println("HELLO")
-      scala.concurrent.duration.Duration(databob.mk[Instant].toEpochMilli, TimeUnit.MILLISECONDS)
-    })
+    erasureIs(databob => scala.concurrent.duration.Duration(databob.mk[Instant].toEpochMilli, TimeUnit.MILLISECONDS))
 
   /**
    * Creates Random Date and Time instances (no boundaries)
