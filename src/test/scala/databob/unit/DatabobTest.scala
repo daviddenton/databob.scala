@@ -1,14 +1,11 @@
 package databob.unit
 
 import java.time.{LocalDate, LocalDateTime, LocalTime, ZonedDateTime}
-import java.util
 
 import io.github.databob._
 import io.github.databob.generators.Generators._
 import io.github.databob.generators._
 import org.scalatest.{FunSpec, ShouldMatchers}
-
-import scala.reflect.Manifest
 
 case class YetAnother(name: Int, which: Boolean, time: LocalDateTime)
 
@@ -18,32 +15,21 @@ case class Person(other: Other, age: Option[ZonedDateTime], bob: LocalDate, name
 
 class APrivateClass private()
 
-class DatabobTest extends FunSpec with ShouldMatchers {
+class DatabobTest extends FunSpec with ShouldMatchers with GeneratorSpecs {
 
-  def describe(name: String, generators: Generators): Unit = {
-
-    def itSupports[A: Manifest](implicit mf: Manifest[A]): Unit = {
-      it(name + " : " + mf.runtimeClass) {
-        Databob.mk[A](generators, mf) === null shouldBe false
+  describe("Custom classes") {
+    describe("default") {
+      it("supports nested object trees") {
+        implicit val g = Defaults
+        Databob.mk[Person] should not be null
       }
     }
 
-    describe(name) {
-      describe(JavaCollectionGenerators.getClass.getSimpleName) {
-        itSupports[util.List[Int]]
-        itSupports[util.Map[Int, Int]]
-        itSupports[util.Set[Int]]
-        itSupports[Array[Int]]
-      }
-
-      describe("Custom case classes") {
-        itSupports[Person]
-      }
+    describe("random") {
+      implicit val g = Random
+      itSupportsRandom[Person]
     }
   }
-
-  describe("default", Defaults)
-  describe("random", Random)
 
   describe("Custom generator") {
     it("is used") {
