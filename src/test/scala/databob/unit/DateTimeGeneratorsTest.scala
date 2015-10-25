@@ -15,7 +15,7 @@ class DateTimeGeneratorsTest extends FunSpec with ShouldMatchers with GeneratorS
     itSupports[LocalDate](LocalDate.of(1970, 1, 1))
     itSupports[LocalTime](LocalTime.of(0, 0, 0))
     itSupports[LocalDateTime](LocalDateTime.of(1970, 1, 1, 0, 0, 0))
-    itSupports[ZonedDateTime](ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault()))
+    itSupports[ZonedDateTime](ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")))
     itSupports[Date](new Date(0))
     itSupports[Timestamp](new Timestamp(0))
     itSupports[Duration](Duration.ofMillis(0))
