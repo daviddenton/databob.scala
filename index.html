@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Databob.scala : Randomised, zero-boilerplate object builders">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Databob.scala</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/daviddenton/databob.scala">View on GitHub</a>
+
+          <h1 id="project_title">Databob.scala</h1>
+          <h2 id="project_tagline">Randomised, zero-boilerplate object builders</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/daviddenton/databob.scala/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/daviddenton/databob.scala/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="databob" class="anchor" href="#databob" aria-hidden="true"><span class="octicon octicon-link"></span></a>databob</h1>
+
+<p><a href="https://travis-ci.org/daviddenton/databob.scala" target="_top">
+<img src="https://travis-ci.org/daviddenton/databob.scala.svg"></a> 
+<a href="https://coveralls.io/github/daviddenton/databob.scala?branch=master" target="_top"><img src="https://coveralls.io/repos/daviddenton/databob.scala/badge.svg?branch=master"></a> 
+<a href="https://bintray.com/daviddenton/maven/databob/_latestVersion" target="_top"><img src="https://api.bintray.com/packages/daviddenton/maven/databob/images/download.svg"></a> 
+<a href="https://bintray.com/daviddenton/maven/databob/view?source=watch" target="_top"><img src="https://www.bintray.com/docs/images/bintray_badge_color.png"></a> </p>
+
+<p>Databob proves a way to generate completely randomised object builders with zero-boilerplate code.</p>
+
+<h3>
+<a id="why" class="anchor" href="#why" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why?</h3>
+
+<p>The problem of generating dummy test instances for our classes has been around for a long time. Given the following case classes...</p>
+
+<div class="highlight highlight-source-scala"><pre><span class="pl-k">case</span> <span class="pl-k">class</span> <span class="pl-en">EmailAddress</span>(<span class="pl-v">value</span>: <span class="pl-k">String</span>)
+
+<span class="pl-k">case</span> <span class="pl-k">class</span> <span class="pl-en">Email</span>(<span class="pl-v">from</span>: <span class="pl-en">EmailAddress</span>, <span class="pl-v">to</span>: <span class="pl-en">Seq</span>[<span class="pl-en">EmailAddress</span>], <span class="pl-v">date</span>: <span class="pl-en">ZonedDateTime</span>, <span class="pl-v">read</span>: <span class="pl-k">Boolean</span>, <span class="pl-v">subject</span>: <span class="pl-k">String</span>, <span class="pl-v">readReceipt</span>: <span class="pl-en">Try</span>[<span class="pl-en">ReadReceipt</span>])
+
+<span class="pl-k">case</span> <span class="pl-k">class</span> <span class="pl-en">Inbox</span>(<span class="pl-v">address</span>: <span class="pl-en">EmailAddress</span>, <span class="pl-v">emails</span>: <span class="pl-en">Seq</span>[<span class="pl-en">Email</span>])</pre></div>
+
+<p>We could start to write objects using the <a href="http://www.javacodegeeks.com/2013/06/builder-pattern-good-for-code-great-for-tests.html">TestBuilder</a> pattern using the traditional method:</p>
+
+<div class="highlight highlight-source-scala"><pre><span class="pl-k">class</span> <span class="pl-en">InboxAddressBuilder</span> {
+  <span class="pl-k">private</span> <span class="pl-k">var</span> <span class="pl-en">address</span> <span class="pl-k">=</span> <span class="pl-en">EmailAddress</span>(<span class="pl-s"><span class="pl-pds">"</span>some@email.address.com<span class="pl-pds">"</span></span>)
+  <span class="pl-k">private</span> <span class="pl-k">var</span> <span class="pl-en">emails</span> <span class="pl-k">=</span> <span class="pl-en">Seq</span>[<span class="pl-en">Email</span>]()
+
+  <span class="pl-k">def</span> <span class="pl-en">withAddress</span>(<span class="pl-v">newAddress</span>: <span class="pl-en">EmailAddress</span>) <span class="pl-k">=</span> {
+    address <span class="pl-k">=</span> newAddress
+    <span class="pl-v">this</span>
+  }
+
+  <span class="pl-k">def</span> <span class="pl-en">withEmails</span>(<span class="pl-v">newEmails</span>: <span class="pl-en">Seq</span>[<span class="pl-en">Email</span>]) <span class="pl-k">=</span> {
+    emails <span class="pl-k">=</span> newEmails
+    <span class="pl-v">this</span>
+  }
+
+  <span class="pl-k">def</span> <span class="pl-en">build</span> <span class="pl-k">=</span> <span class="pl-en">Inbox</span>(address, emails)
+}</pre></div>
+
+<p>Scala makes this easier for us somewhat by leveraging Case class <code>copy()</code>. This also allows us to be compiler safe, as removing 
+a field will break the equivalent <code>with</code> method:</p>
+
+<div class="highlight highlight-source-scala"><pre><span class="pl-k">class</span> <span class="pl-en">InboxAddressBuilder</span> {
+  <span class="pl-k">private</span> <span class="pl-k">var</span> <span class="pl-en">inbox</span> <span class="pl-k">=</span> <span class="pl-en">Inbox</span>(<span class="pl-en">EmailAddress</span>(<span class="pl-s"><span class="pl-pds">"</span>some@email.address.com<span class="pl-pds">"</span></span>), <span class="pl-en">Seq</span>[<span class="pl-en">Email</span>]())
+
+  <span class="pl-k">def</span> <span class="pl-en">withAddress</span>(<span class="pl-v">newAddress</span>: <span class="pl-en">EmailAddress</span>) <span class="pl-k">=</span> {
+    inbox <span class="pl-k">=</span> inbox.copy(address <span class="pl-k">=</span> newAddress)
+    <span class="pl-v">this</span>
+  }
+
+  <span class="pl-k">def</span> <span class="pl-en">withEmails</span>(<span class="pl-v">newEmails</span>: <span class="pl-en">Seq</span>[<span class="pl-en">Email</span>]) <span class="pl-k">=</span> {
+    inbox <span class="pl-k">=</span> inbox.copy(emails <span class="pl-k">=</span> newEmails)
+    <span class="pl-v">this</span>
+  }
+
+  <span class="pl-k">def</span> <span class="pl-en">build</span> <span class="pl-k">=</span> inbox
+}
+</pre></div>
+
+<p>Taking this even further with default arguments, we can reduce this to:</p>
+
+<div class="highlight highlight-source-scala"><pre><span class="pl-k">object</span> <span class="pl-en">InboxAddressBuilder</span> {
+  <span class="pl-k">def</span> <span class="pl-en">apply</span>(<span class="pl-v">address</span>: <span class="pl-en">EmailAddress</span> <span class="pl-k">=</span> <span class="pl-en">EmailAddress</span>(<span class="pl-s"><span class="pl-pds">"</span>some@email.address.com<span class="pl-pds">"</span></span>),
+            <span class="pl-v">emails</span>: <span class="pl-en">Seq</span>[<span class="pl-en">Email</span>] <span class="pl-k">=</span> <span class="pl-c1">Nil</span>)
+    <span class="pl-k">=</span> <span class="pl-en">Inbox</span>(address, emails)
+}</pre></div>
+
+<p>So, better - but it still seems pretty tedious to maintain. Additionally, we don't really want tests to rely unknowingly on 
+bits of default test data for multiple tests which will lead to an explosion of <a href="http://martinfowler.com/bliki/ObjectMother.html">ObjectMother</a>-type methods with small variations 
+to suit particular tests.</p>
+
+<p>What we really want are completely randomised instances, with important overrides set-up only for tests that rely on them. No sharing of test data across tests. Ever.</p>
+
+<p>Enter Databob. For a completely randomised instance, including non-primitive sub-tree objects:</p>
+
+<div class="highlight highlight-source-scala"><pre><span class="pl-en">Databob</span>.random[<span class="pl-en">Email</span>]</pre></div>
+
+<p>That's it. Want to override particular value(s)?</p>
+
+<div class="highlight highlight-source-scala"><pre><span class="pl-en">Databob</span>.random[<span class="pl-en">Inbox</span>].copy(address <span class="pl-k">=</span> <span class="pl-en">EmailAddress</span>(<span class="pl-s"><span class="pl-pds">"</span>my@real.email.com<span class="pl-pds">"</span></span>)</pre></div>
+
+<p>Or add your own rule for generating values:</p>
+
+<div class="highlight highlight-source-scala"><pre><span class="pl-k">implicit</span> <span class="pl-k">val</span> <span class="pl-en">generators</span> <span class="pl-k">=</span> typeIs(databob <span class="pl-k">=&gt;</span> {
+  <span class="pl-en">EmailAddress</span>(databob.mk[<span class="pl-k">String</span>] <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>@<span class="pl-pds">"</span></span> <span class="pl-k">+</span> databob.mk[<span class="pl-k">String</span>] <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>.com<span class="pl-pds">"</span></span>)
+}) <span class="pl-k">+</span><span class="pl-k">:</span> <span class="pl-en">Generators</span>.<span class="pl-en">EmptyGenerators</span>
+<span class="pl-en">Databob</span>.random[<span class="pl-en">Email</span>]</pre></div>
+
+<p>Out of the box, Databob supports:</p>
+
+<ul>
+<li>Nested object-trees (ie. non-primitive fields)</li>
+<li>All Scala/Java primitives: Default, random</li>
+<li>Scala and Java Collection classes: Empty, single-value, variable size, random)</li>
+<li>Java8 date-time values: Epoch, current-time, random</li>
+<li>Some monadic types (Option/Either/Try/Future): Happy, Unhappy, random</li>
+<li>Simple overriding mechanism for your own-types and custom generation rules</li>
+</ul>
+
+<h3>
+<a id="see-it-in-action" class="anchor" href="#see-it-in-action" aria-hidden="true"><span class="octicon octicon-link"></span></a>See it in action</h3>
+
+<p>See the <a href="https://github.com/daviddenton/databob.scala/tree/master/src/test/scala/databob/examples">example code</a>.</p>
+
+<h3>
+<a id="get-it" class="anchor" href="#get-it" aria-hidden="true"><span class="octicon octicon-link"></span></a>Get it</h3>
+
+<p>Add the following lines to <code>build.sbt</code>:</p>
+
+<div class="highlight highlight-source-scala"><pre>resolvers <span class="pl-k">+</span><span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>JCenter<span class="pl-pds">"</span></span> at <span class="pl-s"><span class="pl-pds">"</span>https://jcenter.bintray.com<span class="pl-pds">"</span></span>
+libraryDependencies <span class="pl-k">+</span><span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>io.github.daviddenton<span class="pl-pds">"</span></span> <span class="pl-k">%%</span> <span class="pl-s"><span class="pl-pds">"</span>databob.scala<span class="pl-pds">"</span></span> <span class="pl-k">%</span> <span class="pl-s"><span class="pl-pds">"</span>X.X.X<span class="pl-pds">"</span></span></pre></div>
+
+<h3>
+<a id="acks" class="anchor" href="#acks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Acks</h3>
+
+<p>To <a href="https://github.com/json4s/json4s">Json4S</a> for the inspiration and reflection utils.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Databob.scala maintained by <a href="https://github.com/daviddenton">daviddenton</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
