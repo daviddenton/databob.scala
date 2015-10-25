@@ -124,11 +124,22 @@ Or to get XML...
   {Xml.toXml(decompose(Databob.random[SchoolLibrary]))}
 </SchoolLibrary>
 ```
-...producing this:
 
+...producing this:
 ```XML
 <SchoolLibrary>
-  <librarian><firstName>60838e8a-c747-4b09-8653-e0272eca9024</firstName><lastName>62ee2c0e-570d-422f-92c5-82cb4911ae87</lastName></librarian>
+    <librarian>
+        <firstName>e1981fac-f3f4-4abf-82e4-374975d2b585</firstName>
+        <lastName>75a13eca-1ee0-4ec0-aff4-1ab3026b5acf</lastName>
+    </librarian>
+    <books>
+        <title>50029977-7566-43d5-83fa-09affdcbd7d5</title>
+        <pages>1502236860</pages>
+    </books>
+    <books>
+        <title>d25a697c-8960-4d9b-b595-224ac07df78a</title>
+        <pages>1777810872</pages>
+    </books>
 </SchoolLibrary>
 ```
 
