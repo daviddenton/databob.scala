@@ -1,6 +1,7 @@
 package io.github.databob.generators
 
 import java.lang.{Boolean => JavaBoolean, Byte => JavaByte, Character => JavaCharacter, Double => JavaDouble, Float => JavaFloat, Long => JavaLong, Short => JavaShort}
+import java.util.UUID
 
 import io.github.databob.Generator._
 
@@ -12,27 +13,31 @@ object PrimitiveGenerators {
   /**
    * Creates Primitive values with their default values (0 for numeric, empty Strings, false)
    */
-  lazy val Defaults = erasureIs[Int](databob => 0) +
-    erasureIs[Char](databob => 0.toChar) +
-    erasureIs[Long](databob => 0L) +
-    erasureIs[Double](databob => 0.0d) +
+  lazy val Defaults = erasureIs[Int](databob => databob.mk[BigDecimal].toInt) +
     erasureIs[BigDecimal](databob => BigDecimal(0)) +
-    erasureIs[BigInt](databob => BigInt(0)) +
+    erasureIs[BigInt](databob => databob.mk[BigDecimal].toBigInt()) +
     erasureIs[String](databob => "") +
-    erasureIs[Float](databob => 0.0f) +
-    erasureIs[Short](databob => 0) +
-    erasureIs[Byte](databob => 0.toByte) +
+    erasureIs[Long](databob => databob.mk[BigDecimal].toLong) +
+    erasureIs[JavaLong](databob => databob.mk[BigDecimal].toLong) +
+    erasureIs[Double](databob => databob.mk[BigDecimal].toDouble) +
+    erasureIs[JavaDouble](databob => databob.mk[BigDecimal].toDouble) +
+    erasureIs[Float](databob => databob.mk[BigDecimal].toFloat) +
+    erasureIs[JavaFloat](databob => databob.mk[BigDecimal].toFloat) +
+    erasureIs[Short](databob => databob.mk[BigDecimal].toShort) +
+    erasureIs[JavaShort](databob => databob.mk[BigDecimal].toShort) +
+    erasureIs[Byte](databob => databob.mk[BigDecimal].toByte) +
+    erasureIs[JavaByte](databob => databob.mk[BigDecimal].toByte) +
     erasureIs[Boolean](databob => false) +
-    erasureIs[JavaLong](databob => new JavaLong(0)) +
-    erasureIs[JavaDouble](databob => new JavaDouble(0)) +
-    erasureIs[JavaFloat](databob => new JavaFloat(0)) +
-    erasureIs[JavaShort](databob => new JavaShort(0.toShort)) +
-    erasureIs[JavaByte](databob => new JavaByte(0.toByte)) +
-    erasureIs[JavaBoolean](databob => new JavaBoolean(false)) +
-    erasureIs[JavaCharacter](databob => new JavaCharacter(0.toChar))
+    erasureIs[JavaBoolean](databob => databob.mk[Boolean]) +
+    erasureIs[Char](databob => databob.mk[BigDecimal].toChar) +
+    erasureIs[JavaCharacter](databob => databob.mk[BigDecimal].toChar)
 
   /**
    * Creates random Primitive values
    */
-  lazy val Random = erasureIs[Int](databob => 0) +: Defaults
+  lazy val Random =
+    erasureIs[BigDecimal](databob => BigDecimal(scala.util.Random.nextDouble() * Integer.MAX_VALUE)) +:
+      erasureIs[Boolean](databob => scala.util.Random.nextInt(10) > 5) +:
+      erasureIs[String](databob => UUID.randomUUID().toString) +:
+      Defaults
 }
