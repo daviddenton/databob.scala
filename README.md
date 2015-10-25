@@ -86,9 +86,8 @@ Databob.random[Inbox].copy(address = EmailAddress("my@real.email.com")
 
 Or add your own rule for generating values:
 ```scala
-implicit val generators = typeIs(databob => {
-  EmailAddress(databob.mk[String] + "@" + databob.mk[String] + ".com")
-}) +: Generators.EmptyGenerators
+implicit val generators = typeIs(databob =>  EmailAddress(databob.mk[String] + "@" + databob.mk[String] + ".com")) +: Generators.EmptyGenerators
+
 Databob.random[Email]
 ```
 
