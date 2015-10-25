@@ -20,8 +20,7 @@ class DatabobTest extends FunSpec with ShouldMatchers with GeneratorSpecs {
   describe("Custom classes") {
     describe("default") {
       it("supports nested object trees") {
-        implicit val g = Defaults
-        Databob.mk[Person] should not be null
+        Databob.default[Person] should not be null
       }
     }
 
