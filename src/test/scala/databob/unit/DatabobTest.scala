@@ -31,19 +31,11 @@ class DatabobTest extends FunSpec with ShouldMatchers {
     }
 
     describe(name) {
-      describe(ScalaCollectionGenerators.getClass.getSimpleName) {
-        itSupports[List[Int]]
-        itSupports[Map[Int, Int]]
-        itSupports[Set[Int]]
-        itSupports[Vector[Int]]
-        itSupports[Seq[Int]]
-        itSupports[Array[Int]]
-      }
-
       describe(JavaCollectionGenerators.getClass.getSimpleName) {
         itSupports[util.List[Int]]
         itSupports[util.Map[Int, Int]]
         itSupports[util.Set[Int]]
+        itSupports[Array[Int]]
       }
 
       describe("Custom case classes") {
