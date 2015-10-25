@@ -4,7 +4,7 @@ import java.time.ZonedDateTime
 
 import io.github.databob.Databob
 import io.github.databob.Generator.typeIs
-import io.github.databob.generators.CollectionSize
+import io.github.databob.generators.GeneratedCollectionSize.collectionSizeOf
 
 import scala.collection.immutable.Stream.Empty
 import scala.util.Try
@@ -35,8 +35,8 @@ object Examples extends App {
   println(randomObjectWithOverridenField)
 
   def objectWithCustomCollectionSizes = {
-    implicit val generators = typeIs(databob => CollectionSize(2)) +
-      typeIs(databob => EmailAddress(databob.mk[String] + "@" + databob.mk[String] + ".com"))
+    implicit val generators = collectionSizeOf(() => 2)
+    typeIs(databob => EmailAddress(databob.mk[String] + "@" + databob.mk[String] + ".com"))
     Databob.random[Email]
   }
 
