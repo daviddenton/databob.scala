@@ -10,7 +10,7 @@ object JavaCollectionGenerators {
   /**
    * Generates Empty Java collections
    */
-  val Empty =
+  lazy val Empty =
     new ErasureMatchingGenerator[Any](_.isArray, (gt, databob) => Array()) +
       erasureIs[java.util.List[_]]((databob) => new java.util.ArrayList[Any]()) +
       erasureIs[java.util.Set[_]]((databob) => new java.util.HashSet[Any]()) +
@@ -19,7 +19,7 @@ object JavaCollectionGenerators {
   /**
    * Generates Non-Empty Java collections
    */
-  val NonEmpty = new ErasureMatchingGenerator[Any](_.isArray, (gt, databob) => {
+  lazy val NonEmpty = new ErasureMatchingGenerator[Any](_.isArray, (gt, databob) => {
     Array(databob.mk(gt.typeArgs.head))
   }) +
     erasureIs2[java.util.List[_]]((gt, databob) => {
@@ -41,5 +41,5 @@ object JavaCollectionGenerators {
   /**
    * Generates Random Java collections
    */
-  val Random = NonEmpty
+  lazy val Random = NonEmpty
 }
