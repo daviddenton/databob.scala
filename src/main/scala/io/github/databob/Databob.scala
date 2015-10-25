@@ -73,7 +73,5 @@ object Databob {
    * @param mf manifest for the object to generate
    * @return the generated object
    */
-  def random[A](implicit overrides: Generators = EmptyGenerators, mf: Manifest[A]): A = {
-    mk[A](overrides ++ Random, mf)
-  }
+  def random[A](implicit overrides: Generators = EmptyGenerators, mf: Manifest[A]): A = mk[A](overrides ++ Random, mf)
 }
