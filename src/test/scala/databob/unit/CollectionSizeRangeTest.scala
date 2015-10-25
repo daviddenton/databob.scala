@@ -17,8 +17,8 @@ class CollectionSizeRangeTest extends FunSpec with ShouldMatchers {
     }
     it("random range") {
       val range = CollectionSizeRange(2, 10).toRandomRange.map(identity)
-      range.size should be >= 2
-      range.size should be <= 10
+      range.length should be >= 2
+      range.length should be <= 10
     }
   }
 

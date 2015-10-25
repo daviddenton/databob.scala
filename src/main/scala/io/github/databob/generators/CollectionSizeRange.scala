@@ -10,7 +10,7 @@ case class CollectionSizeRange(min: Int, max: Int) {
 
   def toRandomRange = if (min == 0 && max == 0) Nil
   else if (min == max) 0 until max
-  else min until (scala.util.Random.nextInt(max - min) + min)
+  else 0 until (scala.util.Random.nextInt(max - min) + min)
 }
 
 object CollectionSizeRange {
