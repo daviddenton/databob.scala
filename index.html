@@ -116,12 +116,60 @@ to suit particular tests.</p>
 
 <p>Or add your own rule for generating values:</p>
 
-<div class="highlight highlight-source-scala"><pre><span class="pl-k">implicit</span> <span class="pl-k">val</span> <span class="pl-en">generators</span> <span class="pl-k">=</span> typeIs(databob <span class="pl-k">=&gt;</span> {
-  <span class="pl-en">EmailAddress</span>(databob.mk[<span class="pl-k">String</span>] <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>@<span class="pl-pds">"</span></span> <span class="pl-k">+</span> databob.mk[<span class="pl-k">String</span>] <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>.com<span class="pl-pds">"</span></span>)
-}) <span class="pl-k">+</span><span class="pl-k">:</span> <span class="pl-en">Generators</span>.<span class="pl-en">EmptyGenerators</span>
+<div class="highlight highlight-source-scala"><pre><span class="pl-k">implicit</span> <span class="pl-k">val</span> <span class="pl-en">generators</span> <span class="pl-k">=</span> typeIs(databob <span class="pl-k">=&gt;</span>  <span class="pl-en">EmailAddress</span>(databob.mk[<span class="pl-k">String</span>] <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>@<span class="pl-pds">"</span></span> <span class="pl-k">+</span> databob.mk[<span class="pl-k">String</span>] <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>.com<span class="pl-pds">"</span></span>)) <span class="pl-k">+</span><span class="pl-k">:</span> <span class="pl-en">Generators</span>.<span class="pl-en">EmptyGenerators</span>
+
 <span class="pl-en">Databob</span>.random[<span class="pl-en">Email</span>]</pre></div>
 
-<p>Out of the box, Databob supports:</p>
+<p>Additionally, once we have this randomising structure in code, we can use it for other useful stuff. For example, generating JSON with
+a library such as <a href="https://github.com/json4s/json4s">Json4S</a>:</p>
+
+<div class="highlight highlight-source-scala"><pre><span class="pl-k">case</span> <span class="pl-k">class</span> <span class="pl-en">Book</span>(<span class="pl-v">title</span>: <span class="pl-k">String</span>, <span class="pl-v">pages</span>: <span class="pl-k">Int</span>)
+
+<span class="pl-k">case</span> <span class="pl-k">class</span> <span class="pl-en">Teacher</span>(<span class="pl-v">firstName</span>: <span class="pl-k">String</span>, <span class="pl-v">lastName</span>: <span class="pl-k">String</span>)
+
+<span class="pl-k">case</span> <span class="pl-k">class</span> <span class="pl-en">SchoolLibrary</span>(<span class="pl-v">librarian</span>: <span class="pl-en">Teacher</span>, <span class="pl-v">books</span>: <span class="pl-en">Seq</span>[<span class="pl-en">Book</span>])
+
+<span class="pl-k">implicit</span> <span class="pl-k">val</span> <span class="pl-en">f</span> <span class="pl-k">=</span> <span class="pl-en">DefaultFormats</span>
+pretty(render(decompose(<span class="pl-en">Databob</span>.random[<span class="pl-en">SchoolLibrary</span>])))</pre></div>
+
+<p>... would generate us something like this:</p>
+
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>librarian<span class="pl-pds">"</span></span>:{
+    <span class="pl-s"><span class="pl-pds">"</span>firstName<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>6c550709-bdc8-4ce8-8acd-607020f027bb<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>lastName<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>11073325-20fb-4d81-832c-d2eacd5bc4f1<span class="pl-pds">"</span></span>
+  },
+  <span class="pl-s"><span class="pl-pds">"</span>books<span class="pl-pds">"</span></span>:[{
+    <span class="pl-s"><span class="pl-pds">"</span>title<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>982c7e30-a969-40f1-99c1-f397d1c52494<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>pages<span class="pl-pds">"</span></span>:<span class="pl-c1">713182742</span>
+  }]
+}</pre></div>
+
+<p>Or to get XML...</p>
+
+<div class="highlight highlight-source-scala"><pre>&lt;<span class="pl-ent">SchoolLibrary</span>&gt;
+  {<span class="pl-en">Xml</span>.toXml(decompose(<span class="pl-en">Databob</span>.random[<span class="pl-en">SchoolLibrary</span>]))}
+&lt;/<span class="pl-ent">SchoolLibrary</span>&gt;</pre></div>
+
+<p>...producing this:</p>
+
+<div class="highlight highlight-text-xml"><pre>&lt;<span class="pl-ent">SchoolLibrary</span>&gt;
+    &lt;<span class="pl-ent">librarian</span>&gt;
+        &lt;<span class="pl-ent">firstName</span>&gt;e1981fac-f3f4-4abf-82e4-374975d2b585&lt;/<span class="pl-ent">firstName</span>&gt;
+        &lt;<span class="pl-ent">lastName</span>&gt;75a13eca-1ee0-4ec0-aff4-1ab3026b5acf&lt;/<span class="pl-ent">lastName</span>&gt;
+    &lt;/<span class="pl-ent">librarian</span>&gt;
+    &lt;<span class="pl-ent">books</span>&gt;
+        &lt;<span class="pl-ent">title</span>&gt;50029977-7566-43d5-83fa-09affdcbd7d5&lt;/<span class="pl-ent">title</span>&gt;
+        &lt;<span class="pl-ent">pages</span>&gt;1502236860&lt;/<span class="pl-ent">pages</span>&gt;
+    &lt;/<span class="pl-ent">books</span>&gt;
+    &lt;<span class="pl-ent">books</span>&gt;
+        &lt;<span class="pl-ent">title</span>&gt;d25a697c-8960-4d9b-b595-224ac07df78a&lt;/<span class="pl-ent">title</span>&gt;
+        &lt;<span class="pl-ent">pages</span>&gt;1777810872&lt;/<span class="pl-ent">pages</span>&gt;
+    &lt;/<span class="pl-ent">books</span>&gt;
+&lt;/<span class="pl-ent">SchoolLibrary</span>&gt;</pre></div>
+
+<h3>
+<a id="out-of-the-box-features" class="anchor" href="#out-of-the-box-features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Out-of-the-box features:</h3>
 
 <ul>
 <li>Nested object-trees (ie. non-primitive fields)</li>
