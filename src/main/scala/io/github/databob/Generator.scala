@@ -1,5 +1,6 @@
 package io.github.databob
 
+import io.github.databob.generators.Generators._
 import io.github.databob.generators.{ErasureMatchingGenerator, Generators, TypeMatchingGenerator}
 
 /**
@@ -19,7 +20,7 @@ trait Generator[A] {
    * @param that the generator to append
    * @return the combined Generators
    */
-  def +(that: Generator[_]): Generators = this +: (that +: Generators.Empty)
+  def +(that: Generator[_]): Generators = this +: (that +: EmptyGenerators)
 }
 
 object Generator {

@@ -57,7 +57,7 @@ object Databob {
    * @param mf manifest for the object to generate
    * @return the generated object
    */
-  def mk[A](implicit generators: Generators = Empty, mf: Manifest[A]): A = new Databob(generators).mk[A]
+  def mk[A](implicit generators: Generators = EmptyGenerators, mf: Manifest[A]): A = new Databob(generators).mk[A]
 
   /**
    * Make a default object using the overrides provided and falling back to the set of Default generators
@@ -65,7 +65,7 @@ object Databob {
    * @param mf manifest for the object to generate
    * @return the generated object
    */
-  def default[A](implicit overrides: Generators = Empty, mf: Manifest[A]): A = mk[A](overrides ++ Defaults, mf)
+  def default[A](implicit overrides: Generators = EmptyGenerators, mf: Manifest[A]): A = mk[A](overrides ++ Defaults, mf)
 
   /**
    * Make a random object using the overrides provided and falling back to the set of Random generators
@@ -73,5 +73,7 @@ object Databob {
    * @param mf manifest for the object to generate
    * @return the generated object
    */
-  def random[A](implicit overrides: Generators = Empty, mf: Manifest[A]): A = mk[A](overrides ++ Random, mf)
+  def random[A](implicit overrides: Generators = EmptyGenerators, mf: Manifest[A]): A = {
+    mk[A](overrides ++ Random, mf)
+  }
 }
