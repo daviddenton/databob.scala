@@ -6,7 +6,7 @@ databob
 <a href="https://coveralls.io/github/daviddenton/databob.scala?branch=master" target="_top"><img src="https://coveralls.io/repos/daviddenton/databob.scala/badge.svg?branch=master"/></a> 
 <a href="https://bintray.com/daviddenton/maven/databob/_latestVersion" target="_top"><img src="https://api.bintray.com/packages/daviddenton/maven/databob/images/download.svg"/></a> 
 
-Databob proves a way to generate completely randomised object builders with zero-boilerplate code.
+Databob provides a way to generate completely randomised object builders with zero-boilerplate code.
 
 ###Why?
 The problem of generating dummy test instances for our classes has been around for a long time. Given the following case classes...
