@@ -1,5 +1,6 @@
 databob
 ===========
+
 <a href="https://travis-ci.org/daviddenton/databob.scala.svg?branch=master" target="_top">
 <img src="https://travis-ci.org/daviddenton/databob.scala.svg?branch=master"/></a> 
 <a href="https://coveralls.io/github/daviddenton/databob.scala?branch=master" target="_top"><img src="https://coveralls.io/repos/daviddenton/databob.scala/badge.svg?branch=master"/></a> 
