@@ -81,7 +81,7 @@ Databob.random[Email]
 
 That's it. Want to override particular value(s)?
 ```scala
-Databob.random[Inbox].copy(address = EmailAddress("my@real.email.com")
+Databob.random[Inbox].copy(address = EmailAddress("my@real.email.com"))
 ```
 
 Or add your own rule for generating values?
