@@ -5,7 +5,6 @@ databob
 <img src="https://travis-ci.org/daviddenton/databob.scala.svg?branch=master"/></a> 
 <a href="https://coveralls.io/github/daviddenton/databob.scala?branch=master" target="_top"><img src="https://coveralls.io/repos/daviddenton/databob.scala/badge.svg?branch=master"/></a> 
 <a href="https://bintray.com/daviddenton/maven/databob/_latestVersion" target="_top"><img src="https://api.bintray.com/packages/daviddenton/maven/databob/images/download.svg"/></a> 
-<a href="https://bintray.com/daviddenton/maven/databob/view?source=watch" target="_top"><img src="https://www.bintray.com/docs/images/bintray_badge_color.png"/></a> 
 
 Databob proves a way to generate completely randomised object builders with zero-boilerplate code.
 
