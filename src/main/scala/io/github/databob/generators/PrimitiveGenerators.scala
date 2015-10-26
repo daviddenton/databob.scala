@@ -3,6 +3,7 @@ package io.github.databob.generators
 import java.lang.{Character => JavaCharacter}
 import java.util.UUID
 
+import io.github.databob.Databob
 import io.github.databob.Generator._
 
 /**
@@ -32,8 +33,9 @@ object PrimitiveGenerators {
    * Creates random Primitive values
    */
   lazy val Random =
-    erasureIs[BigDecimal](databob => BigDecimal(scala.util.Random.nextDouble() * Integer.MAX_VALUE)) +:
-      erasureIs[Boolean](databob => scala.util.Random.nextInt(10) > 5) +:
-      erasureIs[String](databob => UUID.randomUUID().toString) +:
+    typeIs(databob => CoinToss.Even) +
+      erasureIs[BigDecimal](databob => BigDecimal(scala.util.Random.nextDouble() * Integer.MAX_VALUE)) +
+      erasureIs[Boolean](databob => Databob.random[CoinToss].toss) +
+      erasureIs[String](databob => UUID.randomUUID().toString) ++
       Defaults
 }

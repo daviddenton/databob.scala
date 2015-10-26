@@ -2,6 +2,7 @@ package io.github.databob.generators
 
 import io.github.databob.Generator._
 
+
 /**
  * Represents the minimum and maximum size of a generated collection. Defaults to 1->5, Add a generator for this to change
  */

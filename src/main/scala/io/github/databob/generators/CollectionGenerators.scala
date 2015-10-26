@@ -47,5 +47,8 @@ object CollectionGenerators {
   /**
    * Generates Random collections
    */
-  lazy val Random = typeIs((databob) => if (Databob.random[Boolean]) CollectionSizeRange(1, 5) else CollectionSizeRange.empty) +: Empty
+  lazy val Random =
+    typeIs(databob => CoinToss.Even) +
+      typeIs[CollectionSizeRange]((databob) => if (Databob.random[CoinToss].toss) CollectionSizeRange(1, 5) else CollectionSizeRange.empty) ++
+      Empty
 }

@@ -14,10 +14,11 @@ object MonadGenerators {
   /**
    * Generates 'happy' monad values (Some Option, Right Either etc)
    */
-  lazy val Happy = erasureIsAssignableFrom[Try[_]]((gt, databob) => Success(databob.mk(gt.typeArgs.head))) +
-    erasureIsAssignableFrom[Future[_]]((gt, databob) => Future.successful(databob.mk(gt.typeArgs.head))) +
-    erasureIsAssignableFrom[Option[_]]((gt, databob) => Option(databob.mk(gt.typeArgs.head))) +
-    erasureIsAssignableFrom[Either[_, _]]((gt, databob) => Right(databob.mk(gt.typeArgs(1))))
+  lazy val Happy =
+    erasureIsAssignableFrom[Try[_]]((gt, databob) => Success(databob.mk(gt.typeArgs.head))) +
+      erasureIsAssignableFrom[Future[_]]((gt, databob) => Future.successful(databob.mk(gt.typeArgs.head))) +
+      erasureIsAssignableFrom[Option[_]]((gt, databob) => Option(databob.mk(gt.typeArgs.head))) +
+      erasureIsAssignableFrom[Either[_, _]]((gt, databob) => Right(databob.mk(gt.typeArgs(1))))
 
   /**
    * Generates 'unhappy' monad values (None Option, Left Either etc)
@@ -28,19 +29,20 @@ object MonadGenerators {
     erasureIsAssignableFrom[Either[_, _]]((gt, databob) => Left(databob.mk(gt.typeArgs.head)))
 
   /**
-   * Generates Random monad values
+   * Generates Random monad values. Override CoinToss generator to change 50:50 success/failure ratio
    */
   lazy val Random =
-    erasureIsAssignableFrom[Try[_]]((gt, databob) => {
-      if (Databob.random[Boolean]) Success(databob.mk(gt.typeArgs.head)) else Failure(databob.mk[Exception])
-    }) +
+    typeIs(databob => CoinToss.Even) +
+      erasureIsAssignableFrom[Try[_]]((gt, databob) => {
+        if (Databob.random[CoinToss].toss) Success(databob.mk(gt.typeArgs.head)) else Failure(databob.mk[Exception])
+      }) +
       erasureIsAssignableFrom[Future[_]]((gt, databob) => {
-        if (Databob.random[Boolean]) Future.successful(databob.mk(gt.typeArgs.head)) else Future.failed(databob.mk[Exception])
+        if (Databob.random[CoinToss].toss) Future.successful(databob.mk(gt.typeArgs.head)) else Future.failed(databob.mk[Exception])
       }) +
       erasureIsAssignableFrom[Option[_]]((gt, databob) => {
-        if (Databob.random[Boolean]) Option(databob.mk(gt.typeArgs.head)) else None
+        if (Databob.random[CoinToss].toss) Option(databob.mk(gt.typeArgs.head)) else None
       }) +
       erasureIsAssignableFrom[Either[_, _]]((gt, databob) => {
-        if (Databob.random[Boolean]) Right(databob.mk(gt.typeArgs(1))) else Left(databob.mk(gt.typeArgs.head))
+        if (Databob.random[CoinToss].toss) Right(databob.mk(gt.typeArgs(1))) else Left(databob.mk(gt.typeArgs.head))
       })
 }
