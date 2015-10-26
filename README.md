@@ -165,4 +165,4 @@ libraryDependencies += "io.github.daviddenton" %% "databob.scala" % "X.X.X"
 PRs gratefully accepted for other common types that might be useful.
 
 ###Acks
-To [Json4S](https://github.com/json4s/json4s) for the inspiration and reflection utils.
+To [Json4S](https://github.com/json4s/json4s) for the ninja reflection util.
