@@ -6,6 +6,8 @@ databob
 <a href="https://coveralls.io/github/daviddenton/databob.scala?branch=master" target="_top"><img src="https://coveralls.io/repos/daviddenton/databob.scala/badge.svg?branch=master"/></a> 
 <a href="https://bintray.com/daviddenton/maven/databob/_latestVersion" target="_top"><img src="https://api.bintray.com/packages/daviddenton/maven/databob/images/download.svg"/></a> 
 
+##### (Also available in [JavaScript](https://github.com/daviddenton/databob) and [Kotlin](https://github.com/daviddenton/databob.kotlin) flavours)
+
 Databob provides a way to generate completely randomised object builders with zero-boilerplate code.
 
 ###Why?
