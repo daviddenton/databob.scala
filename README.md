@@ -10,7 +10,7 @@ databob
 
 Databob provides a way to generate completely randomised object builders with zero-boilerplate code.
 
-###Why?
+### Why?
 The problem of generating dummy test instances for our classes has been around for a long time. Given the following case classes...
 ```scala
 case class EmailAddress(value: String)
@@ -76,7 +76,10 @@ to suit particular tests.
 
 What we really want are completely randomised instances, with important overrides set-up only for tests that rely on them. No sharing of test data across tests. Ever.
 
-Enter Databob. For a completely randomised instance, including non-primitive sub-tree objects:
+No sharing of test data across tests. <b>Ever</b>.
+
+#### Enter Databob
+For a completely randomised instance, including non-primitive sub-tree objects:
 ```scala
 Databob.random[Email]
 ```
@@ -145,7 +148,7 @@ Or to get XML...
 </SchoolLibrary>
 ```
 
-###Out-of-the-box features:
+### Out-of-the-box features:
 - Nested object-trees (ie. non-primitive fields)
 - All Scala/Java primitives: Default, random
 - Scala and Java Collection classes: Empty, single-value, variable size, random
@@ -153,18 +156,18 @@ Or to get XML...
 - Some monadic types (Option/Either/Try/Future): Happy, unhappy, random
 - Simple overriding mechanism for your own-types and custom generation rules
 
-###See it in action
+### See it in action
 See the [example code](https://github.com/daviddenton/databob.scala/tree/master/src/test/scala/databob/examples).
 
-###Get it
+### Get it
 Add the following lines to ```build.sbt```:
 ```scala
 resolvers += "JCenter" at "https://jcenter.bintray.com"
 libraryDependencies += "io.github.daviddenton" %% "databob.scala" % "X.X.X"
 ```
 
-###Contribute
+### Contribute
 PRs gratefully accepted for other common types that might be useful.
 
-###Acks
+### Acks
 To [Json4S](https://github.com/json4s/json4s) for the ninja reflection util.
