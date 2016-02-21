@@ -13,6 +13,8 @@ Databob provides a way to generate completely randomised object builders with ze
 ### Why?
 The problem of generating dummy test instances for our classes has been around for a long time. Given the following case classes...
 ```scala
+case class ReadReceipt(value: Boolean)
+
 case class EmailAddress(value: String)
 
 case class Email(from: EmailAddress, to: Seq[EmailAddress], date: ZonedDateTime, read: Boolean, subject: String, readReceipt: Try[ReadReceipt])
