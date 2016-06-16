@@ -20,21 +20,26 @@
 
     <section class="main-content">
       <h1>
-<a id="databob" class="anchor" href="#databob" aria-hidden="true"><span class="octicon octicon-link"></span></a>databob</h1>
+<a id="databob" class="anchor" href="#databob" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>databob</h1>
 
-<p><a href="https://travis-ci.org/daviddenton/databob.scala.svg?branch=master" target="_top">
+<p><a href="https://travis-ci.org/daviddenton/databob.scala.svg?branch=master">
 <img src="https://travis-ci.org/daviddenton/databob.scala.svg?branch=master"></a> 
-<a href="https://coveralls.io/github/daviddenton/databob.scala?branch=master" target="_top"><img src="https://coveralls.io/repos/daviddenton/databob.scala/badge.svg?branch=master"></a> 
-<a href="https://bintray.com/daviddenton/maven/databob/_latestVersion" target="_top"><img src="https://api.bintray.com/packages/daviddenton/maven/databob/images/download.svg"></a> </p>
+<a href="https://coveralls.io/github/daviddenton/databob.scala?branch=master"><img src="https://coveralls.io/repos/daviddenton/databob.scala/badge.svg?branch=master"></a> 
+<a href="https://bintray.com/daviddenton/maven/databob/_latestVersion"><img src="https://api.bintray.com/packages/daviddenton/maven/databob/images/download.svg"></a> </p>
+
+<h5>
+<a id="also-available-in-javascript-and-kotlin-flavours" class="anchor" href="#also-available-in-javascript-and-kotlin-flavours" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>(Also available in <a href="https://github.com/daviddenton/databob">JavaScript</a> and <a href="https://github.com/daviddenton/databob.kotlin">Kotlin</a> flavours)</h5>
 
 <p>Databob provides a way to generate completely randomised object builders with zero-boilerplate code.</p>
 
 <h3>
-<a id="why" class="anchor" href="#why" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why?</h3>
+<a id="why" class="anchor" href="#why" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Why?</h3>
 
 <p>The problem of generating dummy test instances for our classes has been around for a long time. Given the following case classes...</p>
 
-<div class="highlight highlight-source-scala"><pre><span class="pl-k">case</span> <span class="pl-k">class</span> <span class="pl-en">EmailAddress</span>(<span class="pl-v">value</span>: <span class="pl-k">String</span>)
+<div class="highlight highlight-source-scala"><pre><span class="pl-k">case</span> <span class="pl-k">class</span> <span class="pl-en">ReadReceipt</span>(<span class="pl-v">value</span>: <span class="pl-k">Boolean</span>)
+
+<span class="pl-k">case</span> <span class="pl-k">class</span> <span class="pl-en">EmailAddress</span>(<span class="pl-v">value</span>: <span class="pl-k">String</span>)
 
 <span class="pl-k">case</span> <span class="pl-k">class</span> <span class="pl-en">Email</span>(<span class="pl-v">from</span>: <span class="pl-en">EmailAddress</span>, <span class="pl-v">to</span>: <span class="pl-en">Seq</span>[<span class="pl-en">EmailAddress</span>], <span class="pl-v">date</span>: <span class="pl-en">ZonedDateTime</span>, <span class="pl-v">read</span>: <span class="pl-k">Boolean</span>, <span class="pl-v">subject</span>: <span class="pl-k">String</span>, <span class="pl-v">readReceipt</span>: <span class="pl-en">Try</span>[<span class="pl-en">ReadReceipt</span>])
 
@@ -93,7 +98,12 @@ to suit particular tests.</p>
 
 <p>What we really want are completely randomised instances, with important overrides set-up only for tests that rely on them. No sharing of test data across tests. Ever.</p>
 
-<p>Enter Databob. For a completely randomised instance, including non-primitive sub-tree objects:</p>
+<p>No sharing of test data across tests. <b>Ever</b>.</p>
+
+<h4>
+<a id="enter-databob" class="anchor" href="#enter-databob" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Enter Databob</h4>
+
+<p>For a completely randomised instance, including non-primitive sub-tree objects:</p>
 
 <div class="highlight highlight-source-scala"><pre><span class="pl-en">Databob</span>.random[<span class="pl-en">Email</span>]</pre></div>
 
@@ -156,7 +166,7 @@ pretty(render(decompose(<span class="pl-en">Databob</span>.random[<span class="p
 &lt;/<span class="pl-ent">SchoolLibrary</span>&gt;</pre></div>
 
 <h3>
-<a id="out-of-the-box-features" class="anchor" href="#out-of-the-box-features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Out-of-the-box features:</h3>
+<a id="out-of-the-box-features" class="anchor" href="#out-of-the-box-features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Out-of-the-box features:</h3>
 
 <ul>
 <li>Nested object-trees (ie. non-primitive fields)</li>
@@ -168,25 +178,25 @@ pretty(render(decompose(<span class="pl-en">Databob</span>.random[<span class="p
 </ul>
 
 <h3>
-<a id="see-it-in-action" class="anchor" href="#see-it-in-action" aria-hidden="true"><span class="octicon octicon-link"></span></a>See it in action</h3>
+<a id="see-it-in-action" class="anchor" href="#see-it-in-action" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>See it in action</h3>
 
 <p>See the <a href="https://github.com/daviddenton/databob.scala/tree/master/src/test/scala/databob/examples">example code</a>.</p>
 
 <h3>
-<a id="get-it" class="anchor" href="#get-it" aria-hidden="true"><span class="octicon octicon-link"></span></a>Get it</h3>
+<a id="get-it" class="anchor" href="#get-it" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Get it</h3>
 
 <p>Add the following lines to <code>build.sbt</code>:</p>
 
 <div class="highlight highlight-source-scala"><pre>resolvers <span class="pl-k">+</span><span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>JCenter<span class="pl-pds">"</span></span> at <span class="pl-s"><span class="pl-pds">"</span>https://jcenter.bintray.com<span class="pl-pds">"</span></span>
-libraryDependencies <span class="pl-k">+</span><span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>io.github.daviddenton<span class="pl-pds">"</span></span> <span class="pl-k">%%</span> <span class="pl-s"><span class="pl-pds">"</span>databob.scala<span class="pl-pds">"</span></span> <span class="pl-k">%</span> <span class="pl-s"><span class="pl-pds">"</span>X.X.X<span class="pl-pds">"</span></span></pre></div>
+libraryDependencies <span class="pl-k">+</span><span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>io.github.daviddenton<span class="pl-pds">"</span></span> <span class="pl-k">%%</span> <span class="pl-s"><span class="pl-pds">"</span>databob<span class="pl-pds">"</span></span> <span class="pl-k">%</span> <span class="pl-s"><span class="pl-pds">"</span>1.2.0<span class="pl-pds">"</span></span></pre></div>
 
 <h3>
-<a id="contribute" class="anchor" href="#contribute" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contribute</h3>
+<a id="contribute" class="anchor" href="#contribute" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contribute</h3>
 
 <p>PRs gratefully accepted for other common types that might be useful.</p>
 
 <h3>
-<a id="acks" class="anchor" href="#acks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Acks</h3>
+<a id="acks" class="anchor" href="#acks" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Acks</h3>
 
 <p>To <a href="https://github.com/json4s/json4s">Json4S</a> for the ninja reflection util.</p>
 
