@@ -10,9 +10,9 @@ name := projectName
 
 description := "Randomized object generation"
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
-crossScalaVersions := Seq("2.11.7", "2.10.4")
+crossScalaVersions := Seq("2.11.8", "2.10.6")
 
 scalacOptions += "-deprecation"
 

@@ -9,7 +9,7 @@ import org.scalatest.{FunSpec, ShouldMatchers}
 
 case class YetAnother(name: Int, which: Boolean, time: LocalDateTime)
 
-case class Other(name: String, yet: YetAnother)
+case class Other(name: Option[String], yet: YetAnother)
 
 case class Person(other: Other, age: Option[ZonedDateTime], bob: LocalDate, names: Seq[Other], aMap: Map[String, ZonedDateTime])
 
@@ -27,6 +27,7 @@ class DatabobTest extends FunSpec with ShouldMatchers with GeneratorSpecs {
     describe("random") {
       implicit val g = Random
       itSupportsRandom[Person]
+      itSupportsRandom[Other]
     }
   }
 
