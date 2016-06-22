@@ -42,4 +42,6 @@ pomExtra :=
       </developer>
     </developers>
 
+credentials += Credentials(Path.userHome / ".sonatype" / ".credentials")
+
 Seq(bintraySettings: _*)
