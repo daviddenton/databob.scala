@@ -165,7 +165,7 @@ See the [example code](https://github.com/daviddenton/databob.scala/tree/master/
 Add the following lines to ```build.sbt```:
 ```scala
 resolvers += "JCenter" at "https://jcenter.bintray.com"
-libraryDependencies += "io.github.daviddenton" %% "databob" % "1.3.0"
+libraryDependencies += "io.github.daviddenton" %% "databob" % "1.5.0"
 ```
 
 ### Contribute
