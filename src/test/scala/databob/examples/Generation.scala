@@ -27,6 +27,10 @@ object Generation extends App {
 
   println(completelyRandomObject)
 
+  def randomObjectNotEmpty = Databob.randomNotEmpty[Email]
+
+  println(randomObjectNotEmpty)
+
   def completelyDefaultObject = Databob.default[Email]
 
   println(completelyDefaultObject)
