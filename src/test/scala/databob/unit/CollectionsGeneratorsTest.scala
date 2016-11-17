@@ -3,9 +3,9 @@ package databob.unit
 import java.util
 
 import io.github.databob.generators._
-import org.scalatest.{FunSpec, ShouldMatchers}
+import org.scalatest.{FunSpec, Matchers}
 
-class CollectionsGeneratorsTest extends FunSpec with ShouldMatchers with GeneratorSpecs {
+class CollectionsGeneratorsTest extends FunSpec with Matchers with GeneratorSpecs {
 
   describe("empty") {
     implicit val g = CollectionGenerators.Empty ++ PrimitiveGenerators.Defaults

@@ -2,6 +2,7 @@ package io.github.databob.generators
 
 import io.github.databob.Databob
 import io.github.databob.Generator._
+import io.github.databob.generators.CollectionSizeRange.exactly
 
 import scala.collection.JavaConverters._
 
@@ -42,7 +43,7 @@ object CollectionGenerators {
   /**
    * Generates Non-Empty collections
    */
-  lazy val NonEmpty = CollectionSizeRange.exactly(1) +: Empty
+  lazy val NonEmpty = exactly(1) +: Empty
 
   /**
    * Generates Random collections

@@ -5,9 +5,9 @@ import java.math.{BigDecimal => JavaBigDecimal, BigInteger => JavaBigInteger}
 
 import io.github.databob.Databob
 import io.github.databob.generators._
-import org.scalatest.{FunSpec, ShouldMatchers}
+import org.scalatest.{FunSpec, Matchers}
 
-class PrimitiveGeneratorsTest extends FunSpec with ShouldMatchers with GeneratorSpecs {
+class PrimitiveGeneratorsTest extends FunSpec with Matchers with GeneratorSpecs {
 
   describe("default") {
     implicit val g = PrimitiveGenerators.Defaults
