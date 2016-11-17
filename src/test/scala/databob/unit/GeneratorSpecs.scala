@@ -2,12 +2,12 @@ package databob.unit
 
 import io.github.databob.Databob
 import io.github.databob.generators._
-import org.scalatest.{FunSpec, ShouldMatchers}
+import org.scalatest.{FunSpec, Matchers}
 
 import scala.reflect.Manifest
 
 trait GeneratorSpecs {
-  self: FunSpec with ShouldMatchers =>
+  self: FunSpec with Matchers =>
   def itSupports[A: Manifest](expected: Any)(implicit generators: Generators, mf: Manifest[A]): Unit = {
     it(mf.runtimeClass.getName + " at " + System.nanoTime()) {
       Databob.mk[A](generators, mf) shouldBe expected

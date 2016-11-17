@@ -1,9 +1,9 @@
 package databob.unit
 
 import io.github.databob.generators.CoinToss
-import org.scalatest.{FunSpec, ShouldMatchers}
+import org.scalatest.{FunSpec, Matchers}
 
-class CoinTossTest extends FunSpec with ShouldMatchers {
+class CoinTossTest extends FunSpec with Matchers {
 
   describe("coin toss") {
     it("always passes") {

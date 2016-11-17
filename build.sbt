@@ -10,18 +10,18 @@ name := projectName
 
 description := "Randomized object generation"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.0"
 
-crossScalaVersions := Seq("2.11.8", "2.10.6")
+crossScalaVersions := Seq("2.12.0", "2.11.8", "2.10.6")
 
 scalacOptions += "-deprecation"
 
 scalacOptions += "-feature"
 
 libraryDependencies ++= Seq(
-  "org.json4s" %% "json4s-core" % "3.3.0",
-  "org.json4s" %% "json4s-native" % "3.3.0" % "test",
-  "org.scalatest" %% "scalatest" % "2.2.5" % "test"
+  "org.json4s" %% "json4s-core" % "3.5.0",
+  "org.json4s" %% "json4s-native" % "3.5.0" % "test",
+  "org.scalatest" %% "scalatest" % "3.0.0" % "test"
 )
 
 licenses +=("Apache-2.0", url("http://opensource.org/licenses/Apache-2.0"))

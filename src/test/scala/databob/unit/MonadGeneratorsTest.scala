@@ -6,14 +6,14 @@ import java.util.concurrent.TimeUnit
 
 import io.github.databob.Databob
 import io.github.databob.generators._
-import org.scalatest.{FunSpec, ShouldMatchers}
+import org.scalatest.{FunSpec, Matchers}
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 import scala.util.{Success, Try}
 
 
-class MonadGeneratorsTest extends FunSpec with ShouldMatchers with GeneratorSpecs {
+class MonadGeneratorsTest extends FunSpec with Matchers with GeneratorSpecs {
 
   describe("happy") {
     implicit val g = MonadGenerators.Happy ++ Generators.Defaults

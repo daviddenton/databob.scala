@@ -1,9 +1,9 @@
 package databob.unit
 
 import io.github.databob.generators.CollectionSizeRange
-import org.scalatest.{FunSpec, ShouldMatchers}
+import org.scalatest.{FunSpec, Matchers}
 
-class CollectionSizeRangeTest extends FunSpec with ShouldMatchers {
+class CollectionSizeRangeTest extends FunSpec with Matchers {
 
   describe("CollectionSizeRange") {
     it("can't be negative") {

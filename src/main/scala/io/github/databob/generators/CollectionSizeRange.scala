@@ -1,10 +1,12 @@
 package io.github.databob.generators
 
+import java.lang.Integer.MAX_VALUE
+
 import io.github.databob.Generator._
 
 
 /**
- * Represents the minimum and maximum size of a generated collection. Defaults to 1->5, Add a generator for this to change
+ * Represents the minimum and maximum size of a generated collection.
  */
 case class CollectionSizeRange(min: Int, max: Int) {
   if (max < min) throw new IllegalArgumentException(s"Can't have a negative collection size ($min, $max)")
@@ -22,7 +24,11 @@ object CollectionSizeRange {
 
   def exactly(value: Int) = collectionSizeRange(() => CollectionSizeRange(value, value))
 
+  def atLeast(value: Int) = collectionSizeRange(() => CollectionSizeRange(value, MAX_VALUE))
+
   def atMost(value: Int) = collectionSizeRange(CollectionSizeRange(1, value))
+
+  def between(min: Int, max: Int) = collectionSizeRange(() => CollectionSizeRange(min, max))
 
   /**
    * Convenience constructor for CollectionSizeRange generator

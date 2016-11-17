@@ -1,6 +1,6 @@
 package io.github.databob
 
-import io.github.databob.generators.Generators
+import io.github.databob.generators.{CollectionSizeRange, Generators}
 import io.github.databob.generators.Generators._
 import org.json4s.reflect.Reflector._
 import org.json4s.reflect._
@@ -69,5 +69,6 @@ object Databob {
    * @param mf manifest for the object to generate
    * @return the generated object
    */
-  def randomNotEmpty[A](implicit overrides: Generators = EmptyGenerators, mf: Manifest[A]): A = mk[A](overrides ++ Random, mf)
+  def randomNotEmpty[A](implicit overrides: Generators = EmptyGenerators, mf: Manifest[A]): A =
+  mk[A](overrides ++ (CollectionSizeRange.between(1, 5) +: Random), mf)
 }

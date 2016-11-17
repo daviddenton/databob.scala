@@ -5,7 +5,7 @@ import java.time.{LocalDate, LocalDateTime, LocalTime, ZonedDateTime}
 import io.github.databob._
 import io.github.databob.generators.Generators._
 import io.github.databob.generators._
-import org.scalatest.{FunSpec, ShouldMatchers}
+import org.scalatest.{FunSpec, Matchers}
 
 case class YetAnother(name: Int, which: Boolean, time: LocalDateTime)
 
@@ -15,7 +15,7 @@ case class Person(other: Other, age: Option[ZonedDateTime], bob: LocalDate, name
 
 class APrivateClass private()
 
-class DatabobTest extends FunSpec with ShouldMatchers with GeneratorSpecs {
+class DatabobTest extends FunSpec with Matchers with GeneratorSpecs {
 
   describe("Custom classes") {
     describe("default") {
